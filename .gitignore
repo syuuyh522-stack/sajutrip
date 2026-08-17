@@ -6,6 +6,9 @@
 .env.*
 !.env.example
 
+# 원천 데이터 (민감 — 외부 저장소 반출 금지)
+*.xlsx
+
 # Node / Next.js (코드 추가 대비)
 node_modules/
 .next/
