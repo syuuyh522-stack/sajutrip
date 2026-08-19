@@ -1,0 +1,27 @@
+/* 최소 리셋 + 토큰. Tailwind는 스펙 미확정이라 도입 금지(§2) — 순수 CSS. */
+:root {
+  --ink: #1E293B;
+  --muted: #64748B;
+  --muted-2: #94A3B8;
+  --line: #E2E8F0;
+  --paper: #FFFFFF;
+  --accent: #4338CA;
+  --accent-soft: #E0E7FF;
+  --sans: -apple-system, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; }
+button { font-family: inherit; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}

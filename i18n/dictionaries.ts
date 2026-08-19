@@ -1,0 +1,285 @@
+// i18n 사전. (CLAUDE.md §6.3)
+// 로케일 추가 = ① Locale 유니온에 코드 추가 ② LOCALES 배열에 추가 ③ dict에 사전 객체 추가.
+//   → 컴포넌트는 t.<key>만 참조하므로 수정 불필요.
+
+export type Locale = 'en' | 'ko';
+
+export const LOCALES: readonly Locale[] = ['en', 'ko'];
+export const DEFAULT_LOCALE: Locale = 'en';
+
+/** 로케일 선택 UI에 쓰는 표기 (각 언어의 자기이름) */
+export const LOCALE_LABELS: Record<Locale, string> = {
+  en: 'English',
+  ko: '한국어',
+};
+
+/** 사전 형태 — en을 기준 타입으로 삼아 다른 로케일이 같은 키를 갖도록 강제 */
+export interface Dictionary {
+  landing: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    gender: string;
+    female: string;
+    male: string;
+    dob: string;
+    year: string;
+    month: string;
+    day: string;
+    cta: string;
+    note: string;
+  };
+  elements: Record<'wood' | 'fire' | 'earth' | 'metal' | 'water', string>;
+  result: {
+    eyebrow: string;
+    deficient: string;
+    excess: string;
+    back: string;
+    loading: string;
+    error: string;
+  };
+  saju: {
+    chartTitle: string;
+    year: string;
+    month: string;
+    day: string;
+    stem: string;
+    branch: string;
+    /** {element} 자리에 원소명 삽입 (§5.8 공명 톤) */
+    resonance: string;
+  };
+  kstar: {
+    title: string;
+    forFun: string;
+    soulmate: string;
+    soulmateDesc: string;
+    twin: string;
+    twinDesc: string;
+  };
+  explore: {
+    cta: string;
+    title: string;
+    /** {element} 치환 */
+    fill: string;
+    echo: string;
+    empty: string;
+    back: string;
+  };
+  pdp: {
+    /** {element} 치환 (§5.8) */
+    resonance: string;
+    quiet: string;
+    quietNote: string;
+    demo: string;
+    book: string;
+    bookNote: string;
+    addPlan: string;
+    added: string;
+    viewPlan: string;
+    back: string;
+    notFound: string;
+  };
+  plan: {
+    title: string;
+    target: string;
+    locked: string;
+    dates: string;
+    start: string;
+    end: string;
+    day: string;
+    empty: string;
+    remove: string;
+    nearby: string;
+    finish: string;
+    back: string;
+  };
+  share: {
+    title: string;
+    /** {element} 치환 */
+    headline: string;
+    collected: string;
+    save: string;
+    share: string;
+    /** {element} 치환 */
+    shareText: string;
+    back: string;
+  };
+}
+
+const en: Dictionary = {
+  landing: {
+    eyebrow: 'Eastern astrology · Saju',
+    title: 'Travel Korea by the elements you’re missing.',
+    subtitle:
+      'Your birth chart maps five energies — wood, fire, earth, metal, water. We route your trip toward the ones you lack.',
+    gender: 'Gender',
+    female: 'Female',
+    male: 'Male',
+    dob: 'Date of birth',
+    year: 'Year',
+    month: 'Month',
+    day: 'Day',
+    cta: 'Read my elements',
+    note: 'No account needed to see your reading.',
+  },
+  elements: { wood: 'Wood 木', fire: 'Fire 火', earth: 'Earth 土', metal: 'Metal 金', water: 'Water 水' },
+  result: {
+    eyebrow: 'Your five-element balance',
+    deficient: 'Lowest · fill it',
+    excess: 'Strongest · echo it',
+    back: 'Back',
+    loading: 'Reading your chart…',
+    error: 'Could not read your chart. Please try again.',
+  },
+  saju: {
+    chartTitle: 'Your saju chart',
+    year: 'Year',
+    month: 'Month',
+    day: 'Day',
+    stem: 'Heavenly stem',
+    branch: 'Earthly branch',
+    resonance: 'In the five-element tradition, places rich in {element} energy are said to resonate with a chart like yours.',
+  },
+  kstar: {
+    title: 'Your K-star matches',
+    forFun: 'for fun',
+    soulmate: 'Soulmate K-star',
+    soulmateDesc: 'Strong where you run low',
+    twin: 'Same energy as you',
+    twinDesc: 'Shares your strongest element',
+  },
+  explore: {
+    cta: 'Find places that resonate',
+    title: 'Places that resonate',
+    fill: 'Fill · {element}',
+    echo: 'Echo · {element}',
+    empty: 'No places yet for this element.',
+    back: 'Back',
+  },
+  pdp: {
+    resonance: 'A {element}-rich place — said to resonate with a chart like yours.',
+    quiet: 'When it is quiet',
+    quietNote: 'Quietest on weekday mornings',
+    demo: 'demo · live congestion data coming',
+    book: 'Book',
+    bookNote: 'Booking link coming soon',
+    addPlan: 'Add to itinerary',
+    added: 'Added to itinerary',
+    viewPlan: 'View itinerary',
+    back: 'Back',
+    notFound: 'Place not found.',
+  },
+  plan: {
+    title: 'My itinerary',
+    target: 'Filling',
+    locked: 'locked',
+    dates: 'Trip dates',
+    start: 'Start',
+    end: 'End',
+    day: 'Day',
+    empty: 'No places yet. Add some from a place page.',
+    remove: 'Remove',
+    nearby: 'Nearby stay & food will be added automatically (with live data).',
+    finish: 'Finish & make share card',
+    back: 'Back',
+  },
+  share: {
+    title: 'Trip summary',
+    headline: 'I filled my {element} in Korea',
+    collected: 'collected',
+    save: 'Save image',
+    share: 'Share',
+    shareText: 'My SajuTrip — I filled my {element} in Korea.',
+    back: 'Back',
+  },
+};
+
+const ko: Dictionary = {
+  landing: {
+    eyebrow: '동양 사주 · 오행',
+    title: '당신에게 부족한 기운을 채우는 한국 여행',
+    subtitle:
+      '사주는 다섯 기운(목·화·토·금·수)의 분포예요. 당신에게 부족한 기운으로 여행을 안내합니다.',
+    gender: '성별',
+    female: '여성',
+    male: '남성',
+    dob: '생년월일',
+    year: '년',
+    month: '월',
+    day: '일',
+    cta: '내 오행 보기',
+    note: '회원가입 없이 결과를 볼 수 있어요.',
+  },
+  elements: { wood: '목 木', fire: '화 火', earth: '토 土', metal: '금 金', water: '수 水' },
+  result: {
+    eyebrow: '나의 오행 분포',
+    deficient: '가장 부족 · 채우기',
+    excess: '가장 넘침 · 공명',
+    back: '뒤로',
+    loading: '사주를 읽는 중…',
+    error: '사주를 불러오지 못했어요. 다시 시도해 주세요.',
+  },
+  saju: {
+    chartTitle: '나의 사주 명식',
+    year: '연주',
+    month: '월주',
+    day: '일주',
+    stem: '천간',
+    branch: '지지',
+    resonance: '전통 오행에서는 {element} 기운이 강한 곳이 당신과 공명한다고 여겨져요.',
+  },
+  kstar: {
+    title: '나의 K-star',
+    forFun: '재미로',
+    soulmate: '소울메이트 K스타',
+    soulmateDesc: '내게 부족한 기운이 강한 별',
+    twin: '나와 닮은 K스타',
+    twinDesc: '나와 같은 강한 기운',
+  },
+  explore: {
+    cta: '공명하는 장소 찾기',
+    title: '공명하는 장소',
+    fill: '채우기 · {element}',
+    echo: '공명 · {element}',
+    empty: '이 원소의 장소가 아직 없어요.',
+    back: '뒤로',
+  },
+  pdp: {
+    resonance: '{element} 기운이 강한 곳 — 당신의 사주와 공명한다고 여겨져요.',
+    quiet: '여유로운 시간',
+    quietNote: '평일 오전이 가장 한산해요',
+    demo: 'demo · 실시간 혼잡도 연동 예정',
+    book: '예약하기',
+    bookNote: '예약 링크는 곧 연결됩니다',
+    addPlan: '일정에 담기',
+    added: '일정에 담겼어요',
+    viewPlan: '일정 보기',
+    back: '뒤로',
+    notFound: '장소를 찾을 수 없어요.',
+  },
+  plan: {
+    title: '내 일정',
+    target: '채우는 기운',
+    locked: '고정',
+    dates: '여행 일자',
+    start: '시작일',
+    end: '종료일',
+    day: '일차',
+    empty: '담은 장소가 없어요. 장소 상세에서 담아보세요.',
+    remove: '빼기',
+    nearby: '주변 숙박·음식 동선은 자동 확장 예정(실데이터 연동 시).',
+    finish: '완성하고 공유 카드 만들기',
+    back: '뒤로',
+  },
+  share: {
+    title: '여행 요약',
+    headline: '한국에서 {element} 기운을 채웠어요',
+    collected: '수집',
+    save: '이미지 저장',
+    share: '공유',
+    shareText: '사주트립 — 한국에서 {element} 기운을 채웠어요.',
+    back: '뒤로',
+  },
+};
+
+export const dict: Record<Locale, Dictionary> = { en, ko };

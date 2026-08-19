@@ -1,0 +1,711 @@
+<title>SajuTrip — Aurora Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<style>
+  :root{
+    --text:#1E293B; --muted:#64748B; --muted2:#94A3B8;
+    --glass:rgba(255,255,255,.6); --glass-2:rgba(255,255,255,.45); --brd:rgba(255,255,255,.6);
+    --lav:#E0E7FF; --lav2:#E9D5FF; --pink:#FEE2E2; --mint:#D9F99D; --gold:#FEF3C7; --slate:#CBD5E1;
+    --e-wood:#BBF7D0;  --e-wood-t:#15803D;
+    --e-fire:#FECDD3;  --e-fire-t:#BE123C;
+    --e-earth:#FDE68A; --e-earth-t:#A16207;
+    --e-metal:#E2E8F0; --e-metal-t:#475569;
+    --e-water:#C7D2FE; --e-water-t:#4338CA;
+    --grad:linear-gradient(135deg,#CBD5E1 0%,#FEE2E2 40%,#E0E7FF 100%);
+    --iris:linear-gradient(120deg,#E9D5FF,#FEE2E2,#C7D2FE,#D9F99D);
+    --sans:-apple-system,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,monospace;
+    --r:26px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:#EAECF1; font-family:var(--sans); color:var(--text); -webkit-font-smoothing:antialiased; min-height:100dvh}
+
+  /* full-bleed app — fills the whole viewport immediately */
+  .screen{position:fixed; inset:0; width:100%; height:100dvh; margin:0; background:#fff;
+    overflow:hidden; display:flex; flex-direction:column; font-size:14px; line-height:1.5}
+  /* keep the app content in a comfortable column even on wide screens */
+  .view > .anim{max-width:460px; margin:0 auto}
+  .bnav{max-width:460px; margin:0 auto; width:100%}
+  .restart-fab{position:absolute; top:calc(10px + env(safe-area-inset-top)); right:12px; z-index:20;
+    width:38px; height:38px; border-radius:50%; border:1px solid var(--brd); background:rgba(255,255,255,.55);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:var(--muted); font-size:17px; cursor:pointer;
+    display:grid; place-items:center; -webkit-tap-highlight-color:transparent}
+  .restart-fab:hover{background:rgba(255,255,255,.85); color:var(--text)}
+  .restart-fab:active{transform:scale(.94)}
+
+  /* aurora blobs */
+  .aurora{position:absolute; inset:0; overflow:hidden; z-index:0; pointer-events:none}
+  .blob{position:absolute; border-radius:50%; filter:blur(56px); opacity:.85; mix-blend-mode:normal}
+  .b1{width:300px;height:300px; top:-70px; left:-60px; background:radial-gradient(circle at 30% 30%,#E9D5FF,rgba(233,213,255,0)); animation:drift1 18s ease-in-out infinite}
+  .b2{width:280px;height:280px; top:-30px; right:-80px; background:radial-gradient(circle at 60% 40%,#FEE2E2,rgba(254,226,226,0)); animation:drift2 22s ease-in-out infinite}
+  .b3{width:320px;height:320px; bottom:60px; left:-90px; background:radial-gradient(circle at 50% 50%,#D9F99D,rgba(217,249,157,0)); opacity:.6; animation:drift3 26s ease-in-out infinite}
+  .b4{width:300px;height:300px; bottom:-70px; right:-70px; background:radial-gradient(circle at 40% 40%,#C7D2FE,rgba(199,210,254,0)); animation:drift1 24s ease-in-out infinite reverse}
+  .b5{width:200px;height:200px; top:40%; left:30%; background:radial-gradient(circle,#FEF3C7,rgba(254,243,199,0)); opacity:.5; animation:drift2 20s ease-in-out infinite}
+  @keyframes drift1{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,26px)}}
+  @keyframes drift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-26px,30px)}}
+  @keyframes drift3{0%,100%{transform:translate(0,0)}50%{transform:translate(24px,-22px)}}
+
+  .view{position:relative; z-index:1; flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch}
+  .view::-webkit-scrollbar{width:0}
+  .pad{padding:20px 22px 26px}
+  .anim{animation:fade .4s ease}
+  @keyframes fade{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+
+  /* type */
+  h1.big{font-size:30px; font-weight:600; letter-spacing:-.5px; line-height:1.14; margin:0 0 10px; text-wrap:balance}
+  h2.hd{font-size:23px; font-weight:600; letter-spacing:-.3px; margin:0 0 6px}
+  .eyebrow{font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted2); font-weight:600}
+  p.sub{color:var(--muted); margin:0 0 18px}
+  .fine{font-size:12px; color:var(--muted2)}
+
+  /* glass */
+  .glass{background:var(--glass); backdrop-filter:blur(16px) saturate(140%); -webkit-backdrop-filter:blur(16px) saturate(140%);
+    border:1px solid var(--brd); border-radius:var(--r); box-shadow:0 10px 30px -18px rgba(30,41,59,.4)}
+  .soft-shadow{box-shadow:0 20px 44px -22px rgba(30,41,59,.5)}
+
+  /* buttons */
+  .btn{display:flex; align-items:center; justify-content:center; gap:8px; width:100%; cursor:pointer; border:0;
+    font-family:var(--sans); font-size:15.5px; font-weight:600; color:var(--text); border-radius:999px; padding:16px 20px;
+    background:var(--iris); background-size:200% 200%; transition:.2s; box-shadow:0 12px 30px -12px rgba(139,92,246,.5); animation:shimmer 8s ease infinite}
+  @keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  .btn:hover{transform:translateY(-1px); filter:brightness(1.03)}
+  .btn:active{transform:translateY(0)}
+  .btn:focus-visible{outline:2px solid #8b5cf6; outline-offset:3px}
+  .btn.plain{background:var(--glass); backdrop-filter:blur(12px); border:1px solid var(--brd); box-shadow:none; color:var(--text); animation:none}
+  .btn.plain:hover{background:rgba(255,255,255,.8)}
+  .btn.dark{background:#1E293B; color:#fff; animation:none; box-shadow:0 12px 28px -14px rgba(30,41,59,.7)}
+  .btn.dark:hover{background:#0f172a}
+
+  /* pills / chips */
+  .chips{display:flex; gap:8px; overflow-x:auto; padding:2px 0}
+  .chips::-webkit-scrollbar{height:0}
+  .chip{flex:0 0 auto; font-size:12.5px; font-weight:500; padding:9px 15px; border-radius:999px; cursor:pointer; white-space:nowrap;
+    background:rgba(255,255,255,.55); backdrop-filter:blur(8px); border:1px solid var(--brd); color:var(--muted); transition:.16s}
+  .chip[aria-pressed="true"]{background:#1E293B; color:#fff; border-color:#1E293B}
+  .chip:hover{color:var(--text)}
+
+  /* SRP filters (P1) */
+  .filters{display:flex; gap:7px; flex-wrap:wrap; margin:12px 0}
+  .filt{font-size:11.5px; padding:7px 12px; border-radius:999px; background:rgba(255,255,255,.55); backdrop-filter:blur(8px);
+    border:1px solid var(--brd); color:var(--muted); cursor:pointer; transition:.16s}
+  .filt.act{border-color:#818cf8; color:var(--e-water-t); background:rgba(199,210,254,.38); font-weight:600}
+
+  /* signup agree + checkin */
+  .agree{display:flex; gap:9px; align-items:flex-start; font-size:12.5px; color:var(--muted); margin-top:8px; line-height:1.5}
+  .agree a{color:var(--e-water-t); text-decoration:underline; cursor:pointer}
+  .agree input{margin-top:2px}
+  .chkitem{display:flex; gap:10px; align-items:center; padding:9px 0; font-size:13px; color:var(--text)}
+  .chkitem + .chkitem{border-top:1px solid rgba(148,163,184,.2)}
+  .chkitem input{width:18px; height:18px; accent-color:#6366f1}
+
+  /* icon */
+  .ic{width:20px; height:20px; stroke:currentColor; stroke-width:1.7; fill:none; stroke-linecap:round; stroke-linejoin:round; flex:0 0 auto}
+  .ic.sm{width:17px;height:17px}
+
+  /* form (F-1 input) */
+  .field{margin:15px 0}
+  .field > label{display:block; font-size:11px; letter-spacing:.6px; text-transform:uppercase; color:var(--muted); margin-bottom:8px}
+  .seg{display:flex; gap:8px}
+  .seg button{flex:1; padding:15px; border-radius:16px; border:1px solid var(--brd); background:rgba(255,255,255,.5);
+    backdrop-filter:blur(8px); font-family:var(--sans); font-size:14px; color:var(--text); cursor:pointer; transition:.16s}
+  .seg button[aria-pressed="true"]{background:#1E293B; color:#fff; border-color:#1E293B}
+  .dob{display:flex; gap:8px}
+  .dob input{width:100%; padding:15px; border-radius:16px; border:1px solid var(--brd); background:rgba(255,255,255,.5);
+    font-family:var(--mono); font-size:15px; text-align:center; color:var(--text); outline:none}
+  .dob input:focus{border-color:#818cf8; outline:2px solid rgba(129,140,248,.35)}
+
+  /* analyzing */
+  .analyze{min-height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:24px}
+  .analyze .steps{margin-top:22px; display:flex; flex-direction:column; gap:9px; font-size:13px; color:var(--muted)}
+  .analyze .steps b{color:var(--text); font-weight:600}
+
+  /* journey (F-5 plan) */
+  .prefill{display:flex; align-items:center; gap:10px; padding:13px 15px; margin:8px 0}
+  .prefill .lock{font-size:12px; color:var(--e-water-t); margin-left:auto; font-weight:600}
+  .daterow{display:flex; gap:8px; margin:14px 0 18px}
+  .daterow .d{flex:1; padding:12px 14px}
+  .daterow .d .k{font-size:10.5px; text-transform:uppercase; color:var(--muted2); letter-spacing:.5px}
+  .daterow .d .v{font-family:var(--mono); font-size:14px; margin-top:3px}
+  .day{margin:0 0 16px; padding:14px}
+  .day .dh{display:flex; align-items:center; gap:9px; margin-bottom:6px}
+  .day .dh .num{width:24px; height:24px; border-radius:8px; background:#1E293B; color:#fff; display:grid; place-items:center; font-family:var(--mono); font-size:12px; font-weight:600}
+  .day .dh .lbl{font-size:15px; font-weight:600}
+  .day .dh .rgn{margin-left:auto; font-size:10.5px; color:var(--e-wood-t); background:var(--e-wood); border-radius:7px; padding:2px 8px}
+  .stop{display:flex; gap:11px; padding:10px 0; border-top:1px dashed rgba(148,163,184,.3)}
+  .stop.new{background:rgba(199,210,254,.28); margin:0 -6px; padding:10px 6px; border-radius:12px; border-top-color:transparent}
+  .stop .tm{font-family:var(--mono); font-size:11px; color:var(--muted2); width:44px; flex:0 0 auto; padding-top:2px}
+  .stop .sx b{font-size:13.5px} .stop .sx span{display:block; font-size:12px; color:var(--muted)}
+  .stop .eb{font-family:var(--mono); font-size:12px; color:#fff; border-radius:7px; padding:3px 8px; align-self:center}
+
+  /* share card */
+  .sharecard{border-radius:var(--r); padding:22px; color:#fff; margin:6px 0 16px;
+    background:radial-gradient(140px 90px at 78% 12%, rgba(199,210,254,.7), transparent), linear-gradient(160deg,#312e81,#4338ca)}
+  .sharecard .t2{display:flex; justify-content:space-between; align-items:baseline}
+  .sharecard .t2 .bd{font-weight:600}
+  .sharecard .t2 .dt{font-family:var(--mono); font-size:11px; color:#c7d2fe}
+  .sharecard h3{font-size:22px; font-weight:600; margin:14px 0 4px}
+  .sharecard .elrow{margin:14px 0 6px}
+  .sharecard .el{background:rgba(255,255,255,.14); color:rgba(255,255,255,.6); border-color:rgba(255,255,255,.2)}
+  .sharecard .el.water.on{background:#818cf8; color:#fff; border:0}
+  .sharecard .fn{font-family:var(--mono); font-size:12px; color:#c7d2fe}
+  .sharecard .rt{font-size:12px; color:#dbe2fb; margin-top:12px; line-height:1.7}
+
+  /* profile rows */
+  .prow{display:flex; justify-content:space-between; padding:14px 4px; border-bottom:1px solid rgba(148,163,184,.22); font-size:14px}
+  .prow .k{color:var(--muted)} .prow .v{font-family:var(--mono)}
+
+  /* cosmic sphere */
+  .orbwrap{display:grid; place-items:center; padding:26px 0 6px; position:relative}
+  .orb{width:230px; height:230px; border-radius:50%; position:relative;
+    background:conic-gradient(from 90deg,#E9D5FF,#FEE2E2,#FEF3C7,#D9F99D,#C7D2FE,#E9D5FF);
+    filter:blur(2px) saturate(150%); animation:spin 20s linear infinite, bob 6s ease-in-out infinite;
+    box-shadow:0 30px 70px -20px rgba(139,92,246,.55), inset 0 0 60px rgba(255,255,255,.55)}
+  .orb::after{content:""; position:absolute; inset:26px; border-radius:50%; background:radial-gradient(circle at 38% 34%, rgba(255,255,255,.85), rgba(255,255,255,0) 60%)}
+  .orb::before{content:""; position:absolute; inset:-30px; border-radius:50%; background:radial-gradient(circle,rgba(233,213,255,.4),rgba(233,213,255,0) 70%); filter:blur(14px)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes bob{0%,100%{translate:0 0}50%{translate:0 -12px}}
+  .orb-cn{position:absolute; z-index:2; font-family:var(--mono); font-size:34px; color:#fff; text-shadow:0 2px 12px rgba(67,56,202,.5); animation:bob 6s ease-in-out infinite}
+
+  /* five elements */
+  .elrow{display:flex; gap:10px; margin:18px 0}
+  .el{flex:1; aspect-ratio:1; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+    font-family:var(--mono); font-size:12px; color:var(--muted); background:rgba(255,255,255,.5); border:1px solid var(--brd)}
+  .el .cn{font-size:19px}
+  .el.on{color:#fff; border:0}
+  .el.on .cn{color:#fff}
+  .el.wood.on{background:#4ade80} .el.fire.on{background:#fb7185} .el.earth.on{background:#fbbf24}
+  .el.metal.on{background:#94a3b8} .el.water.on{background:#818cf8}
+  .el.miss{outline:2px dashed #818cf8; outline-offset:2px; color:var(--e-water-t)}
+
+  .barlist{display:flex; flex-direction:column; gap:11px; margin:6px 0}
+  .barrow{display:grid; grid-template-columns:58px 1fr 22px; align-items:center; gap:10px; font-size:13px}
+  .barrow .lb{display:flex; gap:6px; align-items:center} .barrow .lb .cn{font-family:var(--mono)}
+  .barrow .tk{height:10px; border-radius:999px; background:rgba(148,163,184,.22); overflow:hidden}
+  .barrow .tk > span{display:block; height:100%; border-radius:999px}
+  .barrow .vv{font-family:var(--mono); font-size:12px; color:var(--muted); text-align:right}
+
+  .tagline{display:flex; gap:8px; flex-wrap:wrap; margin:4px 0 14px}
+  .tag{font-size:12px; font-weight:600; padding:6px 12px; border-radius:999px}
+  .tag.miss{background:var(--e-water); color:var(--e-water-t)}
+  .tag.exc{background:var(--e-fire); color:var(--e-fire-t)}
+
+  /* home */
+  .greet{display:flex; align-items:center; gap:12px; margin-bottom:16px}
+  .greet .hi{flex:1}
+  .greet .hi .s{font-size:12px; color:var(--muted2)}
+  .greet .hi .n{font-size:19px; font-weight:600; letter-spacing:-.3px}
+  .avatar{width:44px; height:44px; border-radius:50%; background:var(--iris); background-size:180%; box-shadow:0 6px 16px -6px rgba(139,92,246,.5)}
+  .searchbar{display:flex; align-items:center; gap:10px; padding:13px 16px; border-radius:999px; color:var(--muted2); margin-bottom:14px}
+  .searchbar input{border:0; background:transparent; flex:1; font-family:var(--sans); font-size:14px; color:var(--text); outline:none}
+  .searchbar input::placeholder{color:var(--muted2)}
+
+  .feature{position:relative; border-radius:var(--r); overflow:hidden; margin:4px 0 18px; height:210px; cursor:pointer; color:#fff}
+  .feature .imgx{position:absolute; inset:0}
+  .feature .ov{position:absolute; inset:0; background:linear-gradient(180deg,rgba(15,23,42,0) 30%,rgba(15,23,42,.62) 100%)}
+  .feature .bk{position:absolute; top:14px; right:14px; width:38px; height:38px; border-radius:50%; display:grid; place-items:center;
+    background:rgba(255,255,255,.25); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.4); color:#fff; cursor:pointer}
+  .feature .el-badge{position:absolute; top:16px; left:16px; font-size:12px; font-weight:600; padding:6px 12px; border-radius:999px;
+    background:rgba(255,255,255,.25); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.35)}
+  .feature .cap{position:absolute; left:18px; bottom:16px; right:18px}
+  .feature .cap .rg{font-size:11.5px; opacity:.9; font-family:var(--mono); letter-spacing:.5px}
+  .feature .cap .ti{font-size:22px; font-weight:600; letter-spacing:-.3px; margin-top:2px}
+
+  .sec-h{display:flex; align-items:baseline; justify-content:space-between; margin:6px 2px 12px}
+  .sec-h .t{font-size:16px; font-weight:600}
+  .sec-h .m{font-size:12px; color:var(--muted2)}
+  .picks{display:flex; flex-direction:column; gap:10px; padding:14px}
+  .pick{display:flex; align-items:center; gap:13px; cursor:pointer; padding:6px; border-radius:16px; transition:.16s}
+  .pick:hover{background:rgba(255,255,255,.55)}
+  .pick .thumb{width:56px; height:56px; border-radius:15px; flex:0 0 auto}
+  .pick .tx{flex:1}
+  .pick .tx b{font-size:14.5px; font-weight:600} .pick .tx span{display:block; font-size:12px; color:var(--muted)}
+  .pick .el-dot{font-family:var(--mono); font-size:12px; padding:4px 9px; border-radius:999px}
+
+  /* detail */
+  .dhero{height:230px; position:relative; color:#fff}
+  .dhero .top{position:absolute; top:14px; left:14px; right:14px; display:flex; justify-content:space-between}
+  .roundbtn{width:38px; height:38px; border-radius:50%; display:grid; place-items:center; cursor:pointer; color:#fff;
+    background:rgba(255,255,255,.25); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.4)}
+  .dhero .cap{position:absolute; left:20px; bottom:16px; right:20px}
+  .dhero .cap .rg{font-family:var(--mono); font-size:11.5px; opacity:.92}
+  .dhero .cap .ti{font-size:25px; font-weight:600; letter-spacing:-.4px}
+  .why{padding:16px; margin:16px 0}
+  .why .q{font-size:14.5px; line-height:1.55; color:var(--text); margin:0}
+  .metr{display:flex; gap:10px; margin:14px 0}
+  .metr .m{flex:1; padding:13px; text-align:center}
+  .metr .m .k{font-size:10.5px; text-transform:uppercase; letter-spacing:.6px; color:var(--muted2)}
+  .metr .m .v{font-size:15px; font-weight:600; margin-top:4px}
+  .quiet{display:flex; align-items:flex-end; gap:5px; height:52px; margin:12px 0 4px}
+  .quiet .q{flex:1; background:rgba(129,140,248,.28); border-radius:5px 5px 0 0}
+  .quiet .q.hi{background:rgba(251,113,133,.5)} .quiet .q.lo{background:rgba(74,222,128,.55)}
+  .qlab{display:flex; justify-content:space-between; font-family:var(--mono); font-size:9px; color:var(--muted2)}
+  .book{display:flex; align-items:center; gap:10px; padding:14px 16px; margin:16px 0}
+  .book .yg{font-weight:800; color:#ff2f6d; font-size:14px}
+  .book .pr{margin-left:auto; font-family:var(--mono); font-size:13px}
+
+  /* scan */
+  .scanwrap{position:relative; height:340px; margin:8px 0 16px; display:grid; place-items:center}
+  .viewfinder{position:absolute; inset:20px; }
+  .corner{position:absolute; width:34px; height:34px; border:2.5px solid rgba(30,41,59,.55)}
+  .corner.tl{top:0;left:0; border-right:0; border-bottom:0; border-radius:14px 0 0 0}
+  .corner.tr{top:0;right:0; border-left:0; border-bottom:0; border-radius:0 14px 0 0}
+  .corner.bl{bottom:0;left:0; border-right:0; border-top:0; border-radius:0 0 0 14px}
+  .corner.br{bottom:0;right:0; border-left:0; border-top:0; border-radius:0 0 14px 0}
+  .scancard{width:180px; height:250px; border-radius:22px; background:conic-gradient(from 210deg,#E9D5FF,#FEE2E2,#FEF3C7,#C7D2FE,#E9D5FF);
+    box-shadow:0 24px 50px -18px rgba(139,92,246,.5); animation:bob 5s ease-in-out infinite; position:relative; overflow:hidden}
+  .scancard .cn{position:absolute; inset:0; display:grid; place-items:center; font-family:var(--mono); font-size:56px; color:rgba(255,255,255,.9); text-shadow:0 3px 16px rgba(67,56,202,.4)}
+  .scanline{position:absolute; left:14px; right:14px; height:3px; border-radius:3px; background:linear-gradient(90deg,transparent,rgba(129,140,248,.9),transparent); top:24px; animation:scan 2.6s ease-in-out infinite}
+  @keyframes scan{0%,100%{top:24px}50%{top:220px}}
+  .status{display:flex; align-items:center; gap:8px; justify-content:center; font-size:14px; font-weight:600; color:var(--text); margin-bottom:8px}
+  .instr{padding:16px 18px; margin-top:2px}
+  .instr li{list-style:none; display:flex; gap:10px; padding:8px 0; font-size:13px; color:var(--muted)}
+  .instr li .d{width:6px;height:6px;border-radius:50%; background:#818cf8; margin-top:7px; flex:0 0 auto}
+  .instr ul{margin:0; padding:0}
+
+  /* chat */
+  .chatscroll{display:flex; flex-direction:column; gap:12px; padding:18px 18px 12px}
+  .actionbar{display:flex; gap:8px; padding:2px 18px 10px; overflow-x:auto}
+  .actionbar::-webkit-scrollbar{height:0}
+  .act{flex:0 0 auto; display:flex; align-items:center; gap:6px; font-size:12.5px; font-weight:500; color:var(--text);
+    padding:9px 13px; border-radius:999px; background:rgba(255,255,255,.6); backdrop-filter:blur(8px); border:1px solid var(--brd); cursor:pointer}
+  .act:hover{background:rgba(255,255,255,.85)}
+  .msg{max-width:82%; padding:13px 15px; border-radius:20px; font-size:14px; line-height:1.5; animation:fade .4s ease}
+  .msg.ai{align-self:flex-start; background:var(--glass); backdrop-filter:blur(14px); border:1px solid var(--brd); border-bottom-left-radius:7px; color:var(--text)}
+  .msg.me{align-self:flex-end; background:linear-gradient(135deg,#C7D2FE,#E9D5FF); border-bottom-right-radius:7px; color:#312e81}
+  .msg .recs{display:flex; flex-direction:column; gap:8px; margin-top:10px}
+  .msg .rec{display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.7); border:1px solid var(--brd); border-radius:14px; padding:8px 10px; cursor:pointer}
+  .msg .rec .th{width:38px;height:38px;border-radius:11px;flex:0 0 auto}
+  .msg .rec b{font-size:13px} .msg .rec span{display:block; font-size:11px; color:var(--muted)}
+  .inputbar{position:absolute; left:50%; transform:translateX(-50%); width:calc(100% - 28px); max-width:432px;
+    bottom:calc(80px + env(safe-area-inset-bottom)); z-index:5; display:flex; align-items:center; gap:8px;
+    padding:8px 8px 8px 18px; border-radius:999px}
+  .inputbar input{flex:1; border:0; background:transparent; font-family:var(--sans); font-size:14px; color:var(--text); outline:none}
+  .inputbar input::placeholder{color:var(--muted2)}
+  .inputbar .send{width:40px;height:40px;border-radius:50%; border:0; cursor:pointer; display:grid; place-items:center; color:#fff; background:#1E293B}
+  .inputbar .mic{color:var(--muted); cursor:pointer; display:grid; place-items:center}
+
+  /* bottom nav */
+  .bnav{position:relative; z-index:2; flex:0 0 auto; display:flex; padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    background:rgba(255,255,255,.55); backdrop-filter:blur(18px) saturate(150%); border-top:1px solid var(--brd)}
+  .bnav button{flex:1; background:transparent; border:0; cursor:pointer; color:var(--muted2); font-size:10.5px; font-weight:500;
+    display:flex; flex-direction:column; align-items:center; gap:5px; padding:6px 4px}
+  .bnav button[aria-current="true"]{color:var(--text)}
+  .bnav button[aria-current="true"] .navic{background:#1E293B; color:#fff}
+  .navic{width:44px; height:30px; border-radius:12px; display:grid; place-items:center; transition:.16s}
+  .bnav button:focus-visible{outline:2px solid #8b5cf6; outline-offset:-2px}
+
+  /* toast */
+  .toast{position:absolute; left:50%; bottom:calc(94px + env(safe-area-inset-bottom)); transform:translateX(-50%) translateY(10px); z-index:9;
+    background:#1E293B; color:#fff; font-size:13px; padding:11px 16px; border-radius:13px; opacity:0; pointer-events:none; transition:.25s}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+</style>
+
+<div class="screen">
+  <div class="aurora">
+    <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+    <div class="blob b4"></div><div class="blob b5"></div>
+  </div>
+  <div class="view" id="view"></div>
+  <nav class="bnav" id="bnav"></nav>
+  <div class="toast" id="toast"></div>
+  <button class="restart-fab" id="restart" aria-label="Restart prototype">↺</button>
+</div>
+
+<script>
+// ---------- icons ----------
+const IC = {
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3-3"/>',
+  bookmark:'<path d="M6 3h12a1 1 0 0 1 1 1v17l-7-4-7 4V4a1 1 0 0 1 1-1z"/>',
+  home:'<path d="M4 11l8-7 8 7"/><path d="M6 10v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-9"/>',
+  scan:'<path d="M4 8V5a1 1 0 0 1 1-1h3"/><path d="M20 8V5a1 1 0 0 0-1-1h-3"/><path d="M4 16v3a1 1 0 0 0 1 1h3"/><path d="M20 16v3a1 1 0 0 1-1 1h-3"/><path d="M4 12h16"/>',
+  chat:'<path d="M21 15a2 2 0 0 1-2 2H8l-4 4V6a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/>',
+  compass:'<circle cx="12" cy="12" r="9"/><path d="m15 9-2 6-4 2 2-6z"/>',
+  spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
+  send:'<path d="M4 12l16-8-6 16-3-6z"/>',
+  mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M6 11a6 6 0 0 0 12 0M12 17v4"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m5 18 5-5 4 3 3-2 4 4"/>',
+  edit:'<path d="M12 20h8"/><path d="M15 4l5 5L9 20H4v-5z"/>',
+  back:'<path d="m14 6-6 6 6 6"/>',
+  heart:'<path d="M12 20s-7-4.6-9.2-9C1.3 8 3 4.8 6.3 4.8c2 0 3.2 1.3 3.7 2.2.5-.9 1.7-2.2 3.7-2.2 3.3 0 5 3.2 3.5 6.2C19 15.4 12 20 12 20z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  route:'<circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7"/>',
+  user:'<circle cx="12" cy="8" r="3.4"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/>',
+};
+const svg=(n,cls='ic')=>`<svg class="${cls}" viewBox="0 0 24 24">${IC[n]}</svg>`;
+
+// ---------- data ----------
+const GRAD = {
+  water:'linear-gradient(135deg,#6366f1,#818cf8,#a5b4fc)',
+  fire:'linear-gradient(135deg,#fb7185,#fda4af,#fecdd3)',
+  earth:'linear-gradient(135deg,#f59e0b,#fbbf24,#fde68a)',
+  wood:'linear-gradient(135deg,#22c55e,#4ade80,#bbf7d0)',
+};
+const PLACES = {
+  osaek:{name:"Osaek Starry Springs", region:"Gangwon", el:"water", cn:"水",
+    why:"One of the strongest water places on the peninsula — carbonated springs deep in a Seoraksan valley, a quiet counterweight to your fire-heavy chart.",
+    quiet:"Quiet mornings", price:"₩68,000~", near:"Sokcho"},
+  jusanji:{name:"Jusanji Mirror Pond", region:"Cheongsong", el:"water", cn:"水",
+    why:"Still water at daybreak — a misty 300-year-old pond inside a UNESCO geopark that reflects the whole sky.",
+    quiet:"Quiet dawn", price:"₩41,000~", near:"Cheongsong"},
+  jeongdongjin:{name:"Jeongdongjin Dawn Coast", region:"Gangneung", el:"water", cn:"水",
+    why:"The widest horizon of water in the country — greet the East Sea at first light.",
+    quiet:"Quiet weekdays", price:"free", near:"Gangneung"},
+  gama:{name:"Gyeongju Kiln Sauna", region:"Gyeongju", el:"fire", cn:"火",
+    why:"A pine-fired clay kiln sweat lodge — sit in the heat your chart already carries.",
+    quiet:"Busy weekends", price:"₩22,000~", near:"Gyeongju"},
+  onggi:{name:"Onggi Pottery Studio", region:"Ulsan", el:"earth", cn:"土",
+    why:"Shape earthenware by hand — grounding earth energy through your own touch.",
+    quiet:"Quiet studio", price:"₩35,000~", near:"Ulsan"},
+  cheonpyeong:{name:"Cheongpyeong Lake", region:"Gapyeong", el:"water", cn:"水",
+    why:"A still mountain lake within reach of Seoul — an easy dose of calm water.",
+    quiet:"Quiet weekdays", price:"₩19,000~", near:"Gapyeong"},
+};
+// F-3 카테고리(장소 타입)
+const TABS={ Wellness:["osaek","jusanji"], Experience:["gama","onggi"], Sights:["jeongdongjin","cheonpyeong"] };
+
+// ---------- state ----------
+const state={screen:"welcome", gender:"Female", place:"osaek", cat:"Wellness",
+  filters:{crowd:true, region:true, water:false}, saved:{}, signedUp:false};
+
+// ---------- helpers ----------
+function barRow(cn,name,color,v){
+  const pct=(v/3)*100, ring=v===0?' style="outline:2px dashed #818cf8; outline-offset:2px; border-radius:999px"':'';
+  return `<div class="barrow"><span class="lb"><b class="cn" style="color:${color}">${cn}</b>${name}</span>
+    <span class="tk"${ring}><span style="width:${Math.max(pct,6)}%; background:${color}"></span></span><span class="vv">${v}</span></div>`;
+}
+function pick(id){const p=PLACES[id];return `<div class="pick" data-place="${id}" role="button" tabindex="0">
+  <div class="thumb" style="background:${GRAD[p.el]}"></div>
+  <div class="tx"><b>${p.name}</b><span>${p.region} · ${p.quiet}</span></div>
+  <span class="el-dot" style="background:${GRAD[p.el]}; color:#fff">${p.cn}</span></div>`;}
+function day(n,label,stops){
+  return `<div class="glass day"><div class="dh"><span class="num">${n}</span><span class="lbl">Day ${n} · ${label}</span><span class="rgn">Regional</span></div>
+    ${stops.map(s=>`<div class="stop${s[5]?' new':''}"><span class="tm">${s[0]}</span>
+      <span class="sx"><b>${s[1]}</b><span>${s[2]}</span></span>
+      ${s[3]?`<span class="eb" style="background:${s[4]}">${s[3]}</span>`:''}</div>`).join('')}
+  </div>`;
+}
+function savedList(){
+  const ids=Object.keys(state.saved);
+  if(!ids.length) return `<div style="padding:12px; font-size:12.5px; color:var(--muted2)">Tap the bookmark on any place to keep it here.</div>`;
+  return ids.map(pick).join('');
+}
+function catList(){
+  return TABS[state.cat].filter(id=> !state.filters.water || PLACES[id].el==='water').map(pick).join('');
+}
+
+// ---------- screens ----------
+const S={
+  welcome:()=>({nav:false, html:`
+    <div class="pad" style="min-height:100%; display:flex; flex-direction:column; justify-content:center; text-align:center">
+      <div class="eyebrow">Eastern astrology · Saju</div>
+      <div class="orbwrap"><div class="orb"></div><span class="orb-cn">五</span></div>
+      <h1 class="big" style="margin-top:22px">Discover your<br>Saju energy.</h1>
+      <p class="sub" style="max-width:280px; margin:0 auto 26px">Five energies shape you — wood, fire, earth, metal, water. We find the one you lack and map it to Korea.</p>
+      <button class="btn" data-nav="input">Get started ${svg('arrow','ic sm')}</button>
+      <p class="fine" style="margin-top:14px">Only your birthday. No account needed.</p>
+    </div>`}),
+
+  input:()=>({nav:false, html:`
+    <div class="pad" style="min-height:100%; display:flex; flex-direction:column; justify-content:center">
+      <div class="eyebrow">Step 1 · your birth</div>
+      <h1 class="big" style="margin-top:10px">Two things.<br>That is all we need.</h1>
+      <p class="sub">We read your chart from your birth date — no camera, no account.</p>
+      <div class="field"><label>Gender</label>
+        <div class="seg" data-seg="gender">
+          <button data-val="Female" aria-pressed="${state.gender==='Female'}">Female</button>
+          <button data-val="Male" aria-pressed="${state.gender==='Male'}">Male</button></div></div>
+      <div class="field"><label>Date of birth</label>
+        <div class="dob"><input value="1996" aria-label="Year"><input value="07" aria-label="Month"><input value="22" aria-label="Day"></div></div>
+      <button class="btn" style="margin-top:10px" data-nav="analyzing">Read my Saju ${svg('arrow','ic sm')}</button>
+      <p class="fine" style="margin-top:12px; text-align:center">Sign up later to save your reading &amp; trips.</p>
+    </div>`}),
+
+  analyzing:()=>({nav:false, html:`
+    <div class="analyze">
+      <div class="orbwrap"><div class="orb" style="width:170px;height:170px"></div><span class="orb-cn" style="font-size:26px">五</span></div>
+      <h2 class="hd" style="margin-top:20px">Reading your chart…</h2>
+      <div class="steps">
+        <div><b>Year · month · day pillars</b> — 1996.07.22</div>
+        <div>Mapping the five elements</div>
+        <div>Finding what runs low</div>
+      </div>
+    </div>`}),
+
+  reading:()=>({nav:true, active:"saju", html:`
+    <div class="pad">
+      <div class="eyebrow">Your five-element balance</div>
+      <h2 class="hd">You resonate with Water.</h2>
+      <div class="tagline"><span class="tag miss">水 Water · lowest</span><span class="tag exc">火 Fire · strongest</span></div>
+      <div class="elrow">
+        <div class="el fire on"><span class="cn">火</span>3</div>
+        <div class="el metal on"><span class="cn">金</span>1</div>
+        <div class="el wood on"><span class="cn">木</span>1</div>
+        <div class="el earth on"><span class="cn">土</span>1</div>
+        <div class="el water miss"><span class="cn">水</span>0</div>
+      </div>
+      <div class="glass" style="padding:16px; margin:8px 0 16px">
+        <div class="barlist">
+          ${barRow('火','Fire','#fb7185',3)}${barRow('金','Metal','#94a3b8',1)}
+          ${barRow('木','Wood','#4ade80',1)}${barRow('土','Earth','#fbbf24',1)}
+          ${barRow('水','Water','#818cf8',0)}
+        </div>
+      </div>
+      <div class="glass" style="padding:16px; margin-bottom:16px">
+        <p class="why q" style="font-style:italic">“In the five-element tradition, places rich in water energy are said to harmonize with a fire-strong chart like yours.”</p>
+        <p class="fine" style="margin-top:8px">We lead with Water to fill what is low — and add a few Fire spots that echo your strong side.</p>
+      </div>
+      <div class="sec-h"><span class="t">Your K-star matches</span><span class="m">for fun</span></div>
+      <div class="glass" style="padding:12px 14px; margin-bottom:16px; display:flex; flex-direction:column; gap:11px">
+        <div style="display:flex; gap:12px; align-items:center">
+          <div class="avatar" style="width:44px; height:44px"></div>
+          <div style="flex:1"><b style="font-size:14px">Soulmate K-star</b><span style="display:block; font-size:12px; color:var(--muted)">A water idol who balances your fire</span></div>
+          <span class="el-dot" style="background:${GRAD.water}; color:#fff">水</span></div>
+        <div style="display:flex; gap:12px; align-items:center; border-top:1px solid rgba(148,163,184,.22); padding-top:11px">
+          <div class="avatar" style="width:44px; height:44px; background:${GRAD.fire}"></div>
+          <div style="flex:1"><b style="font-size:14px">Same chart as you</b><span style="display:block; font-size:12px; color:var(--muted)">A fire-dominant idol born under your day pillar</span></div>
+          <span class="el-dot" style="background:${GRAD.fire}; color:#fff">火</span></div>
+      </div>
+      <button class="btn" data-nav="home">Explore places that resonate ${svg('arrow','ic sm')}</button>
+    </div>`}),
+
+  home:()=>({nav:true, active:"home", html:`
+    <div class="pad">
+      <div class="greet">
+        <div class="hi"><div class="s">Good morning</div><div class="n">Your Water day awaits.</div></div>
+        <div class="avatar" role="button" tabindex="0" aria-label="My page"></div>
+      </div>
+      <button class="searchbar glass" data-nav="search" style="width:100%; text-align:left; cursor:pointer">
+        ${svg('search','ic sm')}<span style="color:var(--muted2)">Search places, regions, elements</span></button>
+      <div class="glass" style="padding:13px 14px; margin:14px 0; display:flex; align-items:center; gap:11px">
+        <span class="el water on" style="width:40px; height:40px; flex:0 0 auto"><span class="cn">水</span></span>
+        <div style="flex:1"><div style="font-size:12px; color:var(--muted)">You resonate with</div>
+          <div style="font-size:15px; font-weight:600">Water 水 · lowest · fill it</div></div>
+        <button class="chip" data-nav="reading">See reading</button>
+      </div>
+      <div class="sec-h"><span class="t">Featured for your Water</span></div>
+      <div class="feature" data-place="osaek">
+        <div class="imgx" style="background:${GRAD.water}"></div><div class="ov"></div>
+        <span class="el-badge">水 Water · fill</span>
+        <button class="bk" data-save="osaek" aria-label="Bookmark">${svg('bookmark','ic sm')}</button>
+        <div class="cap"><div class="rg">GANGWON · 지방</div><div class="ti">Osaek Starry Springs</div></div>
+      </div>
+      <div class="sec-h"><span class="t">Explore by type</span><span class="m">F-3 · SRP</span></div>
+      <div class="chips" data-seg="cat">
+        ${Object.keys(TABS).map(t=>`<button class="chip" data-val="${t}" aria-pressed="${state.cat===t}">${t}</button>`).join('')}
+      </div>
+      <div class="filters" data-seg="filter">
+        <button class="filt${state.filters.crowd?' act':''}" data-val="crowd">Away from crowds</button>
+        <button class="filt${state.filters.region?' act':''}" data-val="region">Off the beaten path</button>
+        <button class="filt${state.filters.water?' act':''}" data-val="water">水 Water only</button>
+      </div>
+      <div class="glass picks">${catList()}</div>
+      <p class="fine" style="margin-top:14px; padding:0 2px">Curated to fill your Water and echo your Fire — crowded landmarks filtered out with live congestion data.</p>
+    </div>`}),
+
+  detail:()=>{const p=PLACES[state.place]; return {nav:false, html:`
+    <div class="dhero" style="background:${GRAD[p.el]}">
+      <div class="top"><button class="roundbtn" data-nav="home" aria-label="Back">${svg('back','ic sm')}</button>
+        <button class="roundbtn" data-save="${state.place}" aria-label="Bookmark">${svg('bookmark','ic sm')}</button></div>
+      <div class="cap"><div class="rg">${p.region.toUpperCase()} · 지방</div><div class="ti">${p.name}</div></div>
+    </div>
+    <div class="pad">
+      <div class="eyebrow">Why it resonates</div>
+      <div class="glass why"><p class="q">${p.why}</p></div>
+      <div class="metr">
+        <div class="glass m"><div class="k">Element</div><div class="v">${p.cn} ${p.el[0].toUpperCase()+p.el.slice(1)}</div></div>
+        <div class="glass m"><div class="k">Region</div><div class="v">${p.region}</div></div>
+        <div class="glass m"><div class="k">Best for</div><div class="v">${p.el==='fire'?'Echoing':'Filling'}</div></div>
+      </div>
+      <div class="sec-h"><span class="t">When it is quiet</span></div>
+      <div class="quiet" aria-hidden="true">
+        <div class="q lo" style="height:40%"></div><div class="q lo" style="height:30%"></div>
+        <div class="q" style="height:55%"></div><div class="q" style="height:70%"></div>
+        <div class="q hi" style="height:95%"></div><div class="q hi" style="height:88%"></div><div class="q" style="height:60%"></div>
+      </div>
+      <div class="qlab"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <p class="fine" style="margin-top:6px">${p.quiet} · live from congestion data.</p>
+      <div class="glass book"><span class="yg">여기어때</span><span class="fine">Stay nearby · ${p.near}</span><span class="pr">${p.price}</span></div>
+      <button class="btn" data-add="1">${svg('plus','ic sm')} Add to my journey</button>
+      <button class="btn plain" style="margin-top:10px" data-nav="chat">Ask the AI agent about this ${svg('chat','ic sm')}</button>
+    </div>`};},
+
+  chat:()=>({nav:true, active:"chat", html:`
+    <div class="actionbar">
+      <button class="act" data-toast="Voice mode is a prototype stub">${svg('mic','ic sm')} Voice mode</button>
+      <button class="act" data-toast="Image generation is a prototype stub">${svg('image','ic sm')} Create card</button>
+      <button class="act" data-toast="Editing is a prototype stub">${svg('edit','ic sm')} Edit trip</button>
+    </div>
+    <div class="chatscroll">
+      <div class="msg ai">Hi! Your chart runs low on <b>Water 水</b>. Want a calm, uncrowded route that fills it without leaving the Gangwon–Gyeongbuk line?</div>
+      <div class="msg me">Yes — 3 days, quiet places only.</div>
+      <div class="msg ai">Here is a water-first route, all away from the crowds:
+        <div class="recs">
+          <div class="rec" data-place="osaek"><div class="th" style="background:${GRAD.water}"></div><div><b>Osaek Starry Springs</b><span>Gangwon · fills 水</span></div></div>
+          <div class="rec" data-place="jusanji"><div class="th" style="background:${GRAD.water}"></div><div><b>Jusanji Mirror Pond</b><span>Cheongsong · fills 水</span></div></div>
+          <div class="rec" data-place="gama"><div class="th" style="background:${GRAD.fire}"></div><div><b>Gyeongju Kiln Sauna</b><span>Echoes your 火</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="inputbar glass">
+      <input placeholder="Chat with AI…" aria-label="Message">
+      <span class="mic" data-toast="Voice input is a prototype stub">${svg('mic','ic sm')}</span>
+      <button class="send" data-toast="This is a design prototype — no live AI" aria-label="Send">${svg('send','ic sm')}</button>
+    </div>`}),
+
+  journey:()=>({nav:true, active:"journey", html:`
+    <div class="pad">
+      <div class="eyebrow">Your journey</div>
+      <h2 class="hd">Filling your Water 水</h2>
+      <div class="glass prefill">
+        <span class="el water on" style="width:36px; height:36px; flex:0 0 auto"><span class="cn">水</span></span>
+        <span style="font-size:13px">Target energy · pre-filled from your reading</span><span class="lock">locked</span></div>
+      <div class="daterow"><div class="glass d"><div class="k">Start</div><div class="v">2026.05.14</div></div>
+        <div class="glass d"><div class="k">End</div><div class="v">2026.05.16</div></div></div>
+      ${day(1,'Seoul → Gangwon',[['13:00','Osaek Starry Springs','Fill · water valley','水','#818cf8', state.place==='osaek'],['18:30','Sokcho seaside stay','여기어때 deep-link','','',false]])}
+      ${day(2,'Cheongsong',[['10:00','Jusanji Mirror Pond','Fill · misty water','水','#818cf8', state.place==='jusanji'],['13:00','Local mulhoe lunch','Nearby · related-spot API','','',false]])}
+      ${day(3,'Gangneung',[['06:00','Jeongdongjin dawn coast','Fill · meeting the sea','水','#818cf8', state.place==='jeongdongjin'],['11:00','Gyeongju kiln sauna','Echo · fire spot','火','#fb7185', state.place==='gama']])}
+      <div class="sec-h" style="margin-top:6px"><span class="t">While traveling · check in</span><span class="m">P1</span></div>
+      <div class="glass" style="padding:8px 14px; margin-bottom:14px">
+        <label class="chkitem"><input type="checkbox"><span>Osaek Starry Springs — water collected</span></label>
+        <label class="chkitem"><input type="checkbox"><span>Jusanji Mirror Pond — water collected</span></label>
+        <label class="chkitem"><input type="checkbox"><span>Today’s activity done — auto-prompt at 8 PM</span></label>
+      </div>
+      <button class="btn" data-nav="share">Finish &amp; make share card ${svg('arrow','ic sm')}</button>
+      <p class="fine" style="margin-top:12px">Every day includes a regional spot — the north star: trips beyond Seoul.</p>
+    </div>`}),
+
+  share:()=>({nav:true, active:"journey", html:`
+    <div class="pad">
+      <div class="eyebrow">After your trip</div>
+      <h2 class="hd">The water you collected</h2>
+      <div class="sharecard">
+        <div class="t2"><span class="bd">SajuTrip 사주트립</span><span class="dt">2026.05.14–16</span></div>
+        <h3>I filled my Water in Korea 水</h3>
+        <div class="elrow">
+          <div class="el on" style="background:#fb7185"><span class="cn">火</span></div>
+          <div class="el"><span class="cn">金</span></div><div class="el"><span class="cn">木</span></div>
+          <div class="el"><span class="cn">土</span></div><div class="el water on"><span class="cn">水</span></div></div>
+        <div class="fn">Water · +3 collected — balance restored</div>
+        <div class="rt">① Osaek Springs, Gangwon<br>② Jusanji Pond, Cheongsong<br>③ Jeongdongjin dawn, Gangneung</div>
+      </div>
+      <div style="display:flex; gap:8px">
+        <button class="btn plain" data-toast="Saved to your photos">Save image</button>
+        <button class="btn" data-toast="Share sheet opened">Share</button></div>
+    </div>`}),
+
+  signup:()=>({nav:false, html:`
+    <div class="pad">
+      <div class="eyebrow">Save your journey · P1</div>
+      <h1 class="big" style="margin-top:8px">Create your account.</h1>
+      <p class="sub">So your reading, saved places and trips are here next time.</p>
+      <div class="field"><label>Gender · pre-filled</label>
+        <div class="seg"><button aria-pressed="true">${state.gender}</button></div></div>
+      <div class="field"><label>Date of birth · pre-filled</label>
+        <div class="dob"><input value="1996" readonly><input value="07" readonly><input value="22" readonly></div></div>
+      <div class="field"><label>Nickname · optional</label>
+        <div class="dob"><input placeholder="e.g. Fire Traveler" style="text-align:left; font-family:var(--sans)"></div></div>
+      <label class="agree"><input type="checkbox" checked>
+        <span>I agree to the <a data-toast="AI-generated · Privacy Policy">Privacy Policy</a> and <a data-toast="AI-generated · Terms of Service">Terms of Service</a> (AI-generated).</span></label>
+      <button class="btn" style="margin-top:16px" data-signup="1">Create account</button>
+      <button class="btn plain" style="margin-top:10px" data-nav="my">Maybe later</button>
+    </div>`}),
+
+  search:()=>({nav:true, active:"search", html:`
+    <div class="pad">
+      <div class="eyebrow">Search</div>
+      <div class="searchbar glass" style="margin:8px 0 4px">${svg('search','ic sm')}<input placeholder="Search places, regions, elements"></div>
+      <div class="sec-h"><span class="t">Recent</span></div>
+      <div class="chips">
+        <button class="chip">Osaek Springs</button><button class="chip">Gangwon 水</button><button class="chip">quiet hot springs</button></div>
+      <div class="sec-h" style="margin-top:20px"><span class="t">Festivals this week</span><span class="m">in season</span></div>
+      <div class="glass picks">
+        <div class="pick" data-place="jeongdongjin" role="button" tabindex="0"><div class="thumb" style="background:${GRAD.water}"></div><div class="tx"><b>Gangneung Water Festival</b><span>Gangneung · this weekend</span></div><span class="el-dot" style="background:${GRAD.water}; color:#fff">水</span></div>
+        <div class="pick" data-place="gama" role="button" tabindex="0"><div class="thumb" style="background:${GRAD.fire}"></div><div class="tx"><b>Gyeongju Fire Night</b><span>Gyeongju · Fri–Sun</span></div><span class="el-dot" style="background:${GRAD.fire}; color:#fff">火</span></div>
+      </div>
+      <p class="fine" style="margin-top:14px">검색(P1) · Airtable filterByFormula — 장소명·지역명. 이번 주 축제는 축제 API 연동.</p>
+    </div>`}),
+
+  my:()=>({nav:true, active:"my", html:`
+    <div class="pad">
+      <div class="greet"><div class="hi"><div class="s">Signed in</div><div class="n">Your elements</div></div><div class="avatar"></div></div>
+      <div class="elrow">
+        <div class="el fire on"><span class="cn">火</span>3</div><div class="el metal on"><span class="cn">金</span>1</div>
+        <div class="el wood on"><span class="cn">木</span>1</div><div class="el earth on"><span class="cn">土</span>1</div>
+        <div class="el water miss"><span class="cn">水</span>0</div></div>
+      <div class="glass" style="padding:6px 16px; margin:8px 0 16px">
+        <div class="prow"><span class="k">Resonates with</span><span class="v">水 Water</span></div>
+        <div class="prow"><span class="k">Birth</span><span class="v">1996.07.22</span></div>
+        <div class="prow"><span class="k">Saved trips</span><span class="v">1</span></div>
+        <div class="prow" style="border:0"><span class="k">Elements collected</span><span class="v">水 +3</span></div>
+      </div>
+      <div class="sec-h"><span class="t">Saved journey</span></div>
+      <div class="glass" style="padding:14px; cursor:pointer" data-nav="journey" role="button" tabindex="0">
+        <div style="font-family:var(--mono); font-size:11px; color:var(--muted2)">2026.05.14–16 · 3 days</div>
+        <div style="font-size:15px; font-weight:600; margin-top:3px">Filling your Water 水</div>
+        <div style="font-size:12px; color:var(--muted)">Gangwon → Cheongsong → Gangneung · 3 regional spots</div>
+      </div>
+      <div class="sec-h" style="margin-top:6px"><span class="t">Saved · 찜</span></div>
+      <div class="glass picks">${savedList()}</div>
+      <button class="btn ${state.signedUp?'plain':''}" style="margin-top:16px" data-nav="signup">${state.signedUp?'Edit profile':'Sign up to save everything'}</button>
+      <p class="fine" style="margin-top:14px">회원가입(P1) · 성별·생년월일 pre-fill, 사주 결과·일정·수집 엘레먼트를 Airtable에 저장. 약관·개인정보처리방침 AI 생성.</p>
+    </div>`}),
+};
+
+// 하단 고정 메뉴 (스펙): 홈(사주) · 내 일정 · 검색 · 마이페이지
+const NAV=[
+  {id:"home",    ic:"home",  label:"Home"},
+  {id:"journey", ic:"route", label:"Trips"},
+  {id:"search",  ic:"search",label:"Search"},
+  {id:"my",      ic:"user",  label:"My"},
+];
+const NAV_TARGET={home:"home", journey:"journey", search:"search", my:"my"};
+const SCREEN_NAV={reading:"home", home:"home", detail:"home", journey:"journey", share:"journey", search:"search", my:"my", chat:"home"};
+
+// ---------- render ----------
+const view=document.getElementById('view'), bnav=document.getElementById('bnav'), toastEl=document.getElementById('toast');
+let analyzeT;
+function render(){
+  const s=S[state.screen]();
+  view.innerHTML=`<div class="anim">${s.html}</div>`;
+  view.scrollTop=0;
+  clearTimeout(analyzeT);
+  if(state.screen==='analyzing'){ analyzeT=setTimeout(()=>{ if(state.screen==='analyzing') go('reading'); }, 1800); }
+  if(s.nav){
+    bnav.style.display='flex';
+    const act=SCREEN_NAV[state.screen];
+    bnav.innerHTML=NAV.map(n=>`<button data-navto="${n.id}" aria-current="${act===n.id}">
+      <span class="navic">${svg(n.ic,'ic sm')}</span>${n.label}</button>`).join('');
+  } else { bnav.style.display='none'; bnav.innerHTML=''; }
+}
+function go(id){ if(S[id]){ state.screen=id; render(); } }
+let tT; function toast(m){ toastEl.textContent=m; toastEl.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>toastEl.classList.remove('show'),1600); }
+
+document.querySelector('.screen').addEventListener('click', e=>{
+  const nav=e.target.closest('[data-nav]'); if(nav){ go(nav.dataset.nav); return; }
+  const navto=e.target.closest('[data-navto]'); if(navto){ go(NAV_TARGET[navto.dataset.navto]); return; }
+  const pl=e.target.closest('[data-place]'); if(pl){ state.place=pl.dataset.place; go('detail'); return; }
+  const add=e.target.closest('[data-add]'); if(add){ toast('Added to your journey'); setTimeout(()=>go('journey'),650); return; }
+  const sv=e.target.closest('[data-save]'); if(sv){ state.saved[sv.dataset.save]=true; toast('Saved to 찜'); if(state.screen==='my') render(); return; }
+  const su=e.target.closest('[data-signup]'); if(su){ state.signedUp=true; toast('Account created'); setTimeout(()=>go('my'),650); return; }
+  const av=e.target.closest('.avatar'); if(av){ go('my'); return; }
+  const seg=e.target.closest('[data-seg] button'); if(seg){
+    const grp=seg.closest('[data-seg]').dataset.seg, val=seg.dataset.val;
+    if(grp==='gender') state.gender=val;
+    else if(grp==='cat') state.cat=val;
+    else if(grp==='filter') state.filters[val]=!state.filters[val];
+    render(); return; }
+  const ts=e.target.closest('[data-toast]'); if(ts){ toast(ts.dataset.toast); return; }
+});
+document.querySelector('.screen').addEventListener('keydown', e=>{
+  const t=e.target.closest('[data-place],[data-nav],[data-navto]');
+  if(t && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); t.click(); }
+});
+document.getElementById('restart').addEventListener('click', ()=>{
+  state.screen='welcome'; state.place='osaek'; state.cat='Wellness';
+  state.filters={crowd:true, region:true, water:false}; state.saved={}; state.signedUp=false; render(); });
+
+render();
+</script>

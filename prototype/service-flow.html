@@ -1,0 +1,486 @@
+<title>SajuTrip — Interactive Prototype</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<style>
+  :root{
+    --ink:#0e1220; --paper:#F1F2ED; --paper-2:#E5E7DE; --card:#FFFFFF;
+    --line:#DCE0D6; --text:#1B2430; --muted:#5B6472; --muted-2:#8A93A0;
+    --wood:#1E7A6B; --fire:#C6402F; --earth:#C79A3A; --metal:#9AA1A9; --water:#26476B;
+    --water-soft:#E4EAF1; --water-mid:#5C7CA0; --yeogi:#ff2f6d;
+    --serif:"Hoefler Text","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:-apple-system,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;
+    --mono:ui-monospace,"SF Mono","SFMono-Regular",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(1000px 560px at 50% -8%, #1b2340 0%, rgba(27,35,64,0) 60%), var(--ink);
+    font-family:var(--sans); -webkit-font-smoothing:antialiased; min-height:100vh; color:#e9ecf1;
+  }
+
+  /* stage chrome (outside the app) */
+  .stagebar{display:flex; align-items:center; gap:12px; padding:16px 22px; color:var(--muted-2); font-size:12.5px}
+  .stagebar .bd{font-family:var(--serif); font-size:16px; color:#fff; letter-spacing:.3px}
+  .stagebar .bd .cn{color:var(--water-mid)}
+  .stagebar .sp{flex:1}
+  .stagebar button{background:rgba(255,255,255,.06); color:#cfd6e0; border:1px solid rgba(255,255,255,.14);
+    border-radius:9px; padding:7px 13px; font-family:var(--sans); font-size:12.5px; cursor:pointer}
+  .stagebar button:hover{background:rgba(255,255,255,.12)}
+
+  .stage{display:grid; place-items:center; padding:8px 24px 40px}
+  .device{width:392px; height:788px; border-radius:48px; padding:12px;
+    background:linear-gradient(#2a3150,#171c2e);
+    box-shadow:0 40px 80px -28px rgba(0,0,0,.75), 0 0 0 1px rgba(255,255,255,.06) inset;}
+  .screen{width:100%; height:100%; border-radius:36px; overflow:hidden; background:var(--paper);
+    color:var(--text); position:relative; display:flex; flex-direction:column; font-size:14px; line-height:1.5}
+
+  /* app bar */
+  .appbar{display:flex; align-items:center; gap:12px; padding:14px 16px 12px; flex:0 0 auto;
+    background:var(--paper); border-bottom:1px solid transparent; z-index:6}
+  .appbar.bord{border-color:var(--line)}
+  .appbar .back{width:34px; height:34px; border-radius:10px; border:1px solid var(--line); background:var(--card);
+    display:grid; place-items:center; cursor:pointer; font-size:16px; color:var(--text); flex:0 0 auto}
+  .appbar .back:hover{background:var(--paper-2)}
+  .appbar .ttl{font-family:var(--serif); font-size:16px; color:#131a24}
+  .appbar .cn{font-family:var(--mono); font-size:11px; color:var(--water-mid); letter-spacing:1px; margin-left:auto}
+
+  /* scrollable view */
+  .view{flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch}
+  .view::-webkit-scrollbar{width:0}
+  .pad{padding:18px 22px 28px}
+  .anim{animation:enter .32s cubic-bezier(.2,.7,.3,1)}
+  @keyframes enter{from{opacity:0; transform:translateX(16px)} to{opacity:1; transform:none}}
+
+  /* typography */
+  .eyebrow{font-family:var(--mono); font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--water-mid)}
+  h2.head{font-family:var(--serif); font-weight:600; font-size:26px; line-height:1.16; margin:10px 0 8px; text-wrap:balance; color:#121924}
+  h3.sub{font-family:var(--serif); font-weight:600; font-size:18px; margin:18px 0 8px; color:#131a24}
+  p.lede{color:var(--muted); margin:0 0 16px}
+  .fine{font-size:12px; color:var(--muted-2)}
+
+  .glyphrow{display:flex; gap:9px; margin:18px 0}
+  .glyph{font-family:var(--serif); font-size:15px; width:34px; height:34px; display:grid; place-items:center;
+    border:1px solid var(--line); border-radius:9px; color:var(--muted); background:var(--card)}
+  .glyph.on{color:#fff; border-color:transparent}
+  .g-wood{background:var(--wood)} .g-fire{background:var(--fire)} .g-earth{background:var(--earth)}
+  .g-metal{background:var(--metal)} .g-water{background:var(--water)}
+
+  /* buttons */
+  .cta{display:flex; align-items:center; justify-content:center; gap:8px; width:100%;
+    font-family:var(--sans); font-size:15px; font-weight:600; cursor:pointer;
+    background:var(--water); color:#fff; border:0; border-radius:14px; padding:15px 18px; transition:.16s}
+  .cta:hover{background:#1d3a5c}
+  .cta:active{transform:translateY(1px)}
+  .cta.ghost{background:transparent; color:var(--water); border:1.5px solid var(--water)}
+  .cta.ghost:hover{background:var(--water-soft)}
+  .cta:focus-visible{outline:2px solid var(--fire); outline-offset:2px}
+
+  /* form */
+  .field{margin:16px 0}
+  .field > label{display:block; font-size:12px; letter-spacing:.4px; text-transform:uppercase; color:var(--muted); margin-bottom:8px}
+  .seg{display:flex; gap:8px}
+  .seg button{flex:1; padding:13px; border:1px solid var(--line); background:var(--card); border-radius:11px;
+    font-family:var(--sans); font-size:14px; color:var(--text); cursor:pointer; transition:.16s}
+  .seg button[aria-pressed="true"]{border-color:var(--water); background:var(--water-soft); color:var(--water); font-weight:600}
+  .dob{display:flex; gap:8px}
+  .dob input{width:100%; padding:13px; border:1px solid var(--line); border-radius:11px; font-family:var(--mono);
+    font-size:15px; text-align:center; color:var(--text); background:var(--card)}
+  .dob input:focus{outline:2px solid var(--water-mid); outline-offset:1px; border-color:var(--water-mid)}
+
+  /* five-element chart */
+  .dist{display:flex; flex-direction:column; gap:10px; margin:10px 0 16px}
+  .bar{display:grid; grid-template-columns:64px 1fr 24px; align-items:center; gap:10px}
+  .bar .lab{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--text)}
+  .bar .lab b{font-family:var(--serif); font-weight:600}
+  .track{height:12px; border-radius:999px; background:var(--paper-2); overflow:hidden}
+  .track > span{display:block; height:100%; border-radius:999px}
+  .bar .v{font-family:var(--mono); font-size:12px; color:var(--muted); text-align:right; font-variant-numeric:tabular-nums}
+  .tags{display:flex; gap:8px; flex-wrap:wrap; margin:2px 0 8px}
+  .chip{font-size:12px; padding:6px 11px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:var(--card)}
+  .chip.def{border-color:var(--water); color:var(--water); background:var(--water-soft); font-weight:600}
+  .chip.exc{border-color:var(--fire); color:var(--fire); background:#f7e7e3; font-weight:600}
+
+  .callout{background:var(--card); border:1px solid var(--line); border-left:3px solid var(--water); border-radius:12px; padding:15px; margin:16px 0}
+  .callout .q{font-family:var(--serif); font-style:italic; color:#26364a; margin:0}
+  .callout p.exp{margin:8px 0 0; font-size:13px; color:var(--muted)}
+
+  .twin{display:flex; gap:13px; align-items:center; background:#121924; color:#eef1f5; border-radius:14px; padding:14px; margin:16px 0}
+  .twin .av{width:46px; height:46px; border-radius:50%; background:radial-gradient(circle at 40% 35%, #45587a, #232c44);
+    display:grid; place-items:center; font-family:var(--serif); font-size:20px; color:#cdd6e6; flex:0 0 auto}
+  .twin .info b{font-size:14px} .twin .info span{display:block; font-size:12px; color:#9fb0c8}
+
+  /* explore */
+  .tabs{display:flex; gap:6px; padding:2px 22px 0; position:sticky; top:0; background:var(--paper); z-index:4}
+  .tabs button{flex:1; padding:11px 6px; border:0; border-bottom:2px solid var(--line); background:transparent;
+    font-family:var(--sans); font-size:13px; color:var(--muted); cursor:pointer}
+  .tabs button[aria-pressed="true"]{color:var(--water); border-color:var(--water); font-weight:600}
+  .filters{display:flex; gap:7px; flex-wrap:wrap; margin:14px 0}
+  .filt{font-size:11.5px; padding:6px 10px; border-radius:999px; background:var(--card); border:1px solid var(--line); color:var(--muted); cursor:pointer}
+  .filt.act{border-color:var(--wood); color:var(--wood); background:#e6f0ed; font-weight:600}
+
+  .card{background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; margin-bottom:13px; cursor:pointer; transition:.16s}
+  .card:hover{border-color:var(--water-mid); transform:translateY(-2px); box-shadow:0 12px 26px -16px rgba(20,30,50,.5)}
+  .card:active{transform:translateY(0)}
+  .card .ph{height:120px; position:relative}
+  .ph-water{background:linear-gradient(120deg,#22415f,#5c7ca0)}
+  .ph-fire{background:linear-gradient(120deg,#8f2f24,#c6402f)}
+  .ph-earth{background:linear-gradient(120deg,#7c6127,#c79a3a)}
+  .card .ph .el{position:absolute; top:10px; left:10px; font-family:var(--serif); font-size:12px; color:#fff;
+    background:rgba(0,0,0,.3); border-radius:999px; padding:4px 10px}
+  .card .ph .st{position:absolute; top:10px; right:10px; font-size:11px; border-radius:999px; padding:4px 9px; font-weight:600}
+  .st.quiet{color:#12351f; background:#bfe6cd} .st.busy{color:#4a1512; background:#f2c4bd}
+  .card .body{padding:12px 14px}
+  .card .body .rg{font-family:var(--mono); font-size:11px; letter-spacing:.5px; color:var(--water-mid)}
+  .card .body h4{margin:3px 0 5px; font-family:var(--serif); font-size:16px; color:#131a24}
+  .card .body p{margin:0; font-size:12.5px; color:var(--muted)}
+  .rgbadge{display:inline-block; font-size:10.5px; margin-top:9px; color:var(--wood); border:1px solid #bcd6cd; background:#e9f2ef; border-radius:6px; padding:2px 7px}
+
+  /* pdp */
+  .hero{height:200px; margin:0; position:relative}
+  .hero .badge{position:absolute; left:16px; bottom:14px; display:flex; gap:8px}
+  .hero .badge span{font-size:12px; color:#fff; background:rgba(0,0,0,.32); border-radius:999px; padding:5px 11px}
+  .meta{display:flex; gap:16px; margin:14px 0; padding:14px 0; border-top:1px solid var(--line); border-bottom:1px solid var(--line)}
+  .meta div{flex:1}
+  .meta .k{font-size:11px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted-2)}
+  .meta .v{font-family:var(--serif); font-size:15px; color:#131a24; margin-top:3px}
+  .timebars{display:flex; align-items:flex-end; gap:5px; height:58px; margin:12px 0 4px}
+  .timebars .tb{flex:1; background:var(--water-soft); border-radius:4px 4px 0 0}
+  .timebars .tb.hi{background:var(--fire); opacity:.5}
+  .timebars .tb.lo{background:var(--wood); opacity:.6}
+  .tlabels{display:flex; justify-content:space-between; font-family:var(--mono); font-size:9.5px; color:var(--muted-2)}
+  .book{display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--line); border-radius:13px; padding:13px 14px; margin:16px 0}
+  .book .yg{font-weight:800; color:var(--yeogi); font-size:14px}
+  .book .price{margin-left:auto; font-family:var(--mono); font-size:13px; color:var(--text)}
+
+  /* plan */
+  .prefill{display:flex; align-items:center; gap:10px; background:var(--water-soft); border:1px solid #c9d6e4; border-radius:12px; padding:12px 14px; margin:6px 0}
+  .prefill .lock{font-size:12px; color:var(--water); margin-left:auto}
+  .daterow{display:flex; gap:8px; margin:14px 0 18px}
+  .daterow .d{flex:1; border:1px solid var(--line); border-radius:11px; padding:11px 12px; background:var(--card)}
+  .daterow .d .k{font-size:10.5px; text-transform:uppercase; color:var(--muted-2); letter-spacing:.5px}
+  .daterow .d .v{font-family:var(--mono); font-size:14px; color:var(--text); margin-top:3px}
+  .day{margin:0 0 18px}
+  .day .dh{display:flex; align-items:center; gap:9px; margin-bottom:6px}
+  .day .dh .num{width:24px; height:24px; border-radius:7px; background:var(--water); color:#fff; display:grid; place-items:center; font-family:var(--mono); font-size:12px; font-weight:600}
+  .day .dh .lbl{font-family:var(--serif); font-size:15px; color:#131a24}
+  .day .dh .rgn{margin-left:auto; font-size:10.5px; color:var(--wood); border:1px solid #bcd6cd; background:#e9f2ef; border-radius:6px; padding:2px 7px}
+  .stop{display:flex; gap:11px; padding:10px 0; border-top:1px dashed var(--line)}
+  .stop.new{background:#eef5ef; margin:0 -8px; padding:10px 8px; border-radius:8px; border-top-color:transparent}
+  .stop .tm{font-family:var(--mono); font-size:11px; color:var(--muted-2); width:44px; flex:0 0 auto; padding-top:2px}
+  .stop .stx b{font-size:13.5px; color:#131a24} .stop .stx span{display:block; font-size:12px; color:var(--muted)}
+  .stop .el{font-family:var(--serif); font-size:12px; color:#fff; border-radius:6px; padding:2px 8px; height:fit-content; align-self:center}
+
+  /* share */
+  .sharecard{border-radius:18px; padding:22px; color:#eef2f7; margin:6px 0 16px;
+    background:radial-gradient(120px 80px at 80% 12%, rgba(92,124,160,.55), transparent), linear-gradient(160deg,#121a2b,#26476B)}
+  .sharecard .top2{display:flex; justify-content:space-between; align-items:baseline}
+  .sharecard .top2 .bd{font-family:var(--serif); font-size:16px}
+  .sharecard .top2 .dt{font-family:var(--mono); font-size:11px; color:#9fb0c8}
+  .sharecard h3{font-family:var(--serif); font-weight:600; font-size:22px; margin:16px 0 4px; color:#fff}
+  .sharecard .glyph{border-color:rgba(255,255,255,.2); color:rgba(255,255,255,.55); background:transparent}
+  .sharecard .fillnote{font-family:var(--mono); font-size:12px; color:#bcd3ea}
+  .sharecard .route{font-size:12px; color:#c7d2e2; margin-top:12px; line-height:1.7}
+  .sharebtns{display:flex; gap:8px}
+  .sharebtns .cta{flex:1}
+
+  .footnote{margin-top:22px; padding-top:14px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted-2)}
+
+  /* profile */
+  .prow{display:flex; justify-content:space-between; padding:14px 0; border-bottom:1px solid var(--line); font-size:14px}
+  .prow .k{color:var(--muted)} .prow .v{color:var(--text); font-family:var(--mono)}
+
+  /* bottom nav */
+  .bnav{flex:0 0 auto; display:flex; border-top:1px solid var(--line); background:rgba(241,242,237,.94); backdrop-filter:blur(8px)}
+  .bnav button{flex:1; background:transparent; border:0; padding:10px 4px 12px; cursor:pointer; color:var(--muted-2);
+    font-family:var(--sans); font-size:10.5px; display:flex; flex-direction:column; align-items:center; gap:4px}
+  .bnav button .ic{font-family:var(--serif); font-size:17px; line-height:1}
+  .bnav button[aria-current="true"]{color:var(--water)}
+  .bnav button:focus-visible{outline:2px solid var(--water-mid); outline-offset:-2px}
+
+  /* toast */
+  .toast{position:absolute; left:50%; bottom:78px; transform:translateX(-50%) translateY(10px);
+    background:#121924; color:#fff; font-size:13px; padding:11px 16px; border-radius:11px; opacity:0;
+    pointer-events:none; transition:.25s; z-index:9; box-shadow:0 10px 24px -10px rgba(0,0,0,.6)}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+  @media (max-width:480px){
+    .stage{padding:0} .stagebar{padding:12px 16px}
+    .device{width:100vw; height:calc(100vh - 46px); border-radius:0; padding:0}
+    .screen{border-radius:0}
+  }
+</style>
+
+<div class="stagebar">
+  <span class="bd">SajuTrip <span class="cn">사주트립</span></span>
+  <span class="sp"></span>
+  <span>Interactive prototype · 실제 앱처럼 눌러보세요</span>
+  <button id="restart">↺ Restart</button>
+</div>
+
+<div class="stage">
+  <div class="device">
+    <div class="screen">
+      <div class="appbar" id="appbar"></div>
+      <div class="view" id="view"></div>
+      <nav class="bnav" id="bnav"></nav>
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---------- data ----------
+const PLACES = {
+  osaek:      {name:"Osaek Green Yard Hot Spring", region:"Gangwon", el:"water", elc:"水 Water",
+    desc:"Iron-rich carbonated springs deep in a Seoraksan valley.",
+    why:"One of the strongest ‘water’ places on the peninsula — a quiet counterweight to a fire-heavy chart.",
+    state:"quiet", stlabel:"Quiet mornings", price:"₩68,000~", near:"Sokcho"},
+  deokgu:     {name:"Deokgu Natural Spa", region:"Gyeongbuk · Uljin", el:"water", elc:"水 Water",
+    desc:"Korea’s only natural hot-spring bathing river.",
+    why:"Bathe where hot spring water meets a mountain stream — pure water energy, far from the crowds.",
+    state:"quiet", stlabel:"Low crowds", price:"₩54,000~", near:"Uljin"},
+  jusanji:    {name:"Jusanji Reflection Pond", region:"Gyeongbuk · Cheongsong", el:"water", elc:"水 Water",
+    desc:"A misty 300-year-old pond that mirrors the sky at dawn.",
+    why:"Still water at daybreak — a meditative water spot inside a UNESCO geopark.",
+    state:"quiet", stlabel:"Quiet dawn", price:"₩41,000~", near:"Cheongsong"},
+  gama:       {name:"Gama Kiln Sauna", region:"Gyeongju", el:"fire", elc:"火 Fire",
+    desc:"A fired clay-kiln sweat lodge, heated by pine wood.",
+    why:"Resonates with your strong fire side — sit in the heat your chart already carries.",
+    state:"busy", stlabel:"Busy weekends", price:"₩22,000~", near:"Gyeongju"},
+  onggi:      {name:"Onggi Pottery Studio", region:"Ulsan", el:"earth", elc:"土 Earth",
+    desc:"Shape traditional earthenware by hand.",
+    why:"Working the clay grounds you — earth energy through your own hands.",
+    state:"quiet", stlabel:"Quiet", price:"₩35,000~", near:"Ulsan"},
+  jeongdongjin:{name:"Jeongdongjin Sunrise Coast", region:"Gangneung", el:"water", elc:"水 Water",
+    desc:"Meet the East Sea at first light.",
+    why:"The widest horizon of water in the country — greet it at sunrise.",
+    state:"quiet", stlabel:"Quiet weekdays", price:"free", near:"Gangneung"},
+  cheonpyeong:{name:"Cheongpyeong Lake", region:"Gapyeong", el:"water", elc:"水 Water",
+    desc:"Still mountain lake with ferries and pine islets.",
+    why:"A calm inland lake within reach of Seoul — an easy dose of water.",
+    state:"quiet", stlabel:"Quiet", price:"₩19,000~", near:"Gapyeong"},
+};
+const TABS = {
+  Wellness:  ["osaek","deokgu","jusanji"],
+  Experience:["gama","onggi"],
+  Sights:    ["jeongdongjin","cheonpyeong"],
+};
+
+// ---------- state ----------
+const state = {screen:"landing", place:"osaek", tab:"Wellness", gender:"Female"};
+
+// ---------- helpers ----------
+function bar(cn,name,color,v){
+  const pct=(v/3)*100;
+  const ring = v===0? ' style="outline:2px solid var(--water); outline-offset:2px; border-radius:999px"':'';
+  return `<div class="bar"><span class="lab"><b style="color:${color}">${cn}</b> ${name}</span>
+    <span class="track"${ring}><span style="width:${Math.max(pct,5)}%; background:${color}"></span></span>
+    <span class="v">${v}</span></div>`;
+}
+function placeCard(id){
+  const p=PLACES[id];
+  return `<div class="card" data-place="${id}" role="button" tabindex="0">
+    <div class="ph ph-${p.el}"><span class="el">${p.elc}</span><span class="st ${p.state}">${p.stlabel}</span></div>
+    <div class="body"><div class="rg">${p.region}</div><h4>${p.name}</h4><p>${p.desc}</p>
+    <span class="rgbadge">Regional · 지방</span></div></div>`;
+}
+function day(n,label,stops){
+  return `<div class="day"><div class="dh"><span class="num">${n}</span><span class="lbl">Day ${n} · ${label}</span><span class="rgn">Regional</span></div>
+    ${stops.map(s=>`<div class="stop${s[5]?' new':''}"><span class="tm">${s[0]}</span>
+      <span class="stx"><b>${s[1]}</b><span>${s[2]}</span></span>
+      ${s[3]?`<span class="el" style="background:${s[4]}">${s[3]}</span>`:''}</div>`).join('')}
+  </div>`;
+}
+
+// ---------- screens ----------
+const SCREENS = {
+  landing: ()=>({ bar:null, nav:false, html:`
+    <div class="pad">
+      <div class="eyebrow">Gender + birthday · that’s all</div>
+      <h2 class="head">Travel Korea by the elements you’re missing.</h2>
+      <p class="lede">Your birth chart maps five energies — wood, fire, earth, metal, water. We route your trip toward the ones you lack, into places most travelers never reach.</p>
+      <div class="glyphrow" aria-hidden="true">
+        <span class="glyph g-wood on">木</span><span class="glyph g-fire on">火</span>
+        <span class="glyph g-earth on">土</span><span class="glyph g-metal on">金</span>
+        <span class="glyph g-water on">水</span></div>
+      <div class="field"><label>Gender</label>
+        <div class="seg" data-seg="gender">
+          <button data-val="Female" aria-pressed="${state.gender==='Female'}">Female</button>
+          <button data-val="Male" aria-pressed="${state.gender==='Male'}">Male</button></div></div>
+      <div class="field"><label>Date of birth</label>
+        <div class="dob"><input value="1996" aria-label="Year"><input value="07" aria-label="Month"><input value="22" aria-label="Day"></div></div>
+      <button class="cta" data-nav="reading">Read my elements →</button>
+      <p class="fine" style="margin-top:12px">No account needed to see your reading. Sign up later to save your trip.</p>
+    </div>`}),
+
+  reading: ()=>({ bar:{title:"Your reading", cn:"F-2", back:null}, nav:true, html:`
+    <div class="pad">
+      <div class="eyebrow">Your five-element balance</div>
+      <h2 class="head">You resonate with Water.</h2>
+      <div class="tags"><span class="chip def">水 Water · lowest</span><span class="chip exc">火 Fire · strongest</span></div>
+      <div class="dist">
+        ${bar('火','Fire','var(--fire)',3)}${bar('金','Metal','var(--metal)',1)}
+        ${bar('木','Wood','var(--wood)',1)}${bar('土','Earth','var(--earth)',1)}
+        ${bar('水','Water','var(--water)',0)}</div>
+      <div class="callout"><p class="q">“In the five-element tradition, places rich in water energy are said to harmonize with a fire-strong chart like yours.”</p>
+        <p class="exp">We’ll lead with Water to fill what’s low — and add a few Fire spots that echo your strong side.</p></div>
+      <div class="twin"><div class="av">★</div><div class="info"><b>Your K-star element twin</b><span>A fire-dominant idol born under the same day pillar</span></div></div>
+      <button class="cta" data-nav="explore">Find places that resonate →</button>
+    </div>`}),
+
+  explore: ()=>({ bar:{title:"Explore", cn:"F-3", back:null}, nav:true, html:`
+    <div class="tabs" data-seg="tab">
+      ${Object.keys(TABS).map(t=>`<button data-val="${t}" aria-pressed="${state.tab===t}">${t}</button>`).join('')}
+    </div>
+    <div class="pad" style="padding-top:8px">
+      <div class="filters">
+        <span class="filt act">✓ Away from crowds</span>
+        <span class="filt act">✓ Off the beaten path</span>
+        <span class="filt">水 Water</span></div>
+      ${TABS[state.tab].map(placeCard).join('')}
+      <p class="footnote">Matched to your Water (fill) &amp; Fire (echo). Crowded landmarks are filtered out using live congestion data.</p>
+    </div>`}),
+
+  pdp: ()=>{ const p=PLACES[state.place]; return { bar:{title:"", cn:"F-4", back:"explore"}, nav:false, html:`
+    <div class="hero ph-${p.el}"><div class="badge"><span>${p.elc}</span><span>${p.region} · 지방</span></div></div>
+    <div class="pad">
+      <div class="eyebrow">Why it resonates</div>
+      <h2 class="head" style="font-size:23px">${p.name}</h2>
+      <p class="lede">${p.why}</p>
+      <div class="meta">
+        <div><div class="k">Element</div><div class="v">${p.elc}</div></div>
+        <div><div class="k">Region</div><div class="v">${p.region.split(' · ')[0]}</div></div>
+        <div><div class="k">Best for</div><div class="v">${p.el==='fire'?'Echoing':p.el==='earth'?'Grounding':'Filling'}</div></div></div>
+      <h3 class="sub">When it’s quiet</h3>
+      <div class="timebars" aria-hidden="true">
+        <div class="tb lo" style="height:40%"></div><div class="tb lo" style="height:30%"></div>
+        <div class="tb" style="height:55%"></div><div class="tb" style="height:70%"></div>
+        <div class="tb hi" style="height:95%"></div><div class="tb hi" style="height:88%"></div>
+        <div class="tb" style="height:60%"></div></div>
+      <div class="tlabels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+      <p class="fine" style="margin-top:6px">Quietest on weekday mornings · live from congestion data.</p>
+      <div class="book"><span class="yg">여기어때</span><span class="fine">Stay nearby · ${p.near}</span><span class="price">${p.price}</span></div>
+      <button class="cta" data-add="1">Add to itinerary +</button>
+      <button class="cta ghost" style="margin-top:10px" data-nav="explore">← Back to explore</button>
+    </div>`};},
+
+  plan: ()=>({ bar:{title:"My itinerary", cn:"F-5", back:null}, nav:true, html:`
+    <div class="pad">
+      <div class="eyebrow">Building your trip</div>
+      <h2 class="head" style="font-size:23px">Filling your Water 水</h2>
+      <div class="prefill"><span class="glyph g-water on" style="width:28px;height:28px;font-size:13px">水</span>
+        <span style="font-size:13px">Target energy · pre-filled from your reading</span><span class="lock">🔒 locked</span></div>
+      <div class="daterow"><div class="d"><div class="k">Start</div><div class="v">2026.05.14</div></div>
+        <div class="d"><div class="k">End</div><div class="v">2026.05.16</div></div></div>
+      ${day(1,'Seoul → Gangwon',[
+        ['13:00','Osaek Green Yard Hot Spring','Fill · water valley','水','var(--water)', state.place==='osaek'],
+        ['18:30','Sokcho seaside guesthouse','Stay · 여기어때 deep-link','','',false]])}
+      ${day(2,'Cheongsong, Gyeongbuk',[
+        ['10:00','Jusanji Reflection Pond','Fill · misty water mirror','水','var(--water)', state.place==='jusanji'],
+        ['13:00','Local mulhoe lunch','Nearby · related-spot API','','',false]])}
+      ${day(3,'Gangneung coast',[
+        ['06:00','Jeongdongjin sunrise walk','Fill · meeting the sea','水','var(--water)', state.place==='jeongdongjin'],
+        ['11:00','Gama kiln sauna detour','Echo · fire spot','火','var(--fire)', state.place==='gama']])}
+      <button class="cta" data-nav="share">Finish &amp; make share card →</button>
+      <p class="footnote">Every day includes at least one regional spot — the product’s north star: itineraries that pull travelers beyond Seoul.</p>
+    </div>`}),
+
+  share: ()=>({ bar:{title:"Trip summary", cn:"·", back:"plan"}, nav:false, html:`
+    <div class="pad">
+      <div class="eyebrow">After your trip</div>
+      <h2 class="head" style="font-size:23px">The water you collected</h2>
+      <div class="sharecard">
+        <div class="top2"><span class="bd">SajuTrip 사주트립</span><span class="dt">2026.05.14–16</span></div>
+        <h3>I filled my Water in Korea 水</h3>
+        <div class="glyphrow" aria-hidden="true">
+          <span class="glyph g-fire on">火</span><span class="glyph">金</span>
+          <span class="glyph">木</span><span class="glyph">土</span><span class="glyph g-water on">水</span></div>
+        <div class="fillnote">Water · +3 collected — balance restored</div>
+        <div class="route">① Osaek Hot Spring, Gangwon<br>② Jusanji Pond, Cheongsong<br>③ Jeongdongjin sunrise, Gangneung</div></div>
+      <div class="sharebtns"><button class="cta ghost" data-toast="Saved to your photos">Save image</button><button class="cta" data-toast="Share sheet opened">Share</button></div>
+      <p class="footnote">A shareable card closes the loop — each share brings the next traveler back to their own reading.</p>
+    </div>`}),
+
+  my: ()=>({ bar:{title:"My page", cn:"·", back:null}, nav:true, html:`
+    <div class="pad">
+      <div class="eyebrow">Account</div>
+      <h2 class="head" style="font-size:23px">Your elements</h2>
+      <div class="glyphrow" aria-hidden="true">
+        <span class="glyph g-fire on">火</span><span class="glyph">金</span>
+        <span class="glyph">木</span><span class="glyph">土</span><span class="glyph g-water on">水</span></div>
+      <div class="prow"><span class="k">Resonates with</span><span class="v">水 Water</span></div>
+      <div class="prow"><span class="k">Birth</span><span class="v">1996.07.22</span></div>
+      <div class="prow"><span class="k">Saved trips</span><span class="v">1</span></div>
+      <div class="prow"><span class="k">Elements collected</span><span class="v">水 +3</span></div>
+      <h3 class="sub">Saved itinerary</h3>
+      <div class="card" data-nav="plan" role="button" tabindex="0"><div class="body">
+        <div class="rg">2026.05.14–16 · 3 days</div><h4>Filling your Water 水</h4>
+        <p>Gangwon → Cheongsong → Gangneung</p><span class="rgbadge">3 regional spots</span></div></div>
+      <p class="footnote">회원가입(P1) · 성별·생년월일 pre-fill, 사주 결과·일정·수집 엘레먼트를 Airtable에 저장.</p>
+    </div>`}),
+};
+
+const NAV = [
+  {id:"reading", ic:"卦", label:"Reading"},
+  {id:"explore", ic:"探", label:"Explore"},
+  {id:"plan",    ic:"程", label:"Plan"},
+  {id:"my",      ic:"我", label:"My"},
+];
+const NAV_ACTIVE = {reading:"reading", explore:"explore", pdp:"explore", plan:"plan", my:"my", share:"plan"};
+
+// ---------- render ----------
+const view=document.getElementById('view'), appbarEl=document.getElementById('appbar'),
+      bnavEl=document.getElementById('bnav'), toastEl=document.getElementById('toast');
+
+function render(){
+  const s=SCREENS[state.screen]();
+  // app bar
+  if(s.bar){
+    appbarEl.style.display='flex';
+    appbarEl.classList.toggle('bord', state.screen!=='pdp');
+    appbarEl.innerHTML =
+      (s.bar.back?`<button class="back" data-nav="${s.bar.back}" aria-label="Back">‹</button>`:'')
+      + `<span class="ttl">${s.bar.title||''}</span>`
+      + `<span class="cn">${s.bar.cn||''}</span>`;
+  } else { appbarEl.style.display='none'; appbarEl.innerHTML=''; }
+  // view
+  view.innerHTML = `<div class="anim">${s.html}</div>`;
+  view.scrollTop=0;
+  // bottom nav
+  if(s.nav){
+    bnavEl.style.display='flex';
+    const act=NAV_ACTIVE[state.screen];
+    bnavEl.innerHTML = NAV.map(n=>`<button data-nav="${n.id}" aria-current="${act===n.id}">
+      <span class="ic">${n.ic}</span>${n.label}</button>`).join('');
+  } else { bnavEl.style.display='none'; bnavEl.innerHTML=''; }
+}
+function go(id){ if(SCREENS[id]){ state.screen=id; render(); } }
+let toastTimer;
+function toast(msg){
+  toastEl.textContent=msg; toastEl.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>toastEl.classList.remove('show'),1600);
+}
+
+// ---------- events (delegated) ----------
+document.querySelector('.screen').addEventListener('click', e=>{
+  const nav=e.target.closest('[data-nav]');
+  if(nav){ go(nav.dataset.nav); return; }
+  const card=e.target.closest('[data-place]');
+  if(card){ state.place=card.dataset.place; go('pdp'); return; }
+  const add=e.target.closest('[data-add]');
+  if(add){ toast('Added to your itinerary'); setTimeout(()=>go('plan'),650); return; }
+  const seg=e.target.closest('[data-seg] button');
+  if(seg){ const grp=seg.closest('[data-seg]').dataset.seg;
+    if(grp==='gender'){ state.gender=seg.dataset.val; } else if(grp==='tab'){ state.tab=seg.dataset.val; }
+    render(); return; }
+  const tst=e.target.closest('[data-toast]');
+  if(tst){ toast(tst.dataset.toast); return; }
+});
+document.querySelector('.screen').addEventListener('keydown', e=>{
+  const t=e.target.closest('[data-place],[data-nav]');
+  if(t && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); t.click(); }
+});
+document.getElementById('restart').addEventListener('click', ()=>{ state.screen='landing'; state.place='osaek'; state.tab='Wellness'; render(); });
+
+render();
+</script>
