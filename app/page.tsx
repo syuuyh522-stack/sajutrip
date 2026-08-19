@@ -4,12 +4,14 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '../i18n/LanguageProvider';
+import { useProfile } from '../i18n/ProfileProvider';
 import { LanguageSwitch } from '../components/LanguageSwitch';
 
 type Gender = 'female' | 'male';
 
 export default function LandingPage() {
   const { t } = useI18n();
+  const { setBirth } = useProfile();
   const router = useRouter();
   const [gender, setGender] = useState<Gender>('female');
   const [year, setYear] = useState('1996');
@@ -17,6 +19,7 @@ export default function LandingPage() {
   const [day, setDay] = useState('22');
 
   const submit = () => {
+    setBirth({ gender, year, month, day }); // 프로필 저장(하단 네비·마이 등에서 사용)
     const params = new URLSearchParams({ gender, year, month, day });
     router.push(`/result?${params.toString()}`);
   };

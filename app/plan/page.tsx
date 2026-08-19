@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
+import { BottomNav } from '../../components/BottomNav';
 import type { Element } from '../../types/saju';
 
 const ELEMENT_COLOR: Record<Element, string> = {
@@ -38,7 +39,7 @@ function PlanInner() {
   const days = Array.from({ length: dayCount }, (_, i) => i + 1);
 
   return (
-    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
+    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Link href={{ pathname: '/explore', query: birth }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.plan.back}</Link>
         <LanguageSwitch />
@@ -101,6 +102,26 @@ function PlanInner() {
 
         {state.items.length > 0 && <p style={{ fontSize: 12, color: 'var(--muted-2)' }}>{t.plan.nearby}</p>}
 
+        {/* 여행 중 체크인 (P1) */}
+        {state.items.length > 0 && (
+          <section>
+            <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{t.checkin.title}</div>
+            <div style={{ fontSize: 12, color: 'var(--muted-2)', marginBottom: 10 }}>{t.checkin.hint}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, border: '1px solid var(--line)', borderRadius: 12, padding: '4px 14px' }}>
+              {state.items.map((it) => (
+                <label key={it.contentId} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', fontSize: 13, borderBottom: '1px solid var(--line)' }}>
+                  <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--accent)' }} />
+                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{it.name}</span>
+                </label>
+              ))}
+              <label style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', fontSize: 13 }}>
+                <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--accent)' }} />
+                <span>{t.checkin.done}</span>
+              </label>
+            </div>
+          </section>
+        )}
+
         {state.items.length > 0 && (
           <Link
             href={{ pathname: '/share', query: birth }}
@@ -110,6 +131,7 @@ function PlanInner() {
           </Link>
         )}
       </div>
+      <BottomNav />
     </main>
   );
 }

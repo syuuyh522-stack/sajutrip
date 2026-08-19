@@ -104,6 +104,43 @@ export interface Dictionary {
     shareText: string;
     back: string;
   };
+  nav: { saju: string; plan: string; search: string; my: string };
+  search: {
+    title: string;
+    placeholder: string;
+    recent: string;
+    festivals: string;
+    empty: string;
+    back: string;
+  };
+  my: {
+    title: string;
+    collected: string;
+    resonatesWith: string;
+    birth: string;
+    savedTrip: string;
+    savedTripDesc: string;
+    bookmarks: string;
+    noBookmarks: string;
+    signUp: string;
+    editProfile: string;
+    guest: string;
+    back: string;
+  };
+  signup: {
+    title: string;
+    subtitle: string;
+    nickname: string;
+    nicknameHint: string;
+    agree: string;
+    privacy: string;
+    terms: string;
+    aiGen: string;
+    create: string;
+    later: string;
+    back: string;
+  };
+  checkin: { title: string; done: string; hint: string };
 }
 
 const en: Dictionary = {
@@ -192,6 +229,47 @@ const en: Dictionary = {
     shareText: 'My SajuTrip — I filled my {element} in Korea.',
     back: 'Back',
   },
+  nav: { saju: 'Saju', plan: 'Trips', search: 'Search', my: 'My' },
+  search: {
+    title: 'Search',
+    placeholder: 'Search places, regions',
+    recent: 'Recent',
+    festivals: 'Festivals this week',
+    empty: 'No results.',
+    back: 'Back',
+  },
+  my: {
+    title: 'My page',
+    collected: 'Elements',
+    resonatesWith: 'Resonates with',
+    birth: 'Birth',
+    savedTrip: 'Saved itinerary',
+    savedTripDesc: 'places',
+    bookmarks: 'Saved · 찜',
+    noBookmarks: 'Tap the bookmark on a place to keep it here.',
+    signUp: 'Sign up to save everything',
+    editProfile: 'Edit profile',
+    guest: 'Guest',
+    back: 'Back',
+  },
+  signup: {
+    title: 'Create your account',
+    subtitle: 'So your reading, saved places and trips are here next time.',
+    nickname: 'Nickname · optional',
+    nicknameHint: 'e.g. Fire Traveler',
+    agree: 'I agree to the',
+    privacy: 'Privacy Policy',
+    terms: 'Terms',
+    aiGen: 'AI-generated',
+    create: 'Create account',
+    later: 'Maybe later',
+    back: 'Back',
+  },
+  checkin: {
+    title: 'While traveling · check in',
+    done: "Today's activity done — auto-prompt at 8 PM",
+    hint: 'Check off elements as you collect them.',
+  },
 };
 
 const ko: Dictionary = {
@@ -279,6 +357,47 @@ const ko: Dictionary = {
     share: '공유',
     shareText: '사주트립 — 한국에서 {element} 기운을 채웠어요.',
     back: '뒤로',
+  },
+  nav: { saju: '사주', plan: '내 일정', search: '검색', my: '마이' },
+  search: {
+    title: '검색',
+    placeholder: '장소·지역 검색',
+    recent: '최근 검색',
+    festivals: '이번 주 축제',
+    empty: '결과가 없어요.',
+    back: '뒤로',
+  },
+  my: {
+    title: '마이페이지',
+    collected: '내 오행',
+    resonatesWith: '공명하는 기운',
+    birth: '생년월일',
+    savedTrip: '저장한 일정',
+    savedTripDesc: '곳',
+    bookmarks: '찜',
+    noBookmarks: '장소의 북마크를 누르면 여기에 담겨요.',
+    signUp: '회원가입하고 전부 저장하기',
+    editProfile: '프로필 수정',
+    guest: '게스트',
+    back: '뒤로',
+  },
+  signup: {
+    title: '회원가입',
+    subtitle: '사주 결과·찜·일정을 다음에도 볼 수 있게 저장해요.',
+    nickname: '닉네임 · 선택',
+    nicknameHint: '예: Fire Traveler',
+    agree: '동의합니다:',
+    privacy: '개인정보처리방침',
+    terms: '이용약관',
+    aiGen: 'AI 생성',
+    create: '가입하기',
+    later: '나중에',
+    back: '뒤로',
+  },
+  checkin: {
+    title: '여행 중 · 체크인',
+    done: '오늘 활동 완료 — 오후 8시 자동 알림',
+    hint: '기운을 채울 때마다 체크하세요.',
   },
 };
 

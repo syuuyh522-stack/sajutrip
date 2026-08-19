@@ -3,6 +3,7 @@
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 import { AREA_BY_CODE } from '../../config/regions';
+import { tagByName } from './tag';
 import type { PlaceLocale } from './wellness';
 
 const DEFAULT_KOR = 'https://apis.data.go.kr/B551011/KorService2';
@@ -65,6 +66,31 @@ function toPlace(raw: GeneralRaw, element: Element, locale: PlaceLocale): Place 
     tel: raw.tel || undefined,
     primaryElement: element,
   };
+}
+
+/** 자유 검색 (F-5 P1 검색). 이름/지역 키워드 → 장소. 원소는 이름 기반 태깅(있으면). */
+export async function searchPlaces(locale: PlaceLocale, query: string, max = 20): Promise<Place[]> {
+  const q = query.trim();
+  if (!q) return [];
+  const seen = new Set<string>();
+  const out: Place[] = [];
+  for (const raw of await searchKeyword(locale, q, max)) {
+    const contentId = raw.contentid ? String(raw.contentid) : '';
+    const name = (raw.title ?? '').trim();
+    if (!contentId || !name || seen.has(contentId)) continue;
+    seen.add(contentId);
+    out.push({
+      contentId,
+      name,
+      region: AREA_BY_CODE[String(raw.areacode ?? '')]?.[locale] ?? (locale === 'ko' ? (raw.addr1 ?? '').split(' ')[0] ?? '' : ''),
+      image: raw.firstimage || undefined,
+      mapX: raw.mapx ? Number(raw.mapx) : undefined,
+      mapY: raw.mapy ? Number(raw.mapy) : undefined,
+      tel: raw.tel || undefined,
+      primaryElement: tagByName(name),
+    });
+  }
+  return out;
 }
 
 /** 원소별 보강 후보 (fire/metal/earth). 키워드마다 검색 → contentId 중복 제거. */

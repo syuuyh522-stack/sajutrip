@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
+import { BottomNav } from '../../components/BottomNav';
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 
@@ -53,7 +54,7 @@ function ExploreInner() {
   }, [activeElement, locale]);
 
   return (
-    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
+    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Link href={{ pathname: '/result', query: birth }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.explore.back}</Link>
         <LanguageSwitch />
@@ -82,6 +83,7 @@ function ExploreInner() {
           </Link>
         ))}
       </div>
+      <BottomNav />
     </main>
   );
 }

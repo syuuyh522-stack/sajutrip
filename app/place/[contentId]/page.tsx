@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
 import { useI18n } from '../../../i18n/LanguageProvider';
 import { useItinerary } from '../../../i18n/ItineraryProvider';
+import { useProfile } from '../../../i18n/ProfileProvider';
 import { LanguageSwitch } from '../../../components/LanguageSwitch';
 import type { Element } from '../../../types/saju';
 import type { Place } from '../../../types/place';
@@ -23,6 +24,7 @@ const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export default function PlacePage() {
   const { t, locale } = useI18n();
   const { addItem, hasItem } = useItinerary();
+  const { toggleBookmark, hasBookmark } = useProfile();
   const routeParams = useParams<{ contentId: string }>();
   const search = useSearchParams();
 
@@ -62,7 +64,17 @@ export default function PlacePage() {
 
       {place && (
         <>
-          <div style={{ height: 220, background: place.image ? `center/cover no-repeat url(${place.image})` : color }} />
+          <div style={{ height: 220, position: 'relative', background: place.image ? `center/cover no-repeat url(${place.image})` : color }}>
+            <button
+              type="button"
+              onClick={() => toggleBookmark({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null })}
+              aria-label="Bookmark"
+              aria-pressed={hasBookmark(place.contentId)}
+              style={{ position: 'absolute', top: 14, right: 16, width: 40, height: 40, borderRadius: '50%', border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', fontSize: 18, background: 'rgba(255,255,255,.85)', color: hasBookmark(place.contentId) ? 'var(--accent)' : 'var(--muted)' }}
+            >
+              {hasBookmark(place.contentId) ? '★' : '☆'}
+            </button>
+          </div>
           <div style={{ padding: '18px 22px 40px' }}>
             <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted-2)' }}>{place.region}</div>
             <h1 style={{ fontSize: 23, fontWeight: 600, margin: '4px 0 12px' }}>{place.name}</h1>

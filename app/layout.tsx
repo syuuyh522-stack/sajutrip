@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { LanguageProvider } from '../i18n/LanguageProvider';
 import { ItineraryProvider } from '../i18n/ItineraryProvider';
+import { ProfileProvider } from '../i18n/ProfileProvider';
 import { DEFAULT_LOCALE } from '../i18n/dictionaries';
 import './globals.css';
 
@@ -22,7 +23,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang={DEFAULT_LOCALE}>
       <body>
         <LanguageProvider>
-          <ItineraryProvider>{children}</ItineraryProvider>
+          <ProfileProvider>
+            <ItineraryProvider>{children}</ItineraryProvider>
+          </ProfileProvider>
         </LanguageProvider>
       </body>
     </html>

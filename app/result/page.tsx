@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
+import { BottomNav } from '../../components/BottomNav';
 import type { Element, ElementDistribution, Pillar, SajuProfile } from '../../types/saju';
 import { STEM_ELEMENT, BRANCH_ELEMENT } from '../../config/saju-tables';
 
@@ -58,7 +59,7 @@ function ResultInner() {
   }, [params]);
 
   return (
-    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
+    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
         <Link href="/" style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.result.back}</Link>
         <LanguageSwitch />
@@ -135,6 +136,7 @@ function ResultInner() {
           </Link>
         </div>
       )}
+      <BottomNav />
     </main>
   );
 }
