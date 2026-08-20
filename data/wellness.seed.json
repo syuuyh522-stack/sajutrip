@@ -33,7 +33,7 @@
 "mapX": 127.0913227521,
 "mapY": 37.5349377239,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "662637",
@@ -69,7 +69,7 @@
 "mapX": 126.771186507,
 "mapY": 37.7569628138,
 "tel": null,
-"primaryElement": "fire"
+"primaryElement": "water"
 },
 {
 "contentId": "3038543",
@@ -81,7 +81,7 @@
 "mapX": 127.1259251817,
 "mapY": 36.4304352185,
 "tel": null,
-"primaryElement": null
+"primaryElement": "wood"
 },
 {
 "contentId": "2660941",
@@ -177,7 +177,7 @@
 "mapX": 126.3891410344,
 "mapY": 35.352876042,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "4013402",
@@ -189,7 +189,7 @@
 "mapX": 126.647454868477,
 "mapY": 37.4207946749712,
 "tel": null,
-"primaryElement": "earth"
+"primaryElement": "fire"
 },
 {
 "contentId": "127850",
@@ -225,7 +225,7 @@
 "mapX": 128.8935561515,
 "mapY": 37.7435306776,
 "tel": null,
-"primaryElement": "fire"
+"primaryElement": "water"
 },
 {
 "contentId": "4061725",
@@ -261,7 +261,7 @@
 "mapX": 127.751303677829,
 "mapY": 37.0255545163343,
 "tel": null,
-"primaryElement": null
+"primaryElement": "metal"
 },
 {
 "contentId": "3569888",
@@ -297,7 +297,7 @@
 "mapX": 126.704339253,
 "mapY": 37.7089911042,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "127949",
@@ -381,7 +381,7 @@
 "mapX": 126.7431571778,
 "mapY": 35.1680862145,
 "tel": null,
-"primaryElement": null
+"primaryElement": "metal"
 },
 {
 "contentId": "128811",
@@ -489,7 +489,7 @@
 "mapX": 127.0812438106,
 "mapY": 38.0896590238,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "2364045",
@@ -549,7 +549,7 @@
 "mapX": 127.785538906312,
 "mapY": 36.1569345583912,
 "tel": null,
-"primaryElement": null
+"primaryElement": "metal"
 },
 {
 "contentId": "2732163",
@@ -561,7 +561,7 @@
 "mapX": 127.1569530865,
 "mapY": 37.2333155332,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "127608",
@@ -609,7 +609,7 @@
 "mapX": 127.649172,
 "mapY": 37.480586,
 "tel": null,
-"primaryElement": null
+"primaryElement": "fire"
 },
 {
 "contentId": "2770713",
@@ -765,7 +765,7 @@
 "mapX": 126.9195734269,
 "mapY": 33.4421097515,
 "tel": null,
-"primaryElement": "metal"
+"primaryElement": "wood"
 },
 {
 "contentId": "2778917",
@@ -837,7 +837,7 @@
 "mapX": 128.5746011552,
 "mapY": 38.2071873354,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "2766491",
@@ -849,7 +849,7 @@
 "mapX": 128.522690056549,
 "mapY": 35.8081091187563,
 "tel": null,
-"primaryElement": "wood"
+"primaryElement": "water"
 },
 {
 "contentId": "3343355",
@@ -861,7 +861,7 @@
 "mapX": 127.9893278862,
 "mapY": 36.8460711576,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "wood"
 },
 {
 "contentId": "2713440",
@@ -873,7 +873,7 @@
 "mapX": 127.1315870308,
 "mapY": 35.431546464,
 "tel": null,
-"primaryElement": null
+"primaryElement": "wood"
 },
 {
 "contentId": "2804475",
@@ -885,7 +885,7 @@
 "mapX": 129.206165118059,
 "mapY": 35.4171303383366,
 "tel": null,
-"primaryElement": "wood"
+"primaryElement": "metal"
 },
 {
 "contentId": "3397899",
@@ -933,7 +933,7 @@
 "mapX": 127.0182965393,
 "mapY": 37.5182911216,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "128732",
@@ -945,7 +945,7 @@
 "mapX": 126.6558381966,
 "mapY": 36.6938522986,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "1601852",
@@ -981,7 +981,7 @@
 "mapX": 127.927402342205,
 "mapY": 37.0448683770583,
 "tel": null,
-"primaryElement": "fire"
+"primaryElement": "wood"
 },
 {
 "contentId": "127767",
@@ -1053,7 +1053,7 @@
 "mapX": 126.438011494401,
 "mapY": 37.6930269872163,
 "tel": null,
-"primaryElement": null
+"primaryElement": "metal"
 },
 {
 "contentId": "2732168",
@@ -1077,7 +1077,7 @@
 "mapX": 129.243044732,
 "mapY": 35.2588823233,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "4065287",
@@ -1089,7 +1089,7 @@
 "mapX": 128.649611283701,
 "mapY": 35.8552527241055,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "2718732",
@@ -1101,7 +1101,7 @@
 "mapX": 128.5256756252,
 "mapY": 35.8250210143,
 "tel": null,
-"primaryElement": null
+"primaryElement": "fire"
 },
 {
 "contentId": "128699",
@@ -1113,7 +1113,7 @@
 "mapX": 127.6992218945,
 "mapY": 37.2887356407,
 "tel": null,
-"primaryElement": null
+"primaryElement": "fire"
 },
 {
 "contentId": "127914",
@@ -1257,7 +1257,7 @@
 "mapX": 126.818425199,
 "mapY": 34.3279553371,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "wood"
 },
 {
 "contentId": "4091194",
@@ -1281,7 +1281,7 @@
 "mapX": 126.504568869,
 "mapY": 33.5158588206,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "2756589",
@@ -1365,7 +1365,7 @@
 "mapX": 126.882056397525,
 "mapY": 37.152134506051,
 "tel": null,
-"primaryElement": "fire"
+"primaryElement": "water"
 },
 {
 "contentId": "2604923",
@@ -1377,7 +1377,7 @@
 "mapX": 127.0866350548,
 "mapY": 34.6740309373,
 "tel": null,
-"primaryElement": "wood"
+"primaryElement": "water"
 },
 {
 "contentId": "3441597",
@@ -1425,7 +1425,7 @@
 "mapX": 126.404587257139,
 "mapY": 37.44415658478,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "3083295",
@@ -1461,7 +1461,7 @@
 "mapX": 126.958132454653,
 "mapY": 34.6790305030412,
 "tel": null,
-"primaryElement": null
+"primaryElement": "wood"
 },
 {
 "contentId": "3083341",
@@ -1485,7 +1485,7 @@
 "mapX": 126.666449513405,
 "mapY": 33.5029783241663,
 "tel": null,
-"primaryElement": null
+"primaryElement": "wood"
 },
 {
 "contentId": "126573",
@@ -1545,7 +1545,7 @@
 "mapX": 129.1138175312,
 "mapY": 35.1579180661,
 "tel": null,
-"primaryElement": null
+"primaryElement": "wood"
 },
 {
 "contentId": "662862",
@@ -1557,7 +1557,7 @@
 "mapX": 129.1106285651,
 "mapY": 35.125587034,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "322850",
@@ -1677,7 +1677,7 @@
 "mapX": 129.234548774801,
 "mapY": 35.2893695593616,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "2932103",
@@ -1689,7 +1689,7 @@
 "mapX": 127.787528679022,
 "mapY": 37.8517020896632,
 "tel": null,
-"primaryElement": null
+"primaryElement": "metal"
 },
 {
 "contentId": "3522510",
@@ -1713,7 +1713,7 @@
 "mapX": 126.2996,
 "mapY": 36.649,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "wood"
 },
 {
 "contentId": "127752",
@@ -1725,7 +1725,7 @@
 "mapX": 129.0787786847,
 "mapY": 35.0645889744,
 "tel": null,
-"primaryElement": "fire"
+"primaryElement": "water"
 },
 {
 "contentId": "2660744",
@@ -1761,7 +1761,7 @@
 "mapX": 127.4466557305,
 "mapY": 37.1948835381,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "2789664",
@@ -1797,7 +1797,7 @@
 "mapX": 126.856728727593,
 "mapY": 37.8512519191354,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "3075750",
@@ -1845,7 +1845,7 @@
 "mapX": 128.3697929051,
 "mapY": 38.0764969279,
 "tel": null,
-"primaryElement": "earth"
+"primaryElement": "water"
 },
 {
 "contentId": "2931955",
@@ -1857,7 +1857,7 @@
 "mapX": 127.8147948529,
 "mapY": 35.7838734845,
 "tel": null,
-"primaryElement": null
+"primaryElement": "wood"
 },
 {
 "contentId": "4041429",
@@ -1881,7 +1881,7 @@
 "mapX": 127.021814277629,
 "mapY": 37.467027639123,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "3022275",
@@ -1893,7 +1893,7 @@
 "mapX": 128.743092804295,
 "mapY": 37.1302394853555,
 "tel": null,
-"primaryElement": null
+"primaryElement": "metal"
 },
 {
 "contentId": "613310",
@@ -1905,7 +1905,7 @@
 "mapX": 126.888532003,
 "mapY": 37.1686237886,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "2589657",
@@ -1953,7 +1953,7 @@
 "mapX": 126.4409318927,
 "mapY": 35.0858793512,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "metal"
 },
 {
 "contentId": "701642",
@@ -1965,7 +1965,7 @@
 "mapX": 126.660654392437,
 "mapY": 37.4986939420051,
 "tel": null,
-"primaryElement": "water"
+"primaryElement": "fire"
 },
 {
 "contentId": "126108",
@@ -1989,7 +1989,7 @@
 "mapX": 129.0826866234,
 "mapY": 35.2211550982,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 },
 {
 "contentId": "129698",
@@ -2025,7 +2025,7 @@
 "mapX": 126.9761522655,
 "mapY": 37.5497617088,
 "tel": null,
-"primaryElement": null
+"primaryElement": "metal"
 },
 {
 "contentId": "2994739",
@@ -2073,6 +2073,6 @@
 "mapX": 127.065326678193,
 "mapY": 37.5065841346452,
 "tel": null,
-"primaryElement": null
+"primaryElement": "water"
 }
 ]

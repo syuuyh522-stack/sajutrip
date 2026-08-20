@@ -3,6 +3,7 @@
 // 배치성이라 긴 revalidate, 심사 실시간 모드면 no-store(§6.5).
 import type { Place } from '../../types/place';
 import { REGION_BY_CODE } from '../../config/regions';
+import { WELLNESS_THEMA_ELEMENT } from '../../config/wellness-thema';
 import { tagByName } from './tag';
 
 export type PlaceLocale = 'en' | 'ko';
@@ -65,7 +66,8 @@ function toPlace(raw: WellnessRaw, locale: PlaceLocale): Place | null {
     mapX: raw.mapX ? Number(raw.mapX) : undefined,
     mapY: raw.mapY ? Number(raw.mapY) : undefined,
     tel: raw.tel || undefined,
-    primaryElement: tagByName(name),
+    // 1차: 테마코드(구조적·정확), 2차: 이름 키워드 fallback (§5.4)
+    primaryElement: (raw.wellnessThemaCd && WELLNESS_THEMA_ELEMENT[raw.wellnessThemaCd]) || tagByName(name),
   };
 }
 
