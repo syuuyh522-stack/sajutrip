@@ -10,11 +10,14 @@ const DEFAULT_KOR = 'https://apis.data.go.kr/B551011/KorService2';
 const DEFAULT_ENG = 'https://apis.data.go.kr/B551011/EngService2';
 const REVALIDATE = 60 * 60 * 12;
 
-// 로케일별 검색 키워드 (KO=한글, EN=영어 — En은 한글 키워드 커버리지가 낮음).
+// 로케일별 검색 키워드 (KO=한글, EN=영어). 웰니스가 못 채우는 '장소 타입 다양성'을
+// 일반관광(KorService2/EngService2)에서 보강 — 5원소 전체 (§5.4 레이어·다양성).
 const ENRICH: Partial<Record<Element, Record<PlaceLocale, string[]>>> = {
+  water: { ko: ['계곡', '해수욕장', '호수', '폭포'], en: ['valley', 'beach', 'lake', 'waterfall'] },
+  wood: { ko: ['수목원', '자연휴양림', '둘레길', '숲길'], en: ['arboretum', 'forest', 'trail'] },
   fire: { ko: ['찜질방', '불가마', '한증막'], en: ['jjimjilbang', 'sauna'] },
   metal: { ko: ['사찰', '템플스테이'], en: ['temple', 'templestay'] },
-  earth: { ko: ['도자기', '옹기', '머드'], en: ['pottery', 'ceramic', 'mud'] },
+  earth: { ko: ['도자기', '옹기', '머드', '갯벌'], en: ['pottery', 'ceramic', 'mud'] },
 };
 
 interface GeneralRaw {

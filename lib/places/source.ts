@@ -4,17 +4,26 @@ import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 import { getAllWellness, type PlaceLocale } from '../tour-api/wellness';
 import { getEnrichmentPlaces } from '../tour-api/general';
+import { getDurunubiCourses } from '../tour-api/durunubi';
 import { seedByElement, seedById } from './seed';
 
 function tourEnabled(): boolean {
   return Boolean(process.env.TOURAPI_SERVICE_KEY);
 }
 
+/** 웰니스 외 보강 소스: 일반관광 키워드(fire/metal/earth) + 두루누비(wood 걷기) */
+async function getExtraPlaces(element: Element, locale: PlaceLocale): Promise<Place[]> {
+  const parts: Promise<Place[]>[] = [getEnrichmentPlaces(element, locale)];
+  if (element === 'wood') parts.push(getDurunubiCourses(locale));
+  const arrays = await Promise.all(parts);
+  return arrays.flat();
+}
+
 export async function getPlacesByElement(element: Element, locale: PlaceLocale = 'ko', max = 30): Promise<Place[]> {
   if (tourEnabled()) {
     try {
       // 웰니스(물·나무 위주) + 일반관광 키워드 보강(fire/metal/earth)을 합침
-      const [wellness, extra] = await Promise.all([getAllWellness(locale), getEnrichmentPlaces(element, locale)]);
+      const [wellness, extra] = await Promise.all([getAllWellness(locale), getExtraPlaces(element, locale)]);
       const matched = wellness.filter((p) => p.primaryElement === element);
       const seen = new Set(matched.map((p) => p.contentId));
       const combined = [...matched, ...extra.filter((p) => !seen.has(p.contentId))];
@@ -33,7 +42,7 @@ export async function getPlaceById(contentId: string, locale: PlaceLocale = 'ko'
       if (inWellness) return inWellness;
       // 보강 후보(일반관광)는 원소를 알아야 재조회 가능 — PDP 링크가 element를 전달
       if (element) {
-        const inExtra = (await getEnrichmentPlaces(element, locale)).find((p) => p.contentId === contentId);
+        const inExtra = (await getExtraPlaces(element, locale)).find((p) => p.contentId === contentId);
         if (inExtra) return inExtra;
       }
     } catch {
