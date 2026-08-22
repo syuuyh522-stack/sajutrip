@@ -36,6 +36,7 @@ export async function checkApis(): Promise<ApiCheck[]> {
   const wellness = process.env.TOURAPI_WELLNESS_BASE ?? 'https://apis.data.go.kr/B551011/WellnessTursmService';
   const kor = process.env.TOURAPI_KOR_BASE ?? 'https://apis.data.go.kr/B551011/KorService2';
   const eng = process.env.TOURAPI_ENG_BASE ?? 'https://apis.data.go.kr/B551011/EngService2';
+  const durunubi = process.env.TOURAPI_DURUNUBI_BASE ?? 'https://apis.data.go.kr/B551011/Durunubi';
 
   const tourOk = (b: string) => b.includes('"resultCode":"0000"');
 
@@ -46,5 +47,6 @@ export async function checkApis(): Promise<ApiCheck[]> {
     timed('TourAPI 웰니스 (영문)', url(wellness, 'areaBasedList', { serviceKey: tourKey, ...TOUR_COMMON, langDivCd: 'ENG' }), tourOk),
     timed('TourAPI 국문 관광정보', url(kor, 'searchKeyword2', { serviceKey: tourKey, ...TOUR_COMMON, keyword: '온천' }), tourOk),
     timed('TourAPI 영문 관광정보', url(eng, 'searchKeyword2', { serviceKey: tourKey, ...TOUR_COMMON, keyword: 'temple' }), tourOk),
+    timed('TourAPI 두루누비 (걷기)', url(durunubi, 'courseList', { serviceKey: tourKey, ...TOUR_COMMON }), tourOk),
   ]);
 }
