@@ -18,7 +18,7 @@ const COLOR = EL_COLOR; // 공식 팔레트
 
 function MyInner() {
   const { t } = useI18n();
-  const { birth, signedUp, nickname, bookmarks } = useProfile();
+  const { birth, signedUp, nickname, bookmarks, collectedCount } = useProfile();
   const { state } = useItinerary();
   const params = useSearchParams();
 
@@ -54,10 +54,16 @@ function MyInner() {
           <div style={{ display: 'flex', gap: 8 }}>
             {ORDER.map((el) => {
               const on = el === deficient; // 결핍(=채워야 할) 원소 강조
-              const name = t.elements[el].split(' ')[0]; // "수 水" → "수" (한자 제거)
+              const got = collectedCount(el); // 체크인으로 수집한 개수 (컨셉: 모으는 여행)
+              const name = t.elements[el].split(' ')[0];
               return (
-                <div key={el} style={{ flex: 1, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--glass-brd)', background: 'var(--color-surface)' }}>
-                  <div aria-hidden="true" style={{ height: 40, background: COLOR[el], opacity: on ? 1 : 0.35 }} />
+                <div key={el} style={{ flex: 1, borderRadius: 14, overflow: 'hidden', border: on ? `1.5px solid ${EL_INK[el]}` : '1px solid var(--glass-brd)', background: 'var(--color-surface)', position: 'relative' }}>
+                  <div aria-hidden="true" style={{ height: 40, background: COLOR[el], opacity: on || got > 0 ? 1 : 0.35 }} />
+                  {got > 0 && (
+                    <span style={{ position: 'absolute', top: 4, right: 4, fontSize: 10, fontWeight: 700, color: EL_INK[el], background: 'rgba(255,255,255,.85)', borderRadius: 'var(--radius-pill)', padding: '1px 6px', fontVariantNumeric: 'tabular-nums' }}>
+                      +{got}
+                    </span>
+                  )}
                   <div style={{ fontSize: 12, fontWeight: on ? 700 : 500, textAlign: 'center', padding: '6px 0', color: on ? EL_INK[el] : 'var(--color-text-muted)' }}>{name}</div>
                 </div>
               );

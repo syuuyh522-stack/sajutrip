@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
+import { useProfile } from '../../i18n/ProfileProvider';
 import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
@@ -20,6 +21,7 @@ interface RelatedSpot { name: string; region: string; category: string; rank: nu
 function PlanInner() {
   const { t } = useI18n();
   const { state, dayCount, setDates, setItemDay, removeItem } = useItinerary();
+  const { toggleCollect, isCollected } = useProfile();
   const params = useSearchParams();
   const birth = useMemo(
     () => ({
@@ -141,17 +143,27 @@ function PlanInner() {
           <section>
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{t.checkin.title}</div>
             <div style={{ fontSize: 12, color: 'var(--muted-2)', marginBottom: 10 }}>{t.checkin.hint}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2, border: '1px solid var(--line)', borderRadius: 12, padding: '4px 14px' }}>
-              {state.items.map((it) => (
-                <label key={it.contentId} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', fontSize: 13, borderBottom: '1px solid var(--line)' }}>
-                  <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--accent)' }} />
-                  <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{it.name}</span>
-                </label>
-              ))}
-              <label style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', fontSize: 13 }}>
-                <input type="checkbox" style={{ width: 18, height: 18, accentColor: 'var(--accent)' }} />
-                <span>{t.checkin.done}</span>
-              </label>
+            {/* 체크인 = 엘리먼트 수집 (컨셉: 모으는 여행). 체크 시 그 장소의 원소를 수집 */}
+            <div className="glass" style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 14px' }}>
+              {state.items.map((it) => {
+                const collected = isCollected(it.contentId);
+                return (
+                  <label key={it.contentId} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 44, padding: '4px 0', fontSize: 'var(--text-body-sm)', borderBottom: '1px solid rgba(185,180,199,.25)', cursor: 'pointer' }}>
+                    <input
+                      type="checkbox"
+                      checked={collected}
+                      onChange={() => { toggleCollect(it.contentId, it.element); if (!collected) track('checkin', { contentId: it.contentId, element: it.element }); }}
+                      style={{ width: 18, height: 18, accentColor: 'var(--color-water)' }}
+                    />
+                    <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{it.name}</span>
+                    {collected && it.element && (
+                      <span style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: EL_INK[it.element], background: `${EL_COLOR[it.element]}40`, borderRadius: 'var(--radius-pill)', padding: '3px 10px', flex: '0 0 auto' }}>
+                        +1 {t.elements[it.element]}
+                      </span>
+                    )}
+                  </label>
+                );
+              })}
             </div>
           </section>
         )}

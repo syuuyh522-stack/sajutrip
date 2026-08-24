@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
+import { useProfile } from '../../i18n/ProfileProvider';
 import { track } from '../../lib/analytics/track';
 import { Aurora } from '../../components/Aurora';
 import type { Dictionary } from '../../i18n/dictionaries';
@@ -24,7 +25,7 @@ const H = 1350;
 
 function drawCard(
   ctx: CanvasRenderingContext2D,
-  data: { target: Element; items: ItineraryItem[]; start: string; end: string },
+  data: { target: Element; items: ItineraryItem[]; start: string; end: string; collectedN: number },
   t: Dictionary,
 ) {
   // 배경 그라디언트
@@ -75,7 +76,9 @@ function drawCard(
   ctx.fillStyle = 'rgba(199,210,254,0.95)';
   ctx.font = '500 34px ui-monospace, Menlo, monospace';
   ctx.textAlign = 'left';
-  ctx.fillText(`${t.elements[data.target]} · +${data.items.length} ${t.share.collected}`, pad, tileY + tileW + 80);
+  // 실수집 카운트(체크인 기반) — 없으면 담은 장소 수로 폴백
+  const n = data.collectedN > 0 ? data.collectedN : data.items.length;
+  ctx.fillText(`${t.elements[data.target]} · +${n} ${t.share.collected}`, pad, tileY + tileW + 80);
 
   // 여정 리스트 (최대 6)
   ctx.font = '400 34px -apple-system, system-ui, sans-serif';
@@ -131,6 +134,7 @@ function circled(n: number): string {
 function ShareInner() {
   const { t } = useI18n();
   const { state } = useItinerary();
+  const { collectedCount } = useProfile();
   const params = useSearchParams();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [target, setTarget] = useState<Element | null>(null);
@@ -157,8 +161,8 @@ function ShareInner() {
     if (!canvas || !target) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-    drawCard(ctx, { target, items: state.items, start: state.start, end: state.end }, t);
-  }, [target, state, t]);
+    drawCard(ctx, { target, items: state.items, start: state.start, end: state.end, collectedN: collectedCount(target) }, t);
+  }, [target, state, t, collectedCount]);
 
   const save = useCallback(() => {
     track('share_action', { kind: 'save' });

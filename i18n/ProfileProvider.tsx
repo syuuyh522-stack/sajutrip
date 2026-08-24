@@ -16,14 +16,20 @@ export interface Bookmark {
   region: string;
   element: Element | null;
 }
+/** 체크인으로 모은 엘리먼트 — 컨셉 "엘리먼트를 수집하는 여행"의 상태 */
+export interface CollectedItem {
+  contentId: string;
+  element: Element;
+}
 interface ProfileState {
   birth: Birth | null;
   signedUp: boolean;
   nickname: string;
   bookmarks: Bookmark[];
+  collected: CollectedItem[];
 }
 
-const EMPTY: ProfileState = { birth: null, signedUp: false, nickname: '', bookmarks: [] };
+const EMPTY: ProfileState = { birth: null, signedUp: false, nickname: '', bookmarks: [], collected: [] };
 const STORAGE_KEY = 'sajutrip.profile';
 
 interface ProfileContextValue extends ProfileState {
@@ -31,6 +37,11 @@ interface ProfileContextValue extends ProfileState {
   signUp: (nickname: string) => void;
   toggleBookmark: (b: Bookmark) => void;
   hasBookmark: (contentId: string) => boolean;
+  /** 체크인 토글 — 해당 장소의 엘리먼트를 수집/회수 */
+  toggleCollect: (contentId: string, element: Element | null) => void;
+  isCollected: (contentId: string) => boolean;
+  /** 원소별 수집 카운트 */
+  collectedCount: (element: Element) => number;
 }
 
 const ProfileContext = createContext<ProfileContextValue | null>(null);
@@ -65,6 +76,16 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
       persist({ ...state, bookmarks: exists ? state.bookmarks.filter((x) => x.contentId !== b.contentId) : [...state.bookmarks, b] });
     },
     hasBookmark: (contentId) => state.bookmarks.some((x) => x.contentId === contentId),
+    toggleCollect: (contentId, element) => {
+      const exists = state.collected.some((c) => c.contentId === contentId);
+      if (exists) {
+        persist({ ...state, collected: state.collected.filter((c) => c.contentId !== contentId) });
+      } else if (element) {
+        persist({ ...state, collected: [...state.collected, { contentId, element }] });
+      }
+    },
+    isCollected: (contentId) => state.collected.some((c) => c.contentId === contentId),
+    collectedCount: (element) => state.collected.filter((c) => c.element === element).length,
   };
 
   return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
