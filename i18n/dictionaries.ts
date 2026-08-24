@@ -90,6 +90,7 @@ export interface Dictionary {
     empty: string;
     remove: string;
     nearby: string;
+    related: string;
     finish: string;
     back: string;
   };
@@ -217,6 +218,7 @@ const en: Dictionary = {
     empty: 'No places yet. Add some from a place page.',
     remove: 'Remove',
     nearby: 'Nearby stay & food will be added automatically (with live data).',
+    related: 'Popular nearby',
     finish: 'Finish & make share card',
     back: 'Back',
   },
@@ -346,6 +348,7 @@ const ko: Dictionary = {
     empty: '담은 장소가 없어요. 장소 상세에서 담아보세요.',
     remove: '빼기',
     nearby: '주변 숙박·음식 동선은 자동 확장 예정(실데이터 연동 시).',
+    related: '주변 인기 관광지',
     finish: '완성하고 공유 카드 만들기',
     back: '뒤로',
   },

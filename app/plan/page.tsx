@@ -8,11 +8,14 @@ import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
+import { relatedAreaFor } from '../../config/related-region';
 import type { Element } from '../../types/saju';
 
 const ELEMENT_COLOR: Record<Element, string> = {
   wood: '#1E7A6B', fire: '#C6402F', earth: '#C79A3A', metal: '#9AA1A9', water: '#26476B',
 };
+
+interface RelatedSpot { name: string; region: string; category: string; rank: number }
 
 function PlanInner() {
   const { t } = useI18n();
@@ -35,6 +38,23 @@ function PlanInner() {
       .then((j) => setDeficient(j.deficient))
       .catch(() => setDeficient(null));
   }, [birth]);
+
+  // 담은 장소 중 조회 가능한 첫 지역 기준으로 연관 관광지(F-5 동선 확장)
+  const [related, setRelated] = useState<RelatedSpot[]>([]);
+  const firstArea = useMemo(() => {
+    for (const it of state.items) {
+      const a = relatedAreaFor(it.region);
+      if (a) return a;
+    }
+    return null;
+  }, [state.items]);
+  useEffect(() => {
+    if (!firstArea) { setRelated([]); return; }
+    fetch(`/api/related?areaCd=${firstArea.areaCd}&signguCd=${firstArea.signguCd}`)
+      .then((r) => r.json())
+      .then((j) => setRelated(j.spots ?? []))
+      .catch(() => setRelated([]));
+  }, [firstArea]);
 
   const days = Array.from({ length: dayCount }, (_, i) => i + 1);
 
@@ -99,6 +119,21 @@ function PlanInner() {
               </section>
             );
           })}
+
+        {/* 연관 관광지 (F-5 동선 확장, TarRlteTar 실데이터) */}
+        {related.length > 0 && (
+          <section>
+            <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>{t.plan.related}</div>
+            <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
+              {related.map((s) => (
+                <div key={s.name} style={{ flex: '0 0 auto', minWidth: 130, border: '1px solid var(--line)', borderRadius: 12, padding: '10px 12px' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
+                  <div style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>{s.region}{s.category ? ` · ${s.category}` : ''}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {state.items.length > 0 && <p style={{ fontSize: 12, color: 'var(--muted-2)' }}>{t.plan.nearby}</p>}
 
