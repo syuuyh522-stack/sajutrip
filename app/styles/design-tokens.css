@@ -1,0 +1,130 @@
+/*
+  K-Saju Compass — Design Tokens
+  Source of truth for all color/shadow/blur values referenced in
+  sajutrip-design-system.md. Import this file rather than re-declaring
+  values inline — keeps design doc and code from drifting apart.
+*/
+
+:root {
+  color-scheme: light; /* forces light mode, see design doc §0 */
+
+  /* --- Color: surfaces --- */
+  --color-bg: #F8F6FB;
+  --color-surface: #FFFFFF;
+
+  /* --- Color: five elements (fills/accents only, see §1.1 rule) --- */
+  --color-wood: #8FBFA3;
+  --color-fire: #E8927C;
+  --color-earth: #E3B873;
+  --color-metal: #B9B4C7;
+  --color-water: #4A5578;
+
+  /* --- Color: text --- */
+  --color-text: #2B2A33;
+  --color-text-muted: #6E6C7A;
+
+  /* --- Color: strong variants (safe for text/labels, see §1.1) --- */
+  --color-fire-strong: #C96B4E;
+  --color-crowd-high-strong: #B3502D;
+  --color-crowd-low-strong: #4F7A63;
+
+  /* --- Color: status --- */
+  --color-crowd-high: #D9724F;
+  --color-crowd-low: #7BA88F;
+
+  /* --- Typography --- */
+  --font-display: 'Fraunces', 'Noto Serif KR', serif;
+  --font-ui: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --text-display-lg: 32px;
+  --text-display-lg-lh: 40px;
+  --text-display-sm: 24px;
+  --text-display-sm-lh: 32px;
+  --text-title-lg: 20px;
+  --text-title-lg-lh: 28px;
+  --text-title-sm: 18px;
+  --text-title-sm-lh: 26px;
+  --text-body-lg: 16px;
+  --text-body-lg-lh: 24px;
+  --text-body-sm: 14px;
+  --text-body-sm-lh: 20px;
+  --text-caption: 13px;
+  --text-caption-lh: 18px;
+
+  /* --- Spacing (8px base unit) --- */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-6: 48px;
+
+  /* --- Radius --- */
+  --radius-card: 24px;
+  --radius-card-sm: 20px;
+  --radius-input: 12px;
+  --radius-pill: 999px;
+
+  /* --- Shadow --- */
+  --shadow-card: 0 4px 16px rgba(43, 42, 51, 0.06);
+  --shadow-card-raised: 0 8px 24px rgba(43, 42, 51, 0.10);
+  --shadow-fab: 0 6px 20px rgba(232, 146, 124, 0.35);
+
+  /* --- Glass surface (use all four together, see §3.1) --- */
+  --blur-glass: 20px;
+  --surface-glass-fill: rgba(255, 255, 255, 0.72);
+  --surface-glass-fill-fallback: rgba(255, 255, 255, 0.92); /* low-end device fallback, no blur */
+  --border-glass: 1px solid rgba(255, 255, 255, 0.5);
+
+  /* --- Motion --- */
+  --motion-fast: 150ms;
+  --motion-base: 200ms;
+  --motion-press: 100ms;
+
+  /* --- Interaction state deltas (see §4) --- */
+  --state-hover-darken: 6%;
+  --state-press-darken: 10%;
+  --state-press-scale: 0.98;
+  --state-disabled-opacity: 0.4;
+
+  /* --- Accessibility --- */
+  --tap-target-min: 44px;
+  --focus-ring-color: var(--color-water);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+}
+
+/* Glass card utility — apply all four properties together per design doc §3.1 */
+.glass-surface {
+  background: var(--surface-glass-fill);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  border: var(--border-glass);
+  box-shadow: var(--shadow-card);
+}
+
+/* Fallback for devices where backdrop-filter is disabled by the perf check (see §3.1) */
+.glass-surface--fallback {
+  background: var(--surface-glass-fill-fallback);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: var(--border-glass);
+  box-shadow: var(--shadow-card);
+}
+
+/* Focus ring utility — apply to every interactive element, no exceptions (see §8) */
+.focus-ring:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-fast: 0ms;
+    --motion-base: 0ms;
+    --motion-press: 0ms;
+  }
+  .orb-ambient-motion {
+    animation: none !important;
+  }
+}

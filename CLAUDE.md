@@ -39,7 +39,7 @@
 | 데이터 (사업화 Phase 2) | **Supabase** (무료 Postgres + Auth) | 공모전 이후. 장소·유저·K-star + 회원 인증(§6.1). 읽기는 PostgREST fetch(§6.5 캐시 통합). 어댑터만 붙이면 됨(화면·API 불변) |
 | 배포 | **Vercel** | zero-config. 서버리스 함수 특성 유의(6.5) |
 | 배치 | Google Apps Script (백오피스) | 저장소 밖 Google 환경에서 구동. 스크립트 원본은 `scripts/apps-script/`에 버전 관리 |
-| 스타일 | **자체 CSS 디자인 시스템** (에테리얼/글래스모피즘) | 토큰은 `app/globals.css` CSS 변수. 오로라 배경·글래스카드·오방색 원소 팔레트. Tailwind 미도입(POC 경량) |
+| 스타일 | **공식 디자인 시스템** (K-Saju Compass) | 정본: `app/styles/design-tokens.css` + `docs/design-system.md`. 오행 desaturated 팔레트·글래스카드·火 단색 CTA·WCAG 대비 검증. **한자 글리프 UI 금지(§6)**. Tailwind 미도입 |
 
 ## 3. 외부 API
 

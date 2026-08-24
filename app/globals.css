@@ -1,95 +1,54 @@
-/* 사주트립 디자인 시스템 (에테리얼/글래스모피즘). 자체 CSS 토큰 — CLAUDE.md §2. */
-:root {
-  /* 텍스트 */
-  --ink: #1E293B;
-  --muted: #64748B;
-  --muted-2: #94A3B8;
-  --line: #E2E8F0;
-  --paper: #FFFFFF;
-
-  /* 액센트 (에테리얼 인디고/바이올렛) */
-  --accent: #4338CA;
-  --accent-soft: #E0E7FF;
-
-  /* 오로라 배경 블롭 팔레트 */
-  --aurora-lav: #E9D5FF;
-  --aurora-pink: #FEE2E2;
-  --aurora-mint: #D9F99D;
-  --aurora-blue: #C7D2FE;
-  --aurora-gold: #FEF3C7;
-
-  /* 글래스모피즘 */
-  --glass-bg: rgba(255, 255, 255, 0.62);
-  --glass-brd: rgba(255, 255, 255, 0.6);
-  --glass-blur: blur(16px) saturate(140%);
-
-  /* 오행 원소 — 몽환적 파스텔 (탁하지 않게). 진색은 텍스트 대비용만 */
-  --el-wood: #6EE7B7;  --el-wood-2: #A7F3D0;  --el-wood-ink: #047857;
-  --el-fire: #FDA4AF;  --el-fire-2: #FECDD3;  --el-fire-ink: #BE123C;
-  --el-earth: #FCD34D; --el-earth-2: #FDE68A; --el-earth-ink: #B45309;
-  --el-metal: #C7D2E4; --el-metal-2: #E2E8F0; --el-metal-ink: #64748B;
-  --el-water: #A5B4FC; --el-water-2: #C7D2FE; --el-water-ink: #4338CA;
-
-  /* radius / shadow */
-  --r-sm: 12px;
-  --r: 18px;
-  --r-lg: 26px;
-  --shadow-soft: 0 10px 30px -18px rgba(30, 41, 59, 0.4);
-  --shadow-card: 0 20px 44px -24px rgba(30, 41, 59, 0.45);
-
-  --sans: -apple-system, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
-  --mono: ui-monospace, "SF Mono", Menlo, monospace;
-}
+/* 사주트립 — 공식 디자인 시스템 정본. 토큰은 app/styles/design-tokens.css (docs/design-system.md 참조). */
+@import './styles/design-tokens.css';
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
-  font-family: var(--sans);
-  color: var(--ink);
-  background: #EEF0F5;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-bg);
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; }
 button { font-family: inherit; }
 
-/* 키보드 포커스 가시성 (접근성) */
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+/* 키보드 포커스 가시성 — 모든 인터랙티브 요소 (§8) */
+:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring-color); outline-offset: var(--focus-ring-offset); border-radius: 4px; }
 
-/* ---- 오로라 배경 (페이지 뒤 고정) ---- */
-.aurora-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden;
-  background: linear-gradient(180deg, #FBFAFF 0%, #F3F4FB 100%); pointer-events: none; }
-.aurora-bg .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55; }
+/* ---- 글래스 카드 (§3.1 — 네 속성 함께) ---- */
+.glass {
+  background: var(--surface-glass-fill);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+  border: var(--border-glass);
+  border-radius: var(--radius-card-sm);
+  box-shadow: var(--shadow-card);
+}
+
+/* ---- 앰비언트 배경 — 시스템 배경(#F8F6FB) 위 아주 옅은 오행 그라디언트 (점술 톤 아님) ---- */
+.aurora-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: var(--color-bg); pointer-events: none; }
+.aurora-bg .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.28; }
 .aurora-bg .b1 { width: 340px; height: 340px; top: -90px; left: -70px;
-  background: radial-gradient(circle at 30% 30%, var(--aurora-lav), transparent 70%); animation: drift1 20s ease-in-out infinite; }
+  background: radial-gradient(circle at 30% 30%, var(--color-metal), transparent 70%); animation: drift1 22s ease-in-out infinite; }
 .aurora-bg .b2 { width: 300px; height: 300px; top: -40px; right: -80px;
-  background: radial-gradient(circle at 60% 40%, var(--aurora-pink), transparent 70%); animation: drift2 24s ease-in-out infinite; }
+  background: radial-gradient(circle at 60% 40%, var(--color-earth), transparent 70%); animation: drift2 26s ease-in-out infinite; }
 .aurora-bg .b3 { width: 360px; height: 360px; bottom: 40px; left: -100px;
-  background: radial-gradient(circle at 50% 50%, var(--aurora-mint), transparent 70%); opacity: 0.5; animation: drift3 28s ease-in-out infinite; }
+  background: radial-gradient(circle at 50% 50%, var(--color-wood), transparent 70%); animation: drift3 30s ease-in-out infinite; }
 .aurora-bg .b4 { width: 320px; height: 320px; bottom: -80px; right: -70px;
-  background: radial-gradient(circle at 40% 40%, var(--aurora-blue), transparent 70%); animation: drift1 26s ease-in-out infinite reverse; }
+  background: radial-gradient(circle at 40% 40%, var(--color-water), transparent 70%); opacity: 0.16; animation: drift1 28s ease-in-out infinite reverse; }
 @keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(28px,24px); } }
 @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-24px,28px); } }
 @keyframes drift3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(22px,-20px); } }
 
-/* ---- 글래스 유틸 ---- */
-.glass {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-brd);
-  border-radius: var(--r);
-  box-shadow: var(--shadow-soft);
-}
-
-/* ---- 스켈레톤 (로딩) ---- */
+/* ---- 스켈레톤 (§4 로딩, --color-metal 30%) ---- */
 .skeleton {
-  background: linear-gradient(100deg, rgba(255,255,255,.4) 30%, rgba(255,255,255,.7) 50%, rgba(255,255,255,.4) 70%);
+  background: linear-gradient(100deg, rgba(185,180,199,.18) 30%, rgba(185,180,199,.34) 50%, rgba(185,180,199,.18) 70%);
   background-size: 200% 100%;
-  border: 1px solid var(--glass-brd);
+  border: var(--border-glass);
   animation: shimmer 1.4s ease-in-out infinite;
 }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+  * { animation: none !important; transition-duration: 50ms !important; }
 }

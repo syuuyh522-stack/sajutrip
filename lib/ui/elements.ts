@@ -1,23 +1,20 @@
-// 오행 원소 팔레트 — 몽환적 파스텔 (globals.css 토큰과 동일). 그라디언트/글리프 헬퍼.
+// 오행 원소 팔레트 — 공식 디자인 시스템(design-tokens.css §1) 정본 값.
+// 원소색은 fill/accent 전용. 텍스트로 쓸 땐 EL_INK(대비 확보, §1.1).
 import type { Element } from '../../types/saju';
 
-/** 파스텔 대표색 (배경·막대) */
+/** 원소 대표색 (desaturated, fill/accent 전용) */
 export const EL_COLOR: Record<Element, string> = {
-  wood: '#6EE7B7', fire: '#FDA4AF', earth: '#FCD34D', metal: '#C7D2E4', water: '#A5B4FC',
+  wood: '#8FBFA3', fire: '#E8927C', earth: '#E3B873', metal: '#B9B4C7', water: '#4A5578',
 };
-/** 파스텔 밝은색 (그라디언트 끝) */
-export const EL_COLOR_2: Record<Element, string> = {
-  wood: '#A7F3D0', fire: '#FECDD3', earth: '#FDE68A', metal: '#E2E8F0', water: '#C7D2FE',
-};
-/** 진한 잉크색 — 텍스트/대비용 (파스텔 배경 위 글자) */
+/** 텍스트/라벨용 대비 확보색 (§1.1) — 파스텔 위 또는 배경 위 글자 */
 export const EL_INK: Record<Element, string> = {
-  wood: '#047857', fire: '#BE123C', earth: '#B45309', metal: '#64748B', water: '#4338CA',
-};
-export const EL_GLYPH: Record<Element, string> = {
-  wood: '木', fire: '火', earth: '土', metal: '金', water: '水',
+  wood: '#4F7A63', fire: '#C96B4E', earth: '#9A7B3A', metal: '#6E6C7A', water: '#4A5578',
 };
 
-/** 원소 파스텔 그라디언트 (카드·히어로용) */
+/** 원소 그라디언트 (오브·히어로 카드용) */
 export function elGradient(el: Element): string {
-  return `linear-gradient(135deg, ${EL_COLOR[el]}, ${EL_COLOR_2[el]})`;
+  const lift: Record<Element, string> = {
+    wood: '#A9D2BC', fire: '#F0AD9A', earth: '#EFCB94', metal: '#CFCBD8', water: '#6B7699',
+  };
+  return `linear-gradient(135deg, ${EL_COLOR[el]}, ${lift[el]})`;
 }

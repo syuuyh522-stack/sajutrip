@@ -1,77 +1,82 @@
-<title>SajuTrip — Result Preview</title>
+<title>SajuTrip — Result (Official DS)</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  :root{--ink:#1E293B;--muted:#64748B;--muted-2:#94A3B8;--glass-brd:rgba(255,255,255,.6);
-    --mono:ui-monospace,"SF Mono",Menlo,monospace;--sans:-apple-system,"SF Pro Text",system-ui,sans-serif;
-    --el-metal:#C7D2E4;--el-metal2:#E2E8F0;}
-  *{box-sizing:border-box}body{margin:0;font-family:var(--sans);color:var(--ink);background:#F3F4FB}
-  .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:linear-gradient(180deg,#FBFAFF,#F3F4FB)}
-  .bg span{position:absolute;border-radius:50%;filter:blur(80px);opacity:.55}
-  .b1{width:340px;height:340px;top:-90px;left:-70px;background:radial-gradient(circle at 30% 30%,#E9D5FF,transparent 70%)}
-  .b2{width:300px;height:300px;top:-40px;right:-80px;background:radial-gradient(circle at 60% 40%,#FEE2E2,transparent 70%)}
-  .b3{width:360px;height:360px;bottom:40px;left:-100px;background:radial-gradient(circle at 50% 50%,#D9F99D,transparent 70%);opacity:.5}
-  .b4{width:320px;height:320px;bottom:-80px;right:-70px;background:radial-gradient(circle at 40% 40%,#C7D2FE,transparent 70%)}
+  :root{--bg:#F8F6FB;--surface:#FFFFFF;--text:#2B2A33;--muted:#6E6C7A;
+    --wood:#8FBFA3;--fire:#E8927C;--earth:#E3B873;--metal:#B9B4C7;--water:#4A5578;
+    --fire-strong:#C96B4E;--glass:rgba(255,255,255,.72);--glass-brd:rgba(255,255,255,.5);
+    --shadow-card:0 4px 16px rgba(43,42,51,.06);--shadow-fab:0 6px 20px rgba(232,146,124,.35);
+    --mono:'IBM Plex Mono',ui-monospace,monospace;--sans:-apple-system,'Apple SD Gothic Neo',sans-serif;
+    --serif:'Fraunces','Noto Serif KR',serif;}
+  *{box-sizing:border-box}body{margin:0;font-family:var(--sans);color:var(--text);background:var(--bg)}
+  .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:var(--bg)}
+  .bg span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.28}
+  .b1{width:340px;height:340px;top:-90px;left:-70px;background:radial-gradient(circle at 30% 30%,var(--metal),transparent 70%)}
+  .b2{width:300px;height:300px;top:-40px;right:-80px;background:radial-gradient(circle at 60% 40%,var(--earth),transparent 70%)}
+  .b3{width:360px;height:360px;bottom:40px;left:-100px;background:radial-gradient(circle at 50% 50%,var(--wood),transparent 70%)}
+  .b4{width:320px;height:320px;bottom:-80px;right:-70px;background:radial-gradient(circle at 40% 40%,var(--water),transparent 70%);opacity:.16}
   main{max-width:460px;margin:0 auto;padding:24px 22px 40px}
   .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;font-size:14px;color:var(--muted)}
-  .ey{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#4338CA}
-  .glass{background:rgba(255,255,255,.62);backdrop-filter:blur(16px) saturate(140%);border:1px solid var(--glass-brd);border-radius:18px;box-shadow:0 10px 30px -18px rgba(30,41,59,.4)}
+  .ey{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--water)}
+  .glass{background:var(--glass);backdrop-filter:blur(20px);border:1px solid var(--glass-brd);border-radius:20px;box-shadow:var(--shadow-card)}
   .stack{display:flex;flex-direction:column;gap:32px;margin-top:20px}
-  .char{position:relative;border-radius:26px;padding:26px 22px;color:#64748B;overflow:hidden;
-    background:linear-gradient(135deg,var(--el-metal),var(--el-metal2));box-shadow:0 20px 44px -24px rgba(30,41,59,.45)}
+  .char{position:relative;border-radius:24px;padding:26px 22px;color:#6E6C7A;overflow:hidden;
+    background:linear-gradient(135deg,var(--metal),#CFCBD8);box-shadow:0 8px 24px rgba(43,42,51,.10)}
   .char .glow{position:absolute;top:-50px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.55),transparent 70%)}
-  .char .lab{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.75}
-  .char h1{font-size:27px;font-weight:700;margin:6px 0 10px;letter-spacing:-.4px}
-  .char p{font-size:14px;line-height:1.65;margin:0;opacity:.95}
-  h2{font-size:18px;font-weight:600;margin:0 0 12px}
+  .char .lab{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600}
+  .char h1{font-family:var(--serif);font-size:26px;font-weight:600;margin:6px 0 10px;letter-spacing:-.3px;color:#3A3942}
+  .char p{font-size:14px;line-height:1.65;margin:0;color:#4A4954}
+  h2{font-family:var(--serif);font-size:18px;font-weight:600;margin:0 0 12px}
   .pillars{display:flex;gap:10px}
   .pc{flex:1;border:1px solid var(--glass-brd);border-radius:14px;overflow:hidden;text-align:center;background:rgba(255,255,255,.4)}
-  .pc .t{font-size:11px;color:var(--muted-2);padding:7px 0 4px}
-  .pc .g{font-size:30px;font-weight:600;color:#fff;padding:8px 0}
-  .reson{font-size:14px;line-height:1.6;color:#26364a;font-style:italic;margin:16px 0 0}
-  .bar{display:grid;grid-template-columns:84px 1fr 20px;align-items:center;gap:12px;margin-bottom:12px;font-size:13px}
-  .trk{height:12px;border-radius:999px;background:rgba(148,163,184,.22);overflow:hidden}
+  .pc .t{font-size:11px;color:var(--muted);padding:7px 0 4px}
+  .pc .g{font-size:30px;font-weight:700;padding:8px 0;font-family:var(--serif)}
+  .reson{font-size:14px;line-height:1.6;color:#4A4954;font-style:italic;margin:16px 0 0}
+  .bar{display:grid;grid-template-columns:92px 1fr 20px;align-items:center;gap:12px;margin-bottom:12px;font-size:13px}
+  .sw{width:12px;height:12px;border-radius:4px;flex:0 0 auto}
+  .lb{display:flex;align-items:center;gap:7px}
+  .trk{height:12px;border-radius:999px;background:rgba(185,180,199,.28);overflow:hidden}
   .trk span{display:block;height:100%;border-radius:999px}
   .num{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
   .chips{display:flex;gap:12px}
-  .chip{flex:1;border-radius:14px;padding:12px 14px}
+  .chip{flex:1;border-radius:14px;padding:12px 14px;border:1px solid var(--glass-brd)}
   .star{display:flex;align-items:center;gap:12px;border:1px solid var(--glass-brd);background:rgba(255,255,255,.5);border-radius:14px;padding:12px 14px;margin-bottom:10px}
   .star .av{width:44px;height:44px;border-radius:50%;flex:0 0 auto}
-  .cta{display:block;text-align:center;padding:16px;border-radius:16px;background:linear-gradient(120deg,#C7D2FE,#E9D5FF,#FBCFE8);color:#4338CA;font-size:15px;font-weight:700;text-decoration:none;box-shadow:0 14px 34px -14px rgba(139,92,246,.5)}
+  .cta{display:block;text-align:center;padding:16px;border-radius:999px;background:var(--fire-strong);color:#fff;font-size:15px;font-weight:600;text-decoration:none;box-shadow:var(--shadow-fab)}
 </style>
 <div class="bg"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span></div>
 <main>
-  <div class="hd"><span>← 뒤로</span><span style="font-size:12px">한국어 · English</span></div>
-  <div class="ey">나의 오행 분포</div>
+  <div class="hd"><span>← Back</span><span></span></div>
+  <div class="ey">Your five-element balance</div>
   <div class="stack">
     <div class="char"><div class="glow"></div>
-      <div class="lab">금 金</div><h1>벼려진 사람</h1>
-      <p>당신은 금(金) 기운이 가장 강해요 — 예리하고 원칙 있으며 중요한 걸 분명히 아는 사람.</p>
+      <div class="lab">Metal 金</div><h1>The Blade</h1>
+      <p>Metal runs strongest in you — sharp, principled, clear about what matters.</p>
     </div>
     <div class="glass" style="padding:18px">
-      <h2>나의 사주 명식</h2>
+      <h2>Your saju chart</h2>
       <div class="pillars">
-        <div class="pc"><div class="t">연주</div><div class="g" style="background:#FDA4AF;color:#BE123C">丙</div><div class="g" style="background:#A5B4FC;color:#4338CA">子</div></div>
-        <div class="pc"><div class="t">월주</div><div class="g" style="background:#6EE7B7;color:#047857">乙</div><div class="g" style="background:#FCD34D;color:#B45309">未</div></div>
-        <div class="pc"><div class="t">일주</div><div class="g" style="background:#C7D2E4;color:#64748B">庚</div><div class="g" style="background:#C7D2E4;color:#64748B">申</div></div>
+        <div class="pc"><div class="t">Year</div><div class="g" style="background:var(--fire);color:#C96B4E">丙</div><div class="g" style="background:var(--water);color:#fff">子</div></div>
+        <div class="pc"><div class="t">Month</div><div class="g" style="background:var(--wood);color:#4F7A63">乙</div><div class="g" style="background:var(--earth);color:#9A7B3A">未</div></div>
+        <div class="pc"><div class="t">Day</div><div class="g" style="background:var(--metal);color:#6E6C7A">庚</div><div class="g" style="background:var(--metal);color:#6E6C7A">申</div></div>
       </div>
-      <p class="reson">전통 오행에서는 목(木) 기운이 강한 곳이 당신과 공명한다고 여겨져요.</p>
+      <p class="reson">In the five-element tradition, places rich in Wood energy resonate with a chart like yours.</p>
     </div>
     <div class="glass" style="padding:18px">
-      <div class="bar"><span>목 木</span><span class="trk"><span style="width:20%;background:#6EE7B7"></span></span><span class="num">1</span></div>
-      <div class="bar"><span>화 火</span><span class="trk"><span style="width:20%;background:#FDA4AF"></span></span><span class="num">1</span></div>
-      <div class="bar"><span>토 土</span><span class="trk"><span style="width:20%;background:#FCD34D"></span></span><span class="num">1</span></div>
-      <div class="bar"><span style="font-weight:600">금 金</span><span class="trk"><span style="width:40%;background:#C7D2E4"></span></span><span class="num">2</span></div>
-      <div class="bar"><span style="font-weight:600">수 水</span><span class="trk"><span style="width:20%;background:#A5B4FC"></span></span><span class="num">1</span></div>
+      <div class="bar"><span class="lb"><span class="sw" style="background:var(--wood)"></span>Wood 木</span><span class="trk"><span style="width:17%;background:var(--wood)"></span></span><span class="num">1</span></div>
+      <div class="bar"><span class="lb"><span class="sw" style="background:var(--fire)"></span>Fire 火</span><span class="trk"><span style="width:17%;background:var(--fire)"></span></span><span class="num">1</span></div>
+      <div class="bar"><span class="lb"><span class="sw" style="background:var(--earth)"></span>Earth 土</span><span class="trk"><span style="width:17%;background:var(--earth)"></span></span><span class="num">1</span></div>
+      <div class="bar"><span class="lb" style="font-weight:700"><span class="sw" style="background:var(--metal)"></span>Metal 金</span><span class="trk"><span style="width:33%;background:var(--metal)"></span></span><span class="num">2</span></div>
+      <div class="bar"><span class="lb" style="font-weight:700"><span class="sw" style="background:var(--water)"></span>Water 水</span><span class="trk"><span style="width:17%;background:var(--water)"></span></span><span class="num">1</span></div>
       <div class="chips">
-        <div class="chip" style="background:#6EE7B740"><div style="font-size:15px;font-weight:700;color:#047857">목 木</div><div style="font-size:12px;color:var(--muted)">가장 부족 · 채우기</div></div>
-        <div class="chip" style="background:#C7D2E440"><div style="font-size:15px;font-weight:700;color:#64748B">금 金</div><div style="font-size:12px;color:var(--muted)">가장 넘침 · 공명</div></div>
+        <div class="chip" style="background:rgba(143,191,163,.22)"><div style="font-size:15px;font-weight:700;color:#4F7A63">Wood 木</div><div style="font-size:12px;color:var(--muted)">Lowest · fill it</div></div>
+        <div class="chip" style="background:rgba(185,180,199,.22)"><div style="font-size:15px;font-weight:700;color:#6E6C7A">Metal 金</div><div style="font-size:12px;color:var(--muted)">Strongest · echo</div></div>
       </div>
     </div>
     <div class="glass" style="padding:18px">
-      <h2>나의 K-star <span style="font-size:12px;font-weight:400;color:var(--muted-2)">· 재미로</span></h2>
-      <div class="star"><div class="av" style="background:linear-gradient(135deg,#6EE7B7,#A7F3D0)"></div><div style="flex:1"><div style="font-size:14px;font-weight:600">소울메이트 K스타: Star A</div><div style="font-size:12px;color:var(--muted)">내게 부족한 기운이 강한 별</div></div><span style="font-size:12px;font-weight:700;color:#047857;background:#6EE7B7;border-radius:999px;padding:4px 10px">목 木</span></div>
-      <div class="star"><div class="av" style="background:linear-gradient(135deg,#C7D2E4,#E2E8F0)"></div><div style="flex:1"><div style="font-size:14px;font-weight:600">나와 닮은 K스타: Star E</div><div style="font-size:12px;color:var(--muted)">나와 같은 강한 기운</div></div><span style="font-size:12px;font-weight:700;color:#64748B;background:#C7D2E4;border-radius:999px;padding:4px 10px">금 金</span></div>
+      <h2>Your K-star matches <span style="font-size:12px;font-weight:400;color:var(--muted)">· for fun</span></h2>
+      <div class="star"><div class="av" style="background:linear-gradient(135deg,var(--wood),#A9D2BC)"></div><div style="flex:1"><div style="font-size:14px;font-weight:600">Soulmate K-star: Star A</div><div style="font-size:12px;color:var(--muted)">Strong where you run low</div></div><span style="font-size:12px;font-weight:700;color:#4F7A63;background:rgba(143,191,163,.35);border-radius:999px;padding:4px 10px">Wood</span></div>
+      <div class="star"><div class="av" style="background:linear-gradient(135deg,var(--metal),#CFCBD8)"></div><div style="flex:1"><div style="font-size:14px;font-weight:600">Same energy as you: Star E</div><div style="font-size:12px;color:var(--muted)">Shares your strongest element</div></div><span style="font-size:12px;font-weight:700;color:#6E6C7A;background:rgba(185,180,199,.35);border-radius:999px;padding:4px 10px">Metal</span></div>
     </div>
-    <a class="cta">공명하는 장소 찾기 →</a>
+    <a class="cta">Find places that resonate →</a>
   </div>
 </main>

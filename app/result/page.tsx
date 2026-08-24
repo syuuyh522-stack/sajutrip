@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
-import { elGradient, EL_COLOR, EL_INK, EL_GLYPH } from '../../lib/ui/elements';
+import { elGradient, EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import { track } from '../../lib/analytics/track';
 import type { Element, ElementDistribution, Pillar, SajuProfile } from '../../types/saju';
 import { STEM_ELEMENT, BRANCH_ELEMENT } from '../../config/saju-tables';
@@ -122,9 +122,9 @@ function ResultInner() {
                     style={{ display: 'grid', gridTemplateColumns: '92px 1fr 20px', alignItems: 'center', gap: 12 }}
                     role="meter" aria-valuenow={v} aria-valuemin={0} aria-valuemax={6} aria-label={`${t.elements[el]} ${v}`}
                   >
-                    {/* H5: 색 + 글리프로 이중 구분(색맹 대응) */}
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: emphasized ? 700 : 400 }}>
-                      <span aria-hidden="true" style={{ width: 18, height: 18, borderRadius: 5, background: EL_COLOR[el], color: EL_INK[el], fontSize: 11, display: 'grid', placeItems: 'center', flex: '0 0 auto' }}>{EL_GLYPH[el]}</span>
+                    {/* 색 스와치 + 라벨 (§6: 한자 UI 금지 — 색+텍스트 라벨로 구분) */}
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: emphasized ? 700 : 400 }}>
+                      <span aria-hidden="true" style={{ width: 12, height: 12, borderRadius: 4, background: EL_COLOR[el], flex: '0 0 auto' }} />
                       {t.elements[el]}
                     </span>
                     <span style={{ height: 12, borderRadius: 999, background: 'rgba(148,163,184,.22)', overflow: 'hidden' }}>
@@ -161,7 +161,7 @@ function ResultInner() {
 
           <Link
             href={{ pathname: '/explore', query: birth }}
-            style={{ display: 'block', textAlign: 'center', padding: '16px 18px', borderRadius: 16, background: 'linear-gradient(120deg,#C7D2FE,#E9D5FF,#FBCFE8)', color: '#4338CA', fontSize: 15, fontWeight: 700, textDecoration: 'none', boxShadow: '0 14px 34px -14px rgba(139,92,246,.5)' }}
+            style={{ display: 'block', textAlign: 'center', padding: '16px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-fire-strong)', color: '#fff', fontSize: 15, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
           >
             {t.explore.cta} →
           </Link>
