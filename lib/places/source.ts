@@ -5,6 +5,7 @@ import type { Place } from '../../types/place';
 import { getAllWellness, type PlaceLocale } from '../tour-api/wellness';
 import { getEnrichmentPlaces } from '../tour-api/general';
 import { getDurunubiCourses } from '../tour-api/durunubi';
+import { rankPlaces } from '../recommend/rank';
 import { seedByElement, seedById } from './seed';
 
 function tourEnabled(): boolean {
@@ -27,12 +28,12 @@ export async function getPlacesByElement(element: Element, locale: PlaceLocale =
       const matched = wellness.filter((p) => p.primaryElement === element);
       const seen = new Set(matched.map((p) => p.contentId));
       const combined = [...matched, ...extra.filter((p) => !seen.has(p.contentId))];
-      if (combined.length > 0) return combined.slice(0, max);
+      if (combined.length > 0) return rankPlaces(combined, element).slice(0, max); // 지방 우대 랭킹(§5.6)
     } catch {
       // TourAPI 실패 시 시드 fallback
     }
   }
-  return seedByElement(element).slice(0, max);
+  return rankPlaces(seedByElement(element), element).slice(0, max);
 }
 
 export async function getPlaceById(contentId: string, locale: PlaceLocale = 'ko', element?: Element): Promise<Place | null> {

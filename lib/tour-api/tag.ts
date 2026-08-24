@@ -2,6 +2,7 @@
 // 영문 응답도 title에 한글명이 괄호로 포함돼("AMORE Spa (아모레퍼시픽 스파)") 그대로 동작.
 // ⚠️ 규칙 기반 1차값 → 실 서비스 전 curate 필요(§6.6).
 import type { Element } from '../../types/saju';
+import { WELLNESS_THEMA_ELEMENT } from '../../config/wellness-thema';
 
 // 순서 중요(먼저 매칭). 속성 레이어 우선: earth/wood/fire/metal 먼저, water는 폭넓어 마지막.
 const RULES: ReadonlyArray<readonly [Element, readonly string[]]> = [
@@ -17,4 +18,33 @@ export function tagByName(name: string): Element | undefined {
     if (kws.some((k) => name.includes(k))) return element;
   }
   return undefined;
+}
+
+// 이름에 나오면 테마코드보다 우선하는 '강한' 신호 — 명백한 오분류 보정용.
+// 예: fire 테마(EX050200)의 '강변스파랜드'는 이름에 '온천/스파'가 있어 실제 water.
+const STRONG: ReadonlyArray<readonly [Element, readonly string[]]> = [
+  ['water', ['온천', '스파', '해수', '워터', '아쿠아']],
+  ['fire', ['찜질', '불가마', '한증']],
+  ['wood', ['치유의숲', '수목원', '휴양림']],
+];
+
+function strongSignal(name: string): Element | undefined {
+  for (const [element, kws] of STRONG) {
+    if (kws.some((k) => name.includes(k))) return element;
+  }
+  return undefined;
+}
+
+/**
+ * 오행 태깅 통합 — ① 이름의 강한 신호(오분류 보정) → ② 테마코드 → ③ 이름 키워드 fallback.
+ * themaCode가 없으면(일반관광 등) 이름 기반만 사용.
+ */
+export function tagElement(name: string, themaCode?: string): Element | undefined {
+  const strong = strongSignal(name);
+  if (strong) return strong;
+  if (themaCode) {
+    const byCode = WELLNESS_THEMA_ELEMENT[themaCode];
+    if (byCode) return byCode;
+  }
+  return tagByName(name);
 }
