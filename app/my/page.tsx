@@ -9,11 +9,11 @@ import { useProfile } from '../../i18n/ProfileProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
+import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import type { Element } from '../../types/saju';
 
 const ORDER: Element[] = ['wood', 'fire', 'earth', 'metal', 'water'];
-const GLYPH: Record<Element, string> = { wood: '木', fire: '火', earth: '土', metal: '金', water: '水' };
-const COLOR: Record<Element, string> = { wood: '#1E7A6B', fire: '#C6402F', earth: '#C79A3A', metal: '#9AA1A9', water: '#26476B' };
+const COLOR = EL_COLOR; // 공식 팔레트
 
 function MyInner() {
   const { t } = useI18n();
@@ -47,10 +47,12 @@ function MyInner() {
           <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>{t.my.collected}</div>
           <div style={{ display: 'flex', gap: 8 }}>
             {ORDER.map((el) => {
-              const on = el === deficient;
+              const on = el === deficient; // 결핍(=채워야 할) 원소 강조
+              const name = t.elements[el].split(' ')[0]; // "수 水" → "수" (한자 제거)
               return (
-                <div key={el} style={{ flex: 1, aspectRatio: '1', borderRadius: 12, display: 'grid', placeItems: 'center', fontFamily: 'serif', fontSize: 18, color: on ? '#fff' : 'var(--muted-2)', background: on ? COLOR[el] : '#F1F5F9', border: on ? '0' : '1px solid var(--line)' }}>
-                  {GLYPH[el]}
+                <div key={el} style={{ flex: 1, borderRadius: 14, overflow: 'hidden', border: '1px solid var(--glass-brd)', background: 'var(--color-surface)' }}>
+                  <div aria-hidden="true" style={{ height: 40, background: COLOR[el], opacity: on ? 1 : 0.35 }} />
+                  <div style={{ fontSize: 12, fontWeight: on ? 700 : 500, textAlign: 'center', padding: '6px 0', color: on ? EL_INK[el] : 'var(--color-text-muted)' }}>{name}</div>
                 </div>
               );
             })}
