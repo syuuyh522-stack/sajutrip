@@ -7,7 +7,6 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { useI18n } from '../../../i18n/LanguageProvider';
 import { useItinerary } from '../../../i18n/ItineraryProvider';
 import { useProfile } from '../../../i18n/ProfileProvider';
-import { LanguageSwitch } from '../../../components/LanguageSwitch';
 import { track } from '../../../lib/analytics/track';
 import type { Element } from '../../../types/saju';
 import type { Place } from '../../../types/place';
@@ -58,7 +57,6 @@ export default function PlacePage() {
     <main style={{ maxWidth: 460, margin: '0 auto', minHeight: '100dvh' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 22px' }}>
         <Link href={{ pathname: '/explore', query: backQuery }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.pdp.back}</Link>
-        <LanguageSwitch />
       </div>
 
       {notFound && <p style={{ padding: '0 22px', color: 'var(--muted)' }}>{t.pdp.notFound}</p>}

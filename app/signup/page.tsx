@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useProfile } from '../../i18n/ProfileProvider';
-import { LanguageSwitch } from '../../components/LanguageSwitch';
 
 function SignupInner() {
   const { t } = useI18n();
@@ -29,7 +28,6 @@ function SignupInner() {
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Link href={{ pathname: '/my', query }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.signup.back}</Link>
-        <LanguageSwitch />
       </header>
 
       <h1 style={{ fontSize: 24, fontWeight: 600, margin: '0 0 8px' }}>{t.signup.title}</h1>

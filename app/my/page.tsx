@@ -38,9 +38,8 @@ function MyInner() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+      <header style={{ marginBottom: 20 }}>
         <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{signedUp && nickname ? nickname : t.my.title}</h1>
-        <LanguageSwitch />
       </header>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -94,6 +93,15 @@ function MyInner() {
         <Link href={{ pathname: '/signup', query }} style={{ display: 'block', textAlign: 'center', padding: '15px 18px', borderRadius: 14, textDecoration: 'none', fontSize: 15, fontWeight: 600, ...(signedUp ? { border: '1px solid var(--line)', color: 'var(--ink)', background: '#fff' } : { background: 'var(--accent)', color: '#fff' }) }}>
           {signedUp ? t.my.editProfile : t.my.signUp}
         </Link>
+
+        {/* 세팅 — 언어 변경 */}
+        <section>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>{t.my.settings}</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid var(--line)', borderRadius: 14, padding: '12px 14px' }}>
+            <span style={{ fontSize: 14, color: 'var(--muted)' }}>{t.my.language}</span>
+            <LanguageSwitch />
+          </div>
+        </section>
       </div>
       <BottomNav />
     </main>

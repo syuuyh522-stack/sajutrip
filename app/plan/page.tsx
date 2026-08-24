@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
-import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
 import { relatedAreaFor } from '../../config/related-region';
 import { track } from '../../lib/analytics/track';
@@ -63,7 +62,6 @@ function PlanInner() {
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Link href={{ pathname: '/explore', query: birth }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.plan.back}</Link>
-        <LanguageSwitch />
       </header>
 
       <h1 style={{ fontSize: 22, fontWeight: 600, margin: '0 0 16px' }}>{t.plan.title}</h1>

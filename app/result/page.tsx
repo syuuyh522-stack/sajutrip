@@ -5,8 +5,9 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
-import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
+import { Aurora } from '../../components/Aurora';
+import { elGradient } from '../../lib/ui/elements';
 import { track } from '../../lib/analytics/track';
 import type { Element, ElementDistribution, Pillar, SajuProfile } from '../../types/saju';
 import { STEM_ELEMENT, BRANCH_ELEMENT } from '../../config/saju-tables';
@@ -61,9 +62,9 @@ function ResultInner() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
+      <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
         <Link href="/" style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.result.back}</Link>
-        <LanguageSwitch />
       </header>
 
       <p style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--accent)', margin: 0 }}>
@@ -75,8 +76,18 @@ function ResultInner() {
 
       {data && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 20 }}>
+          {/* 캐릭터 한마디 — 과잉(가장 강한) 원소 기준 (FAQ Q3 성격 규정형) */}
+          <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '26px 22px', color: '#fff', overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ position: 'absolute', top: -40, right: -30, width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />
+            <div style={{ position: 'relative' }}>
+              <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', opacity: 0.9 }}>{t.elements[data.excess]}</div>
+              <div style={{ fontSize: 27, fontWeight: 700, margin: '6px 0 10px', letterSpacing: '-0.4px' }}>{t.character[data.excess].label}</div>
+              <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0, opacity: 0.95 }}>{t.character[data.excess].desc}</p>
+            </div>
+          </section>
+
           {/* 사주 명식 — 진짜 산출값 (연·월·일주 간지) */}
-          <section>
+          <section className="glass" style={{ padding: 18 }}>
             <h2 style={sectionH2}>{t.saju.chartTitle}</h2>
             <div style={{ display: 'flex', gap: 10 }}>
               <PillarCard label={t.saju.year} pillar={data.profile.year} />
@@ -90,7 +101,7 @@ function ResultInner() {
           </section>
 
           {/* 오행 분포 + 타깃(결핍·과잉) */}
-          <section style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <section className="glass" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 18 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {ELEMENT_ORDER.map((el) => {
                 const v = data.distribution[el];
@@ -98,7 +109,7 @@ function ResultInner() {
                 return (
                   <div key={el} style={{ display: 'grid', gridTemplateColumns: '84px 1fr 20px', alignItems: 'center', gap: 12 }}>
                     <span style={{ fontSize: 13, fontWeight: emphasized ? 600 : 400 }}>{t.elements[el]}</span>
-                    <span style={{ height: 12, borderRadius: 999, background: '#EEF0F4', overflow: 'hidden' }}>
+                    <span style={{ height: 12, borderRadius: 999, background: 'rgba(148,163,184,.22)', overflow: 'hidden' }}>
                       <span style={{ display: 'block', height: '100%', width: `${Math.max((v / 6) * 100, 4)}%`, background: ELEMENT_COLOR[el], borderRadius: 999 }} />
                     </span>
                     <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)', textAlign: 'right' }}>{v}</span>
@@ -114,7 +125,7 @@ function ResultInner() {
 
           {/* K-star (F-2) */}
           {(data.kstar.soulmate || data.kstar.twin) && (
-            <section>
+            <section className="glass" style={{ padding: 18 }}>
               <h2 style={sectionH2}>
                 {t.kstar.title} <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted-2)' }}>· {t.kstar.forFun}</span>
               </h2>
@@ -161,7 +172,7 @@ function PillarCard({ label, pillar }: { label: string; pillar: Pillar }) {
 function StarRow({ match, title, desc, elementLabel }: { match: KStarMatch; title: string; desc: string; elementLabel: string }) {
   const color = ELEMENT_COLOR[match.element];
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--line)', borderRadius: 14, padding: '12px 14px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--glass-brd)', background: 'rgba(255,255,255,.5)', borderRadius: 14, padding: '12px 14px' }}>
       <div style={{ width: 44, height: 44, borderRadius: '50%', background: color, flex: '0 0 auto' }} aria-hidden="true" />
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 600 }}>{title}: {match.name}</div>

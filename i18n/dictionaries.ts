@@ -48,6 +48,8 @@ export interface Dictionary {
     /** {element} 자리에 원소명 삽입 (§5.8 공명 톤) */
     resonance: string;
   };
+  /** 과잉(가장 강한) 원소 기준 캐릭터 한마디 — 성격 규정형(FAQ Q3, 공유 욕구↑). label=수식어, desc=한 문장 */
+  character: Record<'wood' | 'fire' | 'earth' | 'metal' | 'water', { label: string; desc: string }>;
   kstar: {
     title: string;
     forFun: string;
@@ -126,6 +128,8 @@ export interface Dictionary {
     signUp: string;
     editProfile: string;
     guest: string;
+    settings: string;
+    language: string;
     back: string;
   };
   signup: {
@@ -177,6 +181,13 @@ const en: Dictionary = {
     stem: 'Heavenly stem',
     branch: 'Earthly branch',
     resonance: 'In the five-element tradition, places rich in {element} energy are said to resonate with a chart like yours.',
+  },
+  character: {
+    wood: { label: 'The Grower', desc: 'Wood runs strongest in you — a warm, growing spirit who reaches upward and helps others rise.' },
+    fire: { label: 'The Spark', desc: 'Fire runs strongest in you — bright, passionate, the one who lights up any room.' },
+    earth: { label: 'The Anchor', desc: 'Earth runs strongest in you — grounded and steady, the person everyone leans on.' },
+    metal: { label: 'The Blade', desc: 'Metal runs strongest in you — sharp, principled, clear about what matters.' },
+    water: { label: 'The Flow', desc: 'Water runs strongest in you — deep and adaptable, moving wisely around every obstacle.' },
   },
   kstar: {
     title: 'Your K-star matches',
@@ -252,6 +263,8 @@ const en: Dictionary = {
     signUp: 'Sign up to save everything',
     editProfile: 'Edit profile',
     guest: 'Guest',
+    settings: 'Settings',
+    language: 'Language',
     back: 'Back',
   },
   signup: {
@@ -307,6 +320,13 @@ const ko: Dictionary = {
     stem: '천간',
     branch: '지지',
     resonance: '전통 오행에서는 {element} 기운이 강한 곳이 당신과 공명한다고 여겨져요.',
+  },
+  character: {
+    wood: { label: '자라나는 사람', desc: '당신은 목(木) 기운이 가장 강해요 — 위로 뻗고 주변을 함께 키우는 따뜻한 성장형.' },
+    fire: { label: '빛나는 사람', desc: '당신은 화(火) 기운이 가장 강해요 — 밝고 열정적이며 어디서든 분위기를 밝히는 사람.' },
+    earth: { label: '든든한 사람', desc: '당신은 토(土) 기운이 가장 강해요 — 안정적이고 믿음직해 모두가 기대는 중심.' },
+    metal: { label: '벼려진 사람', desc: '당신은 금(金) 기운이 가장 강해요 — 예리하고 원칙 있으며 중요한 걸 분명히 아는 사람.' },
+    water: { label: '흐르는 사람', desc: '당신은 수(水) 기운이 가장 강해요 — 깊고 유연해 어떤 장애물도 지혜롭게 돌아가는 사람.' },
   },
   kstar: {
     title: '나의 K-star',
@@ -381,6 +401,8 @@ const ko: Dictionary = {
     noBookmarks: '장소의 북마크를 누르면 여기에 담겨요.',
     signUp: '회원가입하고 전부 저장하기',
     editProfile: '프로필 수정',
+    settings: '설정',
+    language: '언어',
     guest: '게스트',
     back: '뒤로',
   },

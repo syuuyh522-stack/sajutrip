@@ -1,12 +1,42 @@
-/* 최소 리셋 + 토큰. Tailwind는 스펙 미확정이라 도입 금지(§2) — 순수 CSS. */
+/* 사주트립 디자인 시스템 (에테리얼/글래스모피즘). 자체 CSS 토큰 — CLAUDE.md §2. */
 :root {
+  /* 텍스트 */
   --ink: #1E293B;
   --muted: #64748B;
   --muted-2: #94A3B8;
   --line: #E2E8F0;
   --paper: #FFFFFF;
+
+  /* 액센트 (에테리얼 인디고/바이올렛) */
   --accent: #4338CA;
   --accent-soft: #E0E7FF;
+
+  /* 오로라 배경 블롭 팔레트 */
+  --aurora-lav: #E9D5FF;
+  --aurora-pink: #FEE2E2;
+  --aurora-mint: #D9F99D;
+  --aurora-blue: #C7D2FE;
+  --aurora-gold: #FEF3C7;
+
+  /* 글래스모피즘 */
+  --glass-bg: rgba(255, 255, 255, 0.62);
+  --glass-brd: rgba(255, 255, 255, 0.6);
+  --glass-blur: blur(16px) saturate(140%);
+
+  /* 오방색 원소 (진한 = 텍스트/막대, 그라디언트용) */
+  --el-wood: #1E7A6B;  --el-wood-2: #34D399;
+  --el-fire: #C6402F;  --el-fire-2: #FB7185;
+  --el-earth: #C79A3A; --el-earth-2: #FBBF24;
+  --el-metal: #9AA1A9; --el-metal-2: #CBD5E1;
+  --el-water: #26476B; --el-water-2: #818CF8;
+
+  /* radius / shadow */
+  --r-sm: 12px;
+  --r: 18px;
+  --r-lg: 26px;
+  --shadow-soft: 0 10px 30px -18px rgba(30, 41, 59, 0.4);
+  --shadow-card: 0 20px 44px -24px rgba(30, 41, 59, 0.45);
+
   --sans: -apple-system, "SF Pro Text", system-ui, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, monospace;
 }
@@ -16,11 +46,36 @@ html, body { margin: 0; padding: 0; }
 body {
   font-family: var(--sans);
   color: var(--ink);
-  background: var(--paper);
+  background: #EEF0F5;
   -webkit-font-smoothing: antialiased;
 }
 a { color: inherit; }
 button { font-family: inherit; }
+
+/* ---- 오로라 배경 (페이지 뒤 고정) ---- */
+.aurora-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #F4F5F9; pointer-events: none; }
+.aurora-bg .blob { position: absolute; border-radius: 50%; filter: blur(64px); opacity: 0.7; }
+.aurora-bg .b1 { width: 340px; height: 340px; top: -90px; left: -70px;
+  background: radial-gradient(circle at 30% 30%, var(--aurora-lav), transparent 70%); animation: drift1 20s ease-in-out infinite; }
+.aurora-bg .b2 { width: 300px; height: 300px; top: -40px; right: -80px;
+  background: radial-gradient(circle at 60% 40%, var(--aurora-pink), transparent 70%); animation: drift2 24s ease-in-out infinite; }
+.aurora-bg .b3 { width: 360px; height: 360px; bottom: 40px; left: -100px;
+  background: radial-gradient(circle at 50% 50%, var(--aurora-mint), transparent 70%); opacity: 0.5; animation: drift3 28s ease-in-out infinite; }
+.aurora-bg .b4 { width: 320px; height: 320px; bottom: -80px; right: -70px;
+  background: radial-gradient(circle at 40% 40%, var(--aurora-blue), transparent 70%); animation: drift1 26s ease-in-out infinite reverse; }
+@keyframes drift1 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(28px,24px); } }
+@keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-24px,28px); } }
+@keyframes drift3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(22px,-20px); } }
+
+/* ---- 글래스 유틸 ---- */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-brd);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-soft);
+}
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

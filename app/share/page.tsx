@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
-import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { track } from '../../lib/analytics/track';
 import type { Dictionary } from '../../i18n/dictionaries';
 import type { Element } from '../../types/saju';
@@ -198,7 +197,6 @@ function ShareInner() {
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Link href={{ pathname: '/plan', query: birth }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.share.back}</Link>
-        <LanguageSwitch />
       </header>
 
       <h1 style={{ fontSize: 22, fontWeight: 600, margin: '0 0 16px' }}>{t.share.title}</h1>

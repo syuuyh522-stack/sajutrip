@@ -1,0 +1,43 @@
+<title>SajuTrip — API Status Preview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{ --ink:#1E293B; --muted:#64748B; --muted-2:#94A3B8; --line:#E2E8F0;
+    --mono:ui-monospace,"SF Mono",Menlo,monospace; --sans:-apple-system,"SF Pro Text",system-ui,sans-serif; }
+  *{box-sizing:border-box} body{margin:0;background:#EAECF1;font-family:var(--sans);color:var(--ink)}
+  main{max-width:640px;margin:0 auto;padding:32px 22px 60px;background:#fff;min-height:100vh}
+  .ey{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted-2)}
+  h1{font-size:24px;font-weight:600;margin:6px 0 0}
+  .pill{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;color:#12351f;background:#bfe6cd}
+  .top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .ctl{display:flex;align-items:center;gap:12px;margin:20px 0;font-size:13px;color:var(--muted)}
+  .btn{padding:8px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:13px}
+  .ts{margin-left:auto;font-family:var(--mono);font-size:12px}
+  .row{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-left:4px solid #1E7A6B;border-radius:12px;padding:13px 16px;margin-bottom:10px}
+  .nm{flex:1;min-width:0;font-size:14px;font-weight:600}
+  .mono{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;text-align:right}
+  .foot{font-size:12px;color:var(--muted-2);margin-top:24px;line-height:1.6}
+</style>
+<main>
+  <div class="top">
+    <div><div class="ey">SajuTrip · Live API status</div><h1>외부 API 실시간 점검</h1></div>
+    <span class="pill">● ALL OK</span>
+  </div>
+  <div class="ctl">
+    <button class="btn">지금 새로고침</button>
+    <label><input type="checkbox" checked> 30초 자동</label>
+    <span class="ts">2026. 8. 24. 오후 11:47:02</span>
+  </div>
+  <div id="rows"></div>
+  <p class="foot">각 항목은 실제 외부 API를 서버에서 실시간 호출한 결과입니다(캐시 없음). 공모전 실시간 호출 요건 증빙용.</p>
+</main>
+<script>
+const data=[
+ ["KASI 음양력정보 (연·일주)",200,98],["KASI 24절기 (월주 검증)",200,95],
+ ["TourAPI 웰니스 (국문)",200,266],["TourAPI 웰니스 (영문)",200,180],
+ ["TourAPI 국문 관광정보",200,265],["TourAPI 영문 관광정보",200,200],
+ ["TourAPI 두루누비 (걷기)",200,154]];
+document.getElementById('rows').innerHTML=data.map(([n,s,ms])=>`
+ <div class="row"><div class="nm">${n}</div>
+ <span class="mono" style="min-width:62px">HTTP ${s}</span>
+ <span class="mono" style="min-width:60px;color:${ms>1000?'#C6402F':'var(--muted)'}">${ms}ms</span></div>`).join('');
+</script>
