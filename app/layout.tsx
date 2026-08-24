@@ -3,6 +3,12 @@ import { LanguageProvider } from '../i18n/LanguageProvider';
 import { ItineraryProvider } from '../i18n/ItineraryProvider';
 import { ProfileProvider } from '../i18n/ProfileProvider';
 import { DEFAULT_LOCALE } from '../i18n/dictionaries';
+// 폰트 셀프호스팅(§2.1) — CDN 미사용, 번들 서빙. Pretendard=dynamic subset(KR 분할 로딩).
+import 'pretendard/dist/web/static/pretendard-dynamic-subset.css';
+import '@fontsource/fraunces/400.css';
+import '@fontsource/fraunces/600.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import './globals.css';
 
 export const metadata: Metadata = {
