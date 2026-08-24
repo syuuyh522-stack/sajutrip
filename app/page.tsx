@@ -64,6 +64,10 @@ export default function LandingPage() {
             <input value={month} onChange={(e) => setMonth(e.target.value)} inputMode="numeric" aria-label={t.landing.month} style={dobInput} />
             <input value={day} onChange={(e) => setDay(e.target.value)} inputMode="numeric" aria-label={t.landing.day} style={dobInput} />
           </div>
+          {/* 개인정보 마이크로카피 — 생년월일 필드 직하단 (§7.2 필수) */}
+          <p style={{ fontSize: 13, lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: '8px 0 0' }}>
+            {t.landing.privacy}
+          </p>
         </div>
       </div>
 
