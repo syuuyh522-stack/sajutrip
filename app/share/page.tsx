@@ -206,7 +206,7 @@ function ShareInner() {
         <Link href={{ pathname: '/plan', query: birth }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.share.back}</Link>
       </header>
 
-      <h1 style={{ fontSize: 22, fontWeight: 600, margin: '0 0 16px' }}>{t.share.title}</h1>
+      <h1 style={{ fontSize: 20, fontWeight: 600, margin: '0 0 16px' }}>{t.share.title}</h1>
 
       <canvas
         ref={canvasRef}
@@ -216,11 +216,11 @@ function ShareInner() {
       />
 
       <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-        <button type="button" onClick={save} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: 'var(--color-text)' }}>
+        <button type="button" onClick={save} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: 'var(--color-text)' }}>
           {t.share.save}
         </button>
         {/* primary = 火 pill (§1) */}
-        <button type="button" onClick={share} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, background: 'var(--color-fire-strong)', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: '#fff', boxShadow: 'var(--shadow-fab)' }}>
+        <button type="button" onClick={share} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, background: 'var(--color-fire-strong)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', boxShadow: 'var(--shadow-fab)' }}>
           {t.share.share}
         </button>
       </div>

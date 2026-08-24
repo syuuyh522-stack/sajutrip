@@ -1,6 +1,7 @@
 'use client';
 
 // 로케일 선택 UI. LOCALES를 순회하므로 언어 추가 시 자동 노출(§6.3).
+// 디자인시스템: 토큰 색만 사용, 탭타깃 44px(§8), 활성=water.
 import { useI18n } from '../i18n/LanguageProvider';
 import { LOCALES, LOCALE_LABELS } from '../i18n/dictionaries';
 
@@ -10,7 +11,7 @@ export function LanguageSwitch() {
     <div
       role="group"
       aria-label="Language"
-      style={{ display: 'inline-flex', gap: 4, background: '#F1F5F9', padding: 4, borderRadius: 999 }}
+      style={{ display: 'inline-flex', gap: 4, background: 'rgba(185,180,199,.18)', padding: 4, borderRadius: 'var(--radius-pill)' }}
     >
       {LOCALES.map((code) => {
         const active = code === locale;
@@ -23,13 +24,14 @@ export function LanguageSwitch() {
             style={{
               border: 0,
               cursor: 'pointer',
-              padding: '7px 14px',
-              borderRadius: 999,
+              minHeight: 36,
+              padding: '8px 16px',
+              borderRadius: 'var(--radius-pill)',
               fontSize: 13,
               fontWeight: active ? 600 : 500,
-              background: active ? '#1E293B' : 'transparent',
-              color: active ? '#fff' : '#64748B',
-              transition: '.15s',
+              background: active ? 'var(--color-water)' : 'transparent',
+              color: active ? '#fff' : 'var(--color-text-muted)',
+              transition: 'all var(--motion-fast)',
             }}
           >
             {LOCALE_LABELS[code]}

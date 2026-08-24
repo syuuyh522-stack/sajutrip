@@ -36,7 +36,7 @@ export default function LandingPage() {
         <LanguageSwitch />
       </header>
 
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--color-water)', margin: '18px 0 0' }}>
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--color-water)', margin: '18px 0 0' }}>
         {t.landing.eyebrow}
       </p>
       {/* Display serif — 히어로 헤드라인 (§2) */}
@@ -68,13 +68,13 @@ export default function LandingPage() {
       </div>
 
       <button type="button" onClick={submit} style={{ ...cta, marginTop: 28 }}>{t.landing.cta} →</button>
-      <p style={{ fontSize: 12, color: 'var(--muted-2)', marginTop: 10, textAlign: 'center' }}>{t.landing.note}</p>
+      <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 10, textAlign: 'center' }}>{t.landing.note}</p>
     </main>
   );
 }
 
 const label: React.CSSProperties = {
-  display: 'block', fontSize: 12, letterSpacing: '0.4px', textTransform: 'uppercase',
+  display: 'block', fontSize: 13, letterSpacing: '0.4px', textTransform: 'uppercase',
   color: 'var(--color-text-muted)', marginBottom: 8,
 };
 // 세그먼트 활성 = water(§1 링크/액티브), 탭타깃 44px+(§8)
@@ -89,11 +89,11 @@ const seg = (active: boolean): React.CSSProperties => ({
 // 생년월일 = mono(§2 숫자)
 const dobInput: React.CSSProperties = {
   width: '100%', minHeight: 44, padding: 13, borderRadius: 'var(--radius-input)', border: '1px solid rgba(185,180,199,.4)',
-  fontFamily: 'var(--font-mono)', fontSize: 15, textAlign: 'center', color: 'var(--color-text)', background: 'var(--color-surface)',
+  fontFamily: 'var(--font-mono)', fontSize: 16, textAlign: 'center', color: 'var(--color-text)', background: 'var(--color-surface)',
 };
 // primary CTA = 火 단색 pill (§1: 앱 전체 유일한 primary 색)
 const cta: React.CSSProperties = {
   width: '100%', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer',
-  fontSize: 15, fontWeight: 600, color: '#fff', background: 'var(--color-fire-strong)', boxShadow: 'var(--shadow-fab)',
+  fontSize: 16, fontWeight: 600, color: '#fff', background: 'var(--color-fire-strong)', boxShadow: 'var(--shadow-fab)',
   transition: 'transform var(--motion-press)',
 };

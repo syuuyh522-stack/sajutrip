@@ -117,8 +117,8 @@ function PlaceCard({ place, element }: { place: Place; element: Element | null }
     <div className="glass" style={{ overflow: 'hidden' }}>
       <div style={{ height: 130, background: place.image ? `center/cover no-repeat url(${place.image})` : fallback }} />
       <div style={{ padding: '12px 16px' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)' }}>{place.region}</div>
-        <div style={{ fontSize: 15, fontWeight: 600, marginTop: 3 }}>{place.name}</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-text-muted)' }}>{place.region}</div>
+        <div style={{ fontSize: 16, fontWeight: 600, marginTop: 3 }}>{place.name}</div>
       </div>
     </div>
   );

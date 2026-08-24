@@ -57,5 +57,5 @@ const navStyle: React.CSSProperties = {
 };
 const itemStyle: React.CSSProperties = {
   display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
-  minHeight: 52, padding: '8px 4px', fontSize: 11, fontWeight: 500, // 44px+ 탭타깃(§8)
+  minHeight: 52, padding: '8px 4px', fontSize: 13, fontWeight: 500, // 44px+ 탭타깃(§8)
 };

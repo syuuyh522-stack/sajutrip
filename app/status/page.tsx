@@ -31,7 +31,7 @@ export default function StatusPage() {
     <main style={{ maxWidth: 640, margin: '0 auto', padding: '32px 22px 60px', minHeight: '100dvh' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
         <div>
-          <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted-2)' }}>SajuTrip · Live API status</div>
+          <div style={{ fontFamily: 'var(--mono)', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted-2)' }}>SajuTrip · Live API status</div>
           <h1 style={{ fontSize: 24, fontWeight: 600, margin: '6px 0 0' }}>외부 API 실시간 점검</h1>
         </div>
         {data && (
@@ -46,7 +46,7 @@ export default function StatusPage() {
         <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
           <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} /> 30초 자동
         </label>
-        {data && <span style={{ marginLeft: 'auto', fontFamily: 'var(--mono)', fontSize: 12 }}>{new Date(data.checkedAt).toLocaleString()}</span>}
+        {data && <span style={{ marginLeft: 'auto', fontFamily: 'var(--mono)', fontSize: 13 }}>{new Date(data.checkedAt).toLocaleString()}</span>}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -54,16 +54,16 @@ export default function StatusPage() {
           <div key={r.name} style={{ display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--line)', borderLeft: `4px solid ${r.ok ? 'var(--color-crowd-low)' : 'var(--color-crowd-high)'}`, borderRadius: 12, padding: '13px 16px' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 600 }}>{r.name}</div>
-              {r.note && <div style={{ fontSize: 11, color: 'var(--muted-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.note}</div>}
+              {r.note && <div style={{ fontSize: 13, color: 'var(--muted-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.note}</div>}
             </div>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)', fontVariantNumeric: 'tabular-nums', minWidth: 62, textAlign: 'right' }}>HTTP {r.status}</span>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: r.latencyMs > 1000 ? 'var(--color-crowd-high-strong)' : 'var(--muted)', fontVariantNumeric: 'tabular-nums', minWidth: 60, textAlign: 'right' }}>{r.latencyMs}ms</span>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted)', fontVariantNumeric: 'tabular-nums', minWidth: 62, textAlign: 'right' }}>HTTP {r.status}</span>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 13, color: r.latencyMs > 1000 ? 'var(--color-crowd-high-strong)' : 'var(--muted)', fontVariantNumeric: 'tabular-nums', minWidth: 60, textAlign: 'right' }}>{r.latencyMs}ms</span>
           </div>
         ))}
         {!data && !loading && <p style={{ color: 'var(--muted)' }}>불러오지 못했습니다.</p>}
       </div>
 
-      <p style={{ fontSize: 12, color: 'var(--muted-2)', marginTop: 24, lineHeight: 1.6 }}>
+      <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 24, lineHeight: 1.6 }}>
         각 항목은 실제 외부 API를 서버에서 실시간 호출한 결과입니다(캐시 없음). 공모전 실시간 호출 요건 증빙용.
       </p>
     </main>

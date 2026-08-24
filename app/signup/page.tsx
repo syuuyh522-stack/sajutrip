@@ -48,7 +48,7 @@ function SignupInner() {
         </Field>
       </div>
 
-      <label style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 12.5, color: 'var(--muted)', marginTop: 18, lineHeight: 1.5 }}>
+      <label style={{ display: 'flex', gap: 9, alignItems: 'flex-start', fontSize: 13, color: 'var(--muted)', marginTop: 18, lineHeight: 1.5 }}>
         <input type="checkbox" defaultChecked style={{ marginTop: 2 }} />
         <span>
           {t.signup.agree}{' '}
@@ -59,7 +59,7 @@ function SignupInner() {
         </span>
       </label>
 
-      <button type="button" onClick={create} style={{ width: '100%', minHeight: 48, marginTop: 24, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer', fontSize: 15, fontWeight: 600, color: '#fff', background: 'var(--color-fire-strong)', boxShadow: 'var(--shadow-fab)' }}>
+      <button type="button" onClick={create} style={{ width: '100%', minHeight: 48, marginTop: 24, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', background: 'var(--color-fire-strong)', boxShadow: 'var(--shadow-fab)' }}>
         {t.signup.create}
       </button>
       <Link href={{ pathname: '/my', query }} style={{ display: 'block', textAlign: 'center', marginTop: 10, fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>{t.signup.later}</Link>
@@ -70,7 +70,7 @@ function SignupInner() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <div style={{ fontSize: 12, letterSpacing: '0.4px', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>{label}</div>
+      <div style={{ fontSize: 13, letterSpacing: '0.4px', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 8 }}>{label}</div>
       {children}
     </div>
   );

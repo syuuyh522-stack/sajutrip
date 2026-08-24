@@ -69,7 +69,7 @@ function SearchInner() {
           </section>
           <section>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{t.search.festivals}</div>
-            <p style={{ fontSize: 12.5, color: 'var(--muted-2)', margin: 0 }}>{t.search.festivalsNote}</p>
+            <p style={{ fontSize: 13, color: 'var(--muted-2)', margin: 0 }}>{t.search.festivalsNote}</p>
           </section>
         </div>
       )}
@@ -85,7 +85,7 @@ function SearchInner() {
                 <div style={{ width: 54, height: 54, borderRadius: 12, flex: '0 0 auto', background: p.image ? `center/cover no-repeat url(${p.image})` : (p.primaryElement ? ELEMENT_COLOR[p.primaryElement] : '#E2E8F0') }} />
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{p.region}</div>
+                  <div style={{ fontSize: 13, color: 'var(--muted)' }}>{p.region}</div>
                 </div>
               </div>
             </Link>
@@ -98,7 +98,7 @@ function SearchInner() {
 }
 
 const chip: React.CSSProperties = {
-  fontSize: 13, padding: '8px 14px', borderRadius: 999, border: '1px solid var(--line)', background: '#fff', color: 'var(--muted)', cursor: 'pointer',
+  fontSize: 13, minHeight: 44, padding: '8px 16px', borderRadius: 999, border: '1px solid var(--line)', background: '#fff', color: 'var(--muted)', cursor: 'pointer',
 };
 
 export default function SearchPage() {

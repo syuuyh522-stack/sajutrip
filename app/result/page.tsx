@@ -63,7 +63,7 @@ function ResultInner() {
       </header>
 
       {/* 한글엔 자간 벌림이 어색 — ko는 letterSpacing 0 */}
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', color: 'var(--color-water)', margin: 0 }}>
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', color: 'var(--color-water)', margin: 0 }}>
         {t.result.eyebrow}
       </p>
 
@@ -101,8 +101,8 @@ function ResultInner() {
             <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />
             <div style={{ position: 'relative' }}>
               {/* fill 위 텍스트 = EL_ON (§1.1 — 水는 어두운 fill이라 흰색, 나머지는 잉크) */}
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 27, fontWeight: 600, margin: '6px 0 10px', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '6px 0 10px', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
               <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0, color: EL_ON_MUTED[data.excess] }}>{t.character[data.excess].desc}</p>
             </div>
           </section>
@@ -142,7 +142,7 @@ function ResultInner() {
                       {/* D2: 0이면 막대 없음 */}
                       {v > 0 && <span style={{ display: 'block', height: '100%', width: `${(v / 6) * 100}%`, background: ELEMENT_COLOR[el], borderRadius: 999 }} />}
                     </span>
-                    <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: v === 0 ? 'var(--muted-2)' : 'var(--muted)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{v}</span>
+                    <span style={{ fontFamily: 'var(--mono)', fontSize: 13, color: v === 0 ? 'var(--muted-2)' : 'var(--muted)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{v}</span>
                   </div>
                 );
               })}
@@ -157,7 +157,7 @@ function ResultInner() {
           {(data.kstar.soulmate || data.kstar.twin) && (
             <section className="glass" style={{ padding: 18 }}>
               <h2 style={sectionH2}>
-                {t.kstar.title} <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted-2)' }}>· {t.kstar.forFun}</span>
+                {t.kstar.title} <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--muted-2)' }}>· {t.kstar.forFun}</span>
               </h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {data.kstar.soulmate && (
@@ -172,7 +172,7 @@ function ResultInner() {
 
           <Link
             href={{ pathname: '/explore', query: birth }}
-            style={{ display: 'block', textAlign: 'center', padding: '16px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-fire-strong)', color: '#fff', fontSize: 15, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
+            style={{ display: 'block', textAlign: 'center', padding: '16px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-fire-strong)', color: '#fff', fontSize: 16, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
           >
             {t.explore.cta} →
           </Link>
@@ -188,12 +188,12 @@ function PillarCard({ label, pillar }: { label: string; pillar: Pillar }) {
   const branchEl = BRANCH_ELEMENT[pillar.branch];
   return (
     <div style={{ flex: 1, border: '1px solid var(--glass-brd)', borderRadius: 14, overflow: 'hidden', textAlign: 'center', background: 'rgba(255,255,255,.4)' }}>
-      <div style={{ fontSize: 11, color: 'var(--muted-2)', padding: '7px 0 4px' }}>{label}</div>
+      <div style={{ fontSize: 13, color: 'var(--muted-2)', padding: '7px 0 4px' }}>{label}</div>
       {/* fill 위 간지 = EL_ON (水 fill은 어두워 흰 글자, §1.1) */}
-      <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.15, color: EL_ON[stemEl], background: ELEMENT_COLOR[stemEl], padding: '8px 0' }}>
+      <div style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.15, color: EL_ON[stemEl], background: ELEMENT_COLOR[stemEl], padding: '8px 0' }}>
         {pillar.stem}
       </div>
-      <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.15, color: EL_ON[branchEl], background: ELEMENT_COLOR[branchEl], padding: '8px 0' }}>
+      <div style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.15, color: EL_ON[branchEl], background: ELEMENT_COLOR[branchEl], padding: '8px 0' }}>
         {pillar.branch}
       </div>
     </div>
@@ -206,9 +206,9 @@ function StarRow({ match, title, desc, elementLabel }: { match: KStarMatch; titl
       <div style={{ width: 44, height: 44, borderRadius: '50%', background: elGradient(match.element), flex: '0 0 auto' }} aria-hidden="true" />
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 600 }}>{title}: {match.name}</div>
-        <div style={{ fontSize: 12, color: 'var(--muted)' }}>{desc}</div>
+        <div style={{ fontSize: 13, color: 'var(--muted)' }}>{desc}</div>
       </div>
-      <span style={{ fontSize: 12, fontWeight: 700, color: EL_ON[match.element], background: EL_COLOR[match.element], borderRadius: 999, padding: '4px 10px' }}>{elementLabel}</span>
+      <span style={{ fontSize: 13, fontWeight: 700, color: EL_ON[match.element], background: EL_COLOR[match.element], borderRadius: 999, padding: '4px 10px' }}>{elementLabel}</span>
     </div>
   );
 }
@@ -216,8 +216,8 @@ function StarRow({ match, title, desc, elementLabel }: { match: KStarMatch; titl
 function Chip({ element, label, tag }: { element: Element; label: string; tag: string }) {
   return (
     <div style={{ flex: 1, border: '1px solid var(--glass-brd)', background: `${EL_COLOR[element]}40`, borderRadius: 14, padding: '12px 14px' }}>
-      <div style={{ fontSize: 15, fontWeight: 700, color: EL_INK[element] }}>{label}</div>
-      <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{tag}</div>
+      <div style={{ fontSize: 16, fontWeight: 700, color: EL_INK[element] }}>{label}</div>
+      <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>{tag}</div>
     </div>
   );
 }

@@ -138,8 +138,8 @@ export default function PlacePage() {
             </button>
           </div>
           <div style={{ padding: '18px 22px 40px' }}>
-            <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted-2)' }}>{place.region}</div>
-            <h1 style={{ fontSize: 23, fontWeight: 600, margin: '4px 0 12px' }}>{place.name}</h1>
+            <div style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)' }}>{place.region}</div>
+            <h1 style={{ fontSize: 24, fontWeight: 600, margin: '4px 0 12px' }}>{place.name}</h1>
 
             {/* 근거 모듈 — 매치 타입 + 보완 게이지 + 문화적 근거 (F-4 "추천 근거 공감") */}
             {element && saju && (
@@ -152,17 +152,17 @@ export default function PlacePage() {
             )}
 
             <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>{t.pdp.quiet}</h2>
-            <div style={{ fontSize: 11, color: 'var(--muted-2)', marginBottom: 8 }}>{t.pdp.demo}</div>
+            <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 8 }}>{t.pdp.demo}</div>
             {/* 혼잡 표시 — 전용 semantic 토큰(§7.3), 원소색 재사용 금지 */}
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 56 }}>
               {CROWD.map((h, i) => (
                 <div key={DAYS[i]} style={{ flex: 1, height: `${h}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'var(--color-crowd-high)' : h <= 40 ? 'var(--color-crowd-low)' : 'rgba(185,180,199,.35)' }} />
               ))}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 9.5, color: 'var(--muted-2)', marginTop: 4 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)', marginTop: 4 }}>
               {DAYS.map((d) => <span key={d}>{d}</span>)}
             </div>
-            <p style={{ fontSize: 12, color: 'var(--muted-2)', marginTop: 6 }}>{t.pdp.quietNote}</p>
+            <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 6 }}>{t.pdp.quietNote}</p>
 
             {/* 일정에 담기 (F-5) */}
             {(() => {
@@ -176,7 +176,7 @@ export default function PlacePage() {
                     onClick={() => { addItem({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null }); track('plan_add', { contentId: place.contentId, region: place.region }); }}
                     style={{
                       width: '100%', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', cursor: added ? 'default' : 'pointer',
-                      fontSize: 15, fontWeight: 600, border: 0,
+                      fontSize: 16, fontWeight: 600, border: 0,
                       background: 'var(--color-fire-strong)', color: '#fff',
                       opacity: added ? 0.4 : 1, boxShadow: added ? 'none' : 'var(--shadow-fab)',
                       transition: 'opacity var(--motion-fast)',
@@ -197,11 +197,11 @@ export default function PlacePage() {
             <button
               type="button"
               onClick={() => { /* TODO: 예약 딥링크 (여기어때/Klook 등) 연결 */ }}
-              style={{ width: '100%', minHeight: 48, marginTop: 12, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: 'var(--color-text)' }}
+              style={{ width: '100%', minHeight: 48, marginTop: 12, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: 'var(--color-text)' }}
             >
               {t.pdp.book}
             </button>
-            <p style={{ fontSize: 11, color: 'var(--color-text-muted)', textAlign: 'center', marginTop: 8 }}>{t.pdp.bookNote}</p>
+            <p style={{ fontSize: 13, color: 'var(--color-text-muted)', textAlign: 'center', marginTop: 8 }}>{t.pdp.bookNote}</p>
           </div>
         </>
       )}
