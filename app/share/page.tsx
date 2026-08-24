@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
+import { track } from '../../lib/analytics/track';
 import type { Dictionary } from '../../i18n/dictionaries';
 import type { Element } from '../../types/saju';
 import type { ItineraryItem } from '../../types/itinerary';
@@ -159,6 +160,7 @@ function ShareInner() {
   }, [target, state, t]);
 
   const save = useCallback(() => {
+    track('share_action', { kind: 'save' });
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.toBlob((blob) => {
@@ -173,6 +175,7 @@ function ShareInner() {
   }, []);
 
   const share = useCallback(async () => {
+    track('share_action', { kind: 'share' });
     const canvas = canvasRef.current;
     if (!canvas || !target) return save();
     canvas.toBlob(async (blob) => {

@@ -1,11 +1,12 @@
 'use client';
 
 // F-1 홈/랜딩 — 언어 선택 + 성별·생년월일 입력. (PRD F-1, CLAUDE.md §7)
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '../i18n/LanguageProvider';
 import { useProfile } from '../i18n/ProfileProvider';
 import { LanguageSwitch } from '../components/LanguageSwitch';
+import { track } from '../lib/analytics/track';
 
 type Gender = 'female' | 'male';
 
@@ -18,8 +19,11 @@ export default function LandingPage() {
   const [month, setMonth] = useState('07');
   const [day, setDay] = useState('22');
 
+  useEffect(() => { track('landing_view'); }, []);
+
   const submit = () => {
     setBirth({ gender, year, month, day }); // 프로필 저장(하단 네비·마이 등에서 사용)
+    track('saju_submit', { gender });
     const params = new URLSearchParams({ gender, year, month, day });
     router.push(`/result?${params.toString()}`);
   };

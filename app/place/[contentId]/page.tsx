@@ -8,6 +8,7 @@ import { useI18n } from '../../../i18n/LanguageProvider';
 import { useItinerary } from '../../../i18n/ItineraryProvider';
 import { useProfile } from '../../../i18n/ProfileProvider';
 import { LanguageSwitch } from '../../../components/LanguageSwitch';
+import { track } from '../../../lib/analytics/track';
 import type { Element } from '../../../types/saju';
 import type { Place } from '../../../types/place';
 
@@ -46,7 +47,7 @@ export default function PlacePage() {
     const elParam = queryEl ? `&element=${queryEl}` : '';
     fetch(`/api/places/${routeParams.contentId}?lang=${locale}${elParam}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => setPlace(j.place))
+      .then((j) => { setPlace(j.place); track('pdp_view', { contentId: routeParams.contentId, element: queryEl ?? null }); })
       .catch(() => setNotFound(true));
   }, [routeParams.contentId, locale, queryEl]);
 
@@ -105,7 +106,7 @@ export default function PlacePage() {
                   <button
                     type="button"
                     disabled={added}
-                    onClick={() => addItem({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null })}
+                    onClick={() => { addItem({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null }); track('plan_add', { contentId: place.contentId, region: place.region }); }}
                     style={{
                       width: '100%', padding: '15px 18px', borderRadius: 14, cursor: added ? 'default' : 'pointer',
                       fontSize: 15, fontWeight: 600,

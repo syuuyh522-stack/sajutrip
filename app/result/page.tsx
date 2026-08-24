@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
+import { track } from '../../lib/analytics/track';
 import type { Element, ElementDistribution, Pillar, SajuProfile } from '../../types/saju';
 import { STEM_ELEMENT, BRANCH_ELEMENT } from '../../config/saju-tables';
 
@@ -54,7 +55,7 @@ function ResultInner() {
     setError(false);
     fetch(`/api/saju?${qs.toString()}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((json: SajuResponse) => setData(json))
+      .then((json: SajuResponse) => { setData(json); track('result_view', { deficient: json.deficient, excess: json.excess }); })
       .catch(() => setError(true));
   }, [params]);
 

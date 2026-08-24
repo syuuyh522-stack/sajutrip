@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
+import { track } from '../../lib/analytics/track';
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 
@@ -34,6 +35,7 @@ function ExploreInner() {
 
   // 1) 사주 산출로 타깃 오행 결정
   useEffect(() => {
+    track('explore_view');
     const qs = new URLSearchParams(birth);
     fetch(`/api/saju?${qs.toString()}`)
       .then((r) => r.json())

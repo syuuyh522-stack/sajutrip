@@ -9,6 +9,7 @@ import { useItinerary } from '../../i18n/ItineraryProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
 import { relatedAreaFor } from '../../config/related-region';
+import { track } from '../../lib/analytics/track';
 import type { Element } from '../../types/saju';
 
 const ELEMENT_COLOR: Record<Element, string> = {
@@ -160,6 +161,12 @@ function PlanInner() {
         {state.items.length > 0 && (
           <Link
             href={{ pathname: '/share', query: birth }}
+            onClick={() => {
+              // NorthStar(§8.1): 지방(비수도권) 스팟 1개 이상 포함 완성 일정
+              const CAPITAL = ['서울', '경기', '인천', 'Seoul', 'Gyeonggi', 'Incheon'];
+              const regionalIncluded = state.items.some((it) => !CAPITAL.some((c) => it.region.includes(c)));
+              track('plan_complete', { items: state.items.length, regionalIncluded, days: dayCount });
+            }}
             style={{ display: 'block', textAlign: 'center', padding: '16px 18px', borderRadius: 14, background: 'var(--accent)', color: '#fff', fontSize: 15, fontWeight: 600, textDecoration: 'none' }}
           >
             {t.plan.finish} →
