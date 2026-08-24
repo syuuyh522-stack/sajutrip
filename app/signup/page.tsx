@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useProfile } from '../../i18n/ProfileProvider';
+import { Aurora } from '../../components/Aurora';
 
 function SignupInner() {
   const { t } = useI18n();
@@ -26,6 +27,7 @@ function SignupInner() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
+      <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Link href={{ pathname: '/my', query }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.signup.back}</Link>
       </header>
@@ -57,7 +59,7 @@ function SignupInner() {
         </span>
       </label>
 
-      <button type="button" onClick={create} style={{ width: '100%', marginTop: 24, padding: '15px 18px', borderRadius: 14, border: 0, cursor: 'pointer', fontSize: 15, fontWeight: 600, color: '#fff', background: 'var(--accent)' }}>
+      <button type="button" onClick={create} style={{ width: '100%', minHeight: 48, marginTop: 24, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer', fontSize: 15, fontWeight: 600, color: '#fff', background: 'var(--color-fire-strong)', boxShadow: 'var(--shadow-fab)' }}>
         {t.signup.create}
       </button>
       <Link href={{ pathname: '/my', query }} style={{ display: 'block', textAlign: 'center', marginTop: 10, fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>{t.signup.later}</Link>

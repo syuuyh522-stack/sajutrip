@@ -51,13 +51,13 @@ export default function StatusPage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {data?.results.map((r) => (
-          <div key={r.name} style={{ display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--line)', borderLeft: `4px solid ${r.ok ? '#1E7A6B' : '#C6402F'}`, borderRadius: 12, padding: '13px 16px' }}>
+          <div key={r.name} style={{ display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--line)', borderLeft: `4px solid ${r.ok ? 'var(--color-crowd-low)' : 'var(--color-crowd-high)'}`, borderRadius: 12, padding: '13px 16px' }}>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ fontSize: 14, fontWeight: 600 }}>{r.name}</div>
               {r.note && <div style={{ fontSize: 11, color: 'var(--muted-2)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.note}</div>}
             </div>
             <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--muted)', fontVariantNumeric: 'tabular-nums', minWidth: 62, textAlign: 'right' }}>HTTP {r.status}</span>
-            <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: r.latencyMs > 1000 ? '#C6402F' : 'var(--muted)', fontVariantNumeric: 'tabular-nums', minWidth: 60, textAlign: 'right' }}>{r.latencyMs}ms</span>
+            <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: r.latencyMs > 1000 ? 'var(--color-crowd-high-strong)' : 'var(--muted)', fontVariantNumeric: 'tabular-nums', minWidth: 60, textAlign: 'right' }}>{r.latencyMs}ms</span>
           </div>
         ))}
         {!data && !loading && <p style={{ color: 'var(--muted)' }}>불러오지 못했습니다.</p>}

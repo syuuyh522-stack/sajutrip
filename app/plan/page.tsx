@@ -7,13 +7,13 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
 import { BottomNav } from '../../components/BottomNav';
+import { Aurora } from '../../components/Aurora';
+import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import { relatedAreaFor } from '../../config/related-region';
 import { track } from '../../lib/analytics/track';
 import type { Element } from '../../types/saju';
 
-const ELEMENT_COLOR: Record<Element, string> = {
-  wood: '#1E7A6B', fire: '#C6402F', earth: '#C79A3A', metal: '#9AA1A9', water: '#26476B',
-};
+const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
 
 interface RelatedSpot { name: string; region: string; category: string; rank: number }
 
@@ -60,21 +60,20 @@ function PlanInner() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
+      <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <Link href={{ pathname: '/explore', query: birth }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.plan.back}</Link>
+        <Link href={{ pathname: '/explore', query: birth }} style={{ fontSize: 14, color: 'var(--color-text-muted)', textDecoration: 'none' }}>← {t.plan.back}</Link>
       </header>
 
-      <h1 style={{ fontSize: 22, fontWeight: 600, margin: '0 0 16px' }}>{t.plan.title}</h1>
+      <h1 style={{ fontSize: 'var(--text-title-lg)', lineHeight: 'var(--text-title-lg-lh)', fontWeight: 600, margin: '0 0 16px' }}>{t.plan.title}</h1>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        {/* 결핍 원소 pre-fill (고정) */}
+        {/* 결핍 원소 pre-fill (고정) — 원소색 스와치(fill) + ink 텍스트(§1.1), 한자 아이콘 금지(§6) */}
         {deficient && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'var(--accent-soft)', border: '1px solid #c9d6e4', borderRadius: 12, padding: '12px 14px' }}>
-            <span style={{ width: 32, height: 32, borderRadius: 8, background: ELEMENT_COLOR[deficient], color: '#fff', display: 'grid', placeItems: 'center', fontSize: 13, fontWeight: 600, flex: '0 0 auto' }}>
-              {t.elements[deficient].split(' ')[1] ?? t.elements[deficient]}
-            </span>
-            <span style={{ flex: 1, fontSize: 13 }}>{t.plan.target}: {t.elements[deficient]}</span>
-            <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>🔒 {t.plan.locked}</span>
+          <div className="glass" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
+            <span aria-hidden="true" style={{ width: 28, height: 28, borderRadius: 8, background: ELEMENT_COLOR[deficient], flex: '0 0 auto' }} />
+            <span style={{ flex: 1, fontSize: 13 }}>{t.plan.target}: <b style={{ color: EL_INK[deficient] }}>{t.elements[deficient]}</b></span>
+            <span style={{ fontSize: 12, color: 'var(--color-water)', fontWeight: 600 }}>🔒 {t.plan.locked}</span>
           </div>
         )}
 
@@ -165,7 +164,7 @@ function PlanInner() {
               const regionalIncluded = state.items.some((it) => !CAPITAL.some((c) => it.region.includes(c)));
               track('plan_complete', { items: state.items.length, regionalIncluded, days: dayCount });
             }}
-            style={{ display: 'block', textAlign: 'center', padding: '16px 18px', borderRadius: 14, background: 'var(--accent)', color: '#fff', fontSize: 15, fontWeight: 600, textDecoration: 'none' }}
+            style={{ display: 'block', textAlign: 'center', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-fire-strong)', color: '#fff', fontSize: 15, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
           >
             {t.plan.finish} →
           </Link>

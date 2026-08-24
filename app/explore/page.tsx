@@ -6,13 +6,13 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
+import { Aurora } from '../../components/Aurora';
+import { EL_COLOR, EL_INK, elGradient } from '../../lib/ui/elements';
 import { track } from '../../lib/analytics/track';
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 
-const ELEMENT_COLOR: Record<Element, string> = {
-  wood: '#1E7A6B', fire: '#C6402F', earth: '#C79A3A', metal: '#9AA1A9', water: '#26476B',
-};
+const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, 텍스트는 EL_INK — §1.1)
 
 function ExploreInner() {
   const { t, locale } = useI18n();
@@ -56,16 +56,17 @@ function ExploreInner() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
+      <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <Link href={{ pathname: '/result', query: birth }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.explore.back}</Link>
+        <Link href={{ pathname: '/result', query: birth }} style={{ fontSize: 14, color: 'var(--color-text-muted)', textDecoration: 'none' }}>← {t.explore.back}</Link>
       </header>
 
-      <h1 style={{ fontSize: 22, fontWeight: 600, margin: '0 0 14px' }}>{t.explore.title}</h1>
+      <h1 style={{ fontSize: 'var(--text-title-lg)', lineHeight: 'var(--text-title-lg-lh)', fontWeight: 600, margin: '0 0 14px' }}>{t.explore.title}</h1>
 
       {targets && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
-          <Tab active={tab === 'fill'} color={ELEMENT_COLOR[targets.deficient]} label={t.explore.fill.replace('{element}', t.elements[targets.deficient])} onClick={() => setTab('fill')} />
-          <Tab active={tab === 'echo'} color={ELEMENT_COLOR[targets.excess]} label={t.explore.echo.replace('{element}', t.elements[targets.excess])} onClick={() => setTab('echo')} />
+          <Tab active={tab === 'fill'} element={targets.deficient} label={t.explore.fill.replace('{element}', t.elements[targets.deficient])} onClick={() => setTab('fill')} />
+          <Tab active={tab === 'echo'} element={targets.excess} label={t.explore.echo.replace('{element}', t.elements[targets.excess])} onClick={() => setTab('echo')} />
         </div>
       )}
 
@@ -79,7 +80,7 @@ function ExploreInner() {
             href={{ pathname: `/place/${p.contentId}`, query: { ...birth, ...(activeElement ? { element: activeElement } : {}) } }}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            <PlaceCard place={p} color={activeElement ? ELEMENT_COLOR[activeElement] : '#94A3B8'} />
+            <PlaceCard place={p} element={activeElement} />
           </Link>
         ))}
       </div>
@@ -88,16 +89,20 @@ function ExploreInner() {
   );
 }
 
-function Tab({ active, color, label, onClick }: { active: boolean; color: string; label: string; onClick: () => void }) {
+// 원소 탭 — fill은 tint(§1.1: 원소색은 fill 전용), 텍스트는 ink 변형. 탭타깃 44px(§8)
+function Tab({ active, element, label, onClick }: { active: boolean; element: Element; label: string; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
       style={{
-        flex: 1, padding: '10px 8px', borderRadius: 12, cursor: 'pointer', fontSize: 13, fontWeight: active ? 600 : 500,
-        border: `1px solid ${active ? color : 'var(--line)'}`,
-        background: active ? color : '#fff', color: active ? '#fff' : 'var(--muted)',
+        flex: 1, minHeight: 44, padding: '10px 8px', borderRadius: 'var(--radius-input)', cursor: 'pointer', fontSize: 13,
+        fontWeight: active ? 700 : 500,
+        border: `1.5px solid ${active ? EL_COLOR[element] : 'rgba(185,180,199,.4)'}`,
+        background: active ? `${EL_COLOR[element]}40` : 'var(--color-surface)',
+        color: active ? EL_INK[element] : 'var(--color-text-muted)',
+        transition: 'all var(--motion-fast)',
       }}
     >
       {label}
@@ -105,12 +110,14 @@ function Tab({ active, color, label, onClick }: { active: boolean; color: string
   );
 }
 
-function PlaceCard({ place, color }: { place: Place; color: string }) {
+// 장소 카드 — 글래스 서피스, 이미지 폴백은 원소 그라디언트(§7.3)
+function PlaceCard({ place, element }: { place: Place; element: Element | null }) {
+  const fallback = element ? elGradient(element) : 'var(--color-metal)';
   return (
-    <div style={{ border: '1px solid var(--line)', borderRadius: 16, overflow: 'hidden' }}>
-      <div style={{ height: 130, background: place.image ? `center/cover no-repeat url(${place.image})` : color }} />
-      <div style={{ padding: '12px 14px' }}>
-        <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted-2)' }}>{place.region}</div>
+    <div className="glass" style={{ overflow: 'hidden' }}>
+      <div style={{ height: 130, background: place.image ? `center/cover no-repeat url(${place.image})` : fallback }} />
+      <div style={{ padding: '12px 16px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--color-text-muted)' }}>{place.region}</div>
         <div style={{ fontSize: 15, fontWeight: 600, marginTop: 3 }}>{place.name}</div>
       </div>
     </div>

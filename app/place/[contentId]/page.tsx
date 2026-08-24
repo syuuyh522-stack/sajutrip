@@ -7,13 +7,13 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { useI18n } from '../../../i18n/LanguageProvider';
 import { useItinerary } from '../../../i18n/ItineraryProvider';
 import { useProfile } from '../../../i18n/ProfileProvider';
+import { Aurora } from '../../../components/Aurora';
+import { EL_COLOR, elGradient } from '../../../lib/ui/elements';
 import { track } from '../../../lib/analytics/track';
 import type { Element } from '../../../types/saju';
 import type { Place } from '../../../types/place';
 
-const ELEMENT_COLOR: Record<Element, string> = {
-  wood: '#1E7A6B', fire: '#C6402F', earth: '#C79A3A', metal: '#9AA1A9', water: '#26476B',
-};
+const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
 function isElement(v: string | null): v is Element {
   return v === 'wood' || v === 'fire' || v === 'earth' || v === 'metal' || v === 'water';
 }
@@ -55,15 +55,16 @@ export default function PlacePage() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', minHeight: '100dvh' }}>
+      <Aurora />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 22px' }}>
-        <Link href={{ pathname: '/explore', query: backQuery }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.pdp.back}</Link>
+        <Link href={{ pathname: '/explore', query: backQuery }} style={{ fontSize: 14, color: 'var(--color-text-muted)', textDecoration: 'none' }}>← {t.pdp.back}</Link>
       </div>
 
-      {notFound && <p style={{ padding: '0 22px', color: 'var(--muted)' }}>{t.pdp.notFound}</p>}
+      {notFound && <p style={{ padding: '0 22px', color: 'var(--color-text-muted)' }}>{t.pdp.notFound}</p>}
 
       {place && (
         <>
-          <div style={{ height: 220, position: 'relative', background: place.image ? `center/cover no-repeat url(${place.image})` : color }}>
+          <div style={{ height: 220, position: 'relative', background: place.image ? `center/cover no-repeat url(${place.image})` : (element ? elGradient(element) : 'var(--color-metal)') }}>
             <button
               type="button"
               onClick={() => toggleBookmark({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null })}
@@ -86,9 +87,10 @@ export default function PlacePage() {
 
             <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>{t.pdp.quiet}</h2>
             <div style={{ fontSize: 11, color: 'var(--muted-2)', marginBottom: 8 }}>{t.pdp.demo}</div>
+            {/* 혼잡 표시 — 전용 semantic 토큰(§7.3), 원소색 재사용 금지 */}
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 56 }}>
               {CROWD.map((h, i) => (
-                <div key={DAYS[i]} style={{ flex: 1, height: `${h}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? '#C6402F' : h <= 40 ? '#1E7A6B' : '#E4EAF1', opacity: h >= 85 || h <= 40 ? 0.6 : 1 }} />
+                <div key={DAYS[i]} style={{ flex: 1, height: `${h}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'var(--color-crowd-high)' : h <= 40 ? 'var(--color-crowd-low)' : 'rgba(185,180,199,.35)' }} />
               ))}
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 9.5, color: 'var(--muted-2)', marginTop: 4 }}>
@@ -101,20 +103,23 @@ export default function PlacePage() {
               const added = hasItem(place.contentId);
               return (
                 <div style={{ marginTop: 24 }}>
+                  {/* primary CTA = 火 단색 pill (§1: 앱 전체 유일). disabled = 40% opacity(§4) */}
                   <button
                     type="button"
                     disabled={added}
                     onClick={() => { addItem({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null }); track('plan_add', { contentId: place.contentId, region: place.region }); }}
                     style={{
-                      width: '100%', padding: '15px 18px', borderRadius: 14, cursor: added ? 'default' : 'pointer',
-                      fontSize: 15, fontWeight: 600,
-                      border: `1.5px solid ${color}`, background: added ? '#fff' : color, color: added ? color : '#fff',
+                      width: '100%', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', cursor: added ? 'default' : 'pointer',
+                      fontSize: 15, fontWeight: 600, border: 0,
+                      background: 'var(--color-fire-strong)', color: '#fff',
+                      opacity: added ? 0.4 : 1, boxShadow: added ? 'none' : 'var(--shadow-fab)',
+                      transition: 'opacity var(--motion-fast)',
                     }}
                   >
                     {added ? `✓ ${t.pdp.added}` : `${t.pdp.addPlan} +`}
                   </button>
                   {added && (
-                    <Link href={{ pathname: '/plan', query: backQuery }} style={{ display: 'block', textAlign: 'center', marginTop: 10, fontSize: 13, color: 'var(--accent)', textDecoration: 'none' }}>
+                    <Link href={{ pathname: '/plan', query: backQuery }} style={{ display: 'block', textAlign: 'center', marginTop: 10, fontSize: 13, color: 'var(--color-water)', textDecoration: 'none' }}>
                       {t.pdp.viewPlan} →
                     </Link>
                   )}
@@ -122,15 +127,15 @@ export default function PlacePage() {
               );
             })()}
 
-            {/* 예약하기 — 딥링크는 나중에 연결 */}
+            {/* 예약하기 — secondary(§1: primary는 fire만). 딥링크 later */}
             <button
               type="button"
               onClick={() => { /* TODO: 예약 딥링크 (여기어때/Klook 등) 연결 */ }}
-              style={{ width: '100%', marginTop: 12, padding: '15px 18px', borderRadius: 14, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}
+              style={{ width: '100%', minHeight: 48, marginTop: 12, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: 'var(--color-text)' }}
             >
               {t.pdp.book}
             </button>
-            <p style={{ fontSize: 11, color: 'var(--muted-2)', textAlign: 'center', marginTop: 8 }}>{t.pdp.bookNote}</p>
+            <p style={{ fontSize: 11, color: 'var(--color-text-muted)', textAlign: 'center', marginTop: 8 }}>{t.pdp.bookNote}</p>
           </div>
         </>
       )}

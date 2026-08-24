@@ -9,6 +9,7 @@ import { useProfile } from '../../i18n/ProfileProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
 import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
+import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import type { Element } from '../../types/saju';
 
@@ -38,6 +39,7 @@ function MyInner() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
+      <Aurora />
       <header style={{ marginBottom: 20 }}>
         <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{signedUp && nickname ? nickname : t.my.title}</h1>
       </header>
@@ -92,7 +94,7 @@ function MyInner() {
           </div>
         </section>
 
-        <Link href={{ pathname: '/signup', query }} style={{ display: 'block', textAlign: 'center', padding: '15px 18px', borderRadius: 14, textDecoration: 'none', fontSize: 15, fontWeight: 600, ...(signedUp ? { border: '1px solid var(--line)', color: 'var(--ink)', background: '#fff' } : { background: 'var(--accent)', color: '#fff' }) }}>
+        <Link href={{ pathname: '/signup', query }} style={{ display: 'block', textAlign: 'center', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', textDecoration: 'none', fontSize: 15, fontWeight: 600, ...(signedUp ? { border: '1.5px solid rgba(185,180,199,.5)', color: 'var(--color-text)', background: 'var(--color-surface)' } : { background: 'var(--color-fire-strong)', color: '#fff', boxShadow: 'var(--shadow-fab)' }) }}>
           {signedUp ? t.my.editProfile : t.my.signUp}
         </Link>
 

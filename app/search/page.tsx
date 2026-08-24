@@ -6,12 +6,12 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
+import { Aurora } from '../../components/Aurora';
+import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 
-const ELEMENT_COLOR: Record<Element, string> = {
-  wood: '#1E7A6B', fire: '#C6402F', earth: '#C79A3A', metal: '#9AA1A9', water: '#26476B',
-};
+const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
 const RECENT = ['온천', '템플스테이', '숲치유'];
 
 function SearchInner() {
@@ -44,8 +44,9 @@ function SearchInner() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
+      <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{t.search.title}</h1>
+        <h1 style={{ fontSize: 'var(--text-title-lg)', lineHeight: 'var(--text-title-lg-lh)', fontWeight: 600, margin: 0 }}>{t.search.title}</h1>
       </header>
 
       <input
@@ -53,7 +54,7 @@ function SearchInner() {
         onChange={(e) => setQ(e.target.value)}
         placeholder={t.search.placeholder}
         aria-label={t.search.title}
-        style={{ width: '100%', padding: '13px 16px', borderRadius: 999, border: '1px solid var(--line)', fontSize: 14, color: 'var(--ink)', outline: 'none' }}
+        style={{ width: '100%', minHeight: 44, padding: '13px 16px', borderRadius: 'var(--radius-pill)', border: '1px solid rgba(185,180,199,.4)', background: 'var(--color-surface)', fontSize: 14, color: 'var(--color-text)', outline: 'none' }}
       />
 
       {/* 검색어 없을 때 = 검색홈 */}

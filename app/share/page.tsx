@@ -7,12 +7,14 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
 import { track } from '../../lib/analytics/track';
+import { Aurora } from '../../components/Aurora';
 import type { Dictionary } from '../../i18n/dictionaries';
 import type { Element } from '../../types/saju';
 import type { ItineraryItem } from '../../types/itinerary';
 
+// 공유 카드(Canvas)용 팔레트 — 공식 원소색. 카드 배경(어두운 남색) 위라 원색 fill 사용.
 const ELEMENT_COLOR: Record<Element, string> = {
-  wood: '#1E7A6B', fire: '#C6402F', earth: '#C79A3A', metal: '#9AA1A9', water: '#26476B',
+  wood: '#8FBFA3', fire: '#E8927C', earth: '#E3B873', metal: '#B9B4C7', water: '#6B7699',
 };
 const GLYPH: Record<Element, string> = { wood: '木', fire: '火', earth: '土', metal: '金', water: '水' };
 const ORDER: Element[] = ['fire', 'metal', 'wood', 'earth', 'water'];
@@ -195,6 +197,7 @@ function ShareInner() {
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
+      <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <Link href={{ pathname: '/plan', query: birth }} style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.share.back}</Link>
       </header>
@@ -209,10 +212,11 @@ function ShareInner() {
       />
 
       <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
-        <button type="button" onClick={save} style={{ flex: 1, padding: '15px 18px', borderRadius: 14, border: '1px solid var(--line)', background: '#fff', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: 'var(--ink)' }}>
+        <button type="button" onClick={save} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: 'var(--color-text)' }}>
           {t.share.save}
         </button>
-        <button type="button" onClick={share} style={{ flex: 1, padding: '15px 18px', borderRadius: 14, border: 0, background: 'var(--accent)', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: '#fff' }}>
+        {/* primary = 火 pill (§1) */}
+        <button type="button" onClick={share} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, background: 'var(--color-fire-strong)', cursor: 'pointer', fontSize: 15, fontWeight: 600, color: '#fff', boxShadow: 'var(--shadow-fab)' }}>
           {t.share.share}
         </button>
       </div>

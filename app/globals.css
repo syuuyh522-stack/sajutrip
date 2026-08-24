@@ -1,6 +1,25 @@
 /* 사주트립 — 공식 디자인 시스템 정본. 토큰은 app/styles/design-tokens.css (docs/design-system.md 참조). */
 @import './styles/design-tokens.css';
 
+/* ---- 레거시 별칭 (구 토큰명 → 공식 토큰 매핑, 화면 마이그레이션 중 브리지) ---- */
+:root {
+  --ink: var(--color-text);
+  --muted: var(--color-text-muted);
+  --muted-2: #9B99A6;
+  --line: rgba(185, 180, 199, 0.35);
+  --paper: var(--color-surface);
+  --accent: var(--color-water);
+  --accent-soft: rgba(74, 85, 120, 0.10);
+  --sans: var(--font-ui);
+  --mono: var(--font-mono);
+  --serif: var(--font-display);
+  --glass-brd: rgba(255, 255, 255, 0.5);
+  --r-sm: var(--radius-input);
+  --r: var(--radius-card-sm);
+  --r-lg: var(--radius-card);
+  --shadow-soft: var(--shadow-card);
+}
+
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
