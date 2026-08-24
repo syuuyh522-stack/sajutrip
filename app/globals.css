@@ -59,6 +59,9 @@ button { font-family: inherit; }
 @keyframes drift2 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(-24px,28px); } }
 @keyframes drift3 { 0%,100% { transform: translate(0,0); } 50% { transform: translate(22px,-20px); } }
 
+/* ---- Element Orb (§5) — 느린 앰비언트 회전만. reduced-motion 시 토큰 CSS가 정지 ---- */
+@keyframes orb-spin { to { transform: rotate(360deg); } }
+
 /* ---- 스켈레톤 (§4 로딩, --color-metal 30%) ---- */
 .skeleton {
   background: linear-gradient(100deg, rgba(185,180,199,.18) 30%, rgba(185,180,199,.34) 50%, rgba(185,180,199,.18) 70%);

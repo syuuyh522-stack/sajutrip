@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
+import { ElementOrb } from '../../components/ElementOrb';
 import { elGradient, EL_COLOR, EL_INK, EL_ON, EL_ON_MUTED } from '../../lib/ui/elements';
 import { track } from '../../lib/analytics/track';
 import type { Element, ElementDistribution, Pillar, SajuProfile } from '../../types/saju';
@@ -86,6 +87,15 @@ function ResultInner() {
 
       {data && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 20 }}>
+          {/* Element Orb (§5 시그니처) — 실분포가 그라디언트 비율이 되는 리빌 모먼트 */}
+          <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
+            <ElementOrb
+              distribution={data.distribution}
+              size={132}
+              label={ELEMENT_ORDER.map((el) => `${t.elements[el]} ${data.distribution[el]}`).join(', ')}
+            />
+          </div>
+
           {/* 캐릭터 한마디 — 과잉(가장 강한) 원소 기준 (FAQ Q3 성격 규정형) */}
           <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '26px 22px', color: EL_ON[data.excess], overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
             <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />

@@ -11,7 +11,8 @@ import { LanguageSwitch } from '../../components/LanguageSwitch';
 import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
-import type { Element } from '../../types/saju';
+import { ElementOrb } from '../../components/ElementOrb';
+import type { Element, ElementDistribution } from '../../types/saju';
 
 const ORDER: Element[] = ['wood', 'fire', 'earth', 'metal', 'water'];
 const COLOR = EL_COLOR; // 공식 팔레트
@@ -29,23 +30,28 @@ function MyInner() {
   const query = useMemo(() => ({ gender: b.gender, year: b.year, month: b.month, day: b.day }), [b.gender, b.year, b.month, b.day]);
 
   const [deficient, setDeficient] = useState<Element | null>(null);
+  const [dist, setDist] = useState<ElementDistribution | null>(null);
   useEffect(() => {
     if (!b.year) return;
     fetch(`/api/saju?${new URLSearchParams(query).toString()}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => setDeficient(j.deficient))
-      .catch(() => setDeficient(null));
+      .then((j) => { setDeficient(j.deficient); setDist(j.distribution); })
+      .catch(() => { setDeficient(null); setDist(null); });
   }, [query, b.year]);
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <Aurora />
-      <header style={{ marginBottom: 20 }}>
-        {/* 제목은 항상 페이지명 — 닉네임은 보조 인사말로 (닉네임이 제목을 대체하면 맥락 상실) */}
-        <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{t.my.title}</h1>
-        {signedUp && nickname && (
-          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', margin: '4px 0 0' }}>{t.my.signedInAs.replace('{name}', nickname)}</p>
-        )}
+      <header style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
+        <div style={{ flex: 1 }}>
+          {/* 제목은 항상 페이지명 — 닉네임은 보조 인사말로 (닉네임이 제목을 대체하면 맥락 상실) */}
+          <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{t.my.title}</h1>
+          {signedUp && nickname && (
+            <p style={{ fontSize: 13, color: 'var(--color-text-muted)', margin: '4px 0 0' }}>{t.my.signedInAs.replace('{name}', nickname)}</p>
+          )}
+        </div>
+        {/* Element Orb 소형 (§5 profile) */}
+        {dist && <ElementOrb distribution={dist} size={64} label={ORDER.map((el) => `${t.elements[el]} ${dist[el]}`).join(', ')} />}
       </header>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
