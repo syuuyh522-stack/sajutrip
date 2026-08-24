@@ -23,12 +23,12 @@
   --glass-brd: rgba(255, 255, 255, 0.6);
   --glass-blur: blur(16px) saturate(140%);
 
-  /* 오방색 원소 (진한 = 텍스트/막대, 그라디언트용) */
-  --el-wood: #1E7A6B;  --el-wood-2: #34D399;
-  --el-fire: #C6402F;  --el-fire-2: #FB7185;
-  --el-earth: #C79A3A; --el-earth-2: #FBBF24;
-  --el-metal: #9AA1A9; --el-metal-2: #CBD5E1;
-  --el-water: #26476B; --el-water-2: #818CF8;
+  /* 오행 원소 — 몽환적 파스텔 (탁하지 않게). 진색은 텍스트 대비용만 */
+  --el-wood: #6EE7B7;  --el-wood-2: #A7F3D0;  --el-wood-ink: #047857;
+  --el-fire: #FDA4AF;  --el-fire-2: #FECDD3;  --el-fire-ink: #BE123C;
+  --el-earth: #FCD34D; --el-earth-2: #FDE68A; --el-earth-ink: #B45309;
+  --el-metal: #C7D2E4; --el-metal-2: #E2E8F0; --el-metal-ink: #64748B;
+  --el-water: #A5B4FC; --el-water-2: #C7D2FE; --el-water-ink: #4338CA;
 
   /* radius / shadow */
   --r-sm: 12px;
@@ -52,9 +52,13 @@ body {
 a { color: inherit; }
 button { font-family: inherit; }
 
+/* 키보드 포커스 가시성 (접근성) */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
 /* ---- 오로라 배경 (페이지 뒤 고정) ---- */
-.aurora-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: #F4F5F9; pointer-events: none; }
-.aurora-bg .blob { position: absolute; border-radius: 50%; filter: blur(64px); opacity: 0.7; }
+.aurora-bg { position: fixed; inset: 0; z-index: -1; overflow: hidden;
+  background: linear-gradient(180deg, #FBFAFF 0%, #F3F4FB 100%); pointer-events: none; }
+.aurora-bg .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.55; }
 .aurora-bg .b1 { width: 340px; height: 340px; top: -90px; left: -70px;
   background: radial-gradient(circle at 30% 30%, var(--aurora-lav), transparent 70%); animation: drift1 20s ease-in-out infinite; }
 .aurora-bg .b2 { width: 300px; height: 300px; top: -40px; right: -80px;
@@ -76,6 +80,15 @@ button { font-family: inherit; }
   border-radius: var(--r);
   box-shadow: var(--shadow-soft);
 }
+
+/* ---- 스켈레톤 (로딩) ---- */
+.skeleton {
+  background: linear-gradient(100deg, rgba(255,255,255,.4) 30%, rgba(255,255,255,.7) 50%, rgba(255,255,255,.4) 70%);
+  background-size: 200% 100%;
+  border: 1px solid var(--glass-brd);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

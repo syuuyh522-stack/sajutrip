@@ -3,10 +3,10 @@
 <style>
   :root{--ink:#1E293B;--muted:#64748B;--muted-2:#94A3B8;--glass-brd:rgba(255,255,255,.6);
     --mono:ui-monospace,"SF Mono",Menlo,monospace;--sans:-apple-system,"SF Pro Text",system-ui,sans-serif;
-    --el-metal:#9AA1A9;--el-metal2:#CBD5E1;}
-  *{box-sizing:border-box}body{margin:0;font-family:var(--sans);color:var(--ink);background:#EEF0F5}
-  .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:#F4F5F9}
-  .bg span{position:absolute;border-radius:50%;filter:blur(64px);opacity:.7}
+    --el-metal:#C7D2E4;--el-metal2:#E2E8F0;}
+  *{box-sizing:border-box}body{margin:0;font-family:var(--sans);color:var(--ink);background:#F3F4FB}
+  .bg{position:fixed;inset:0;z-index:-1;overflow:hidden;background:linear-gradient(180deg,#FBFAFF,#F3F4FB)}
+  .bg span{position:absolute;border-radius:50%;filter:blur(80px);opacity:.55}
   .b1{width:340px;height:340px;top:-90px;left:-70px;background:radial-gradient(circle at 30% 30%,#E9D5FF,transparent 70%)}
   .b2{width:300px;height:300px;top:-40px;right:-80px;background:radial-gradient(circle at 60% 40%,#FEE2E2,transparent 70%)}
   .b3{width:360px;height:360px;bottom:40px;left:-100px;background:radial-gradient(circle at 50% 50%,#D9F99D,transparent 70%);opacity:.5}
@@ -16,10 +16,10 @@
   .ey{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#4338CA}
   .glass{background:rgba(255,255,255,.62);backdrop-filter:blur(16px) saturate(140%);border:1px solid var(--glass-brd);border-radius:18px;box-shadow:0 10px 30px -18px rgba(30,41,59,.4)}
   .stack{display:flex;flex-direction:column;gap:32px;margin-top:20px}
-  .char{position:relative;border-radius:26px;padding:26px 22px;color:#fff;overflow:hidden;
+  .char{position:relative;border-radius:26px;padding:26px 22px;color:#64748B;overflow:hidden;
     background:linear-gradient(135deg,var(--el-metal),var(--el-metal2));box-shadow:0 20px 44px -24px rgba(30,41,59,.45)}
-  .char .glow{position:absolute;top:-40px;right:-30px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.35),transparent 70%)}
-  .char .lab{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.9}
+  .char .glow{position:absolute;top:-50px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.55),transparent 70%)}
+  .char .lab{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;opacity:.75}
   .char h1{font-size:27px;font-weight:700;margin:6px 0 10px;letter-spacing:-.4px}
   .char p{font-size:14px;line-height:1.65;margin:0;opacity:.95}
   h2{font-size:18px;font-weight:600;margin:0 0 12px}
@@ -36,7 +36,7 @@
   .chip{flex:1;border-radius:14px;padding:12px 14px}
   .star{display:flex;align-items:center;gap:12px;border:1px solid var(--glass-brd);background:rgba(255,255,255,.5);border-radius:14px;padding:12px 14px;margin-bottom:10px}
   .star .av{width:44px;height:44px;border-radius:50%;flex:0 0 auto}
-  .cta{display:block;text-align:center;padding:16px;border-radius:14px;background:#4338CA;color:#fff;font-size:15px;font-weight:600;text-decoration:none;box-shadow:0 12px 30px -12px rgba(67,56,202,.5)}
+  .cta{display:block;text-align:center;padding:16px;border-radius:16px;background:linear-gradient(120deg,#C7D2FE,#E9D5FF,#FBCFE8);color:#4338CA;font-size:15px;font-weight:700;text-decoration:none;box-shadow:0 14px 34px -14px rgba(139,92,246,.5)}
 </style>
 <div class="bg"><span class="b1"></span><span class="b2"></span><span class="b3"></span><span class="b4"></span></div>
 <main>
@@ -50,27 +50,27 @@
     <div class="glass" style="padding:18px">
       <h2>나의 사주 명식</h2>
       <div class="pillars">
-        <div class="pc"><div class="t">연주</div><div class="g" style="background:#C6402F">丙</div><div class="g" style="background:#26476B">子</div></div>
-        <div class="pc"><div class="t">월주</div><div class="g" style="background:#1E7A6B">乙</div><div class="g" style="background:#C79A3A">未</div></div>
-        <div class="pc"><div class="t">일주</div><div class="g" style="background:#9AA1A9">庚</div><div class="g" style="background:#9AA1A9">申</div></div>
+        <div class="pc"><div class="t">연주</div><div class="g" style="background:#FDA4AF;color:#BE123C">丙</div><div class="g" style="background:#A5B4FC;color:#4338CA">子</div></div>
+        <div class="pc"><div class="t">월주</div><div class="g" style="background:#6EE7B7;color:#047857">乙</div><div class="g" style="background:#FCD34D;color:#B45309">未</div></div>
+        <div class="pc"><div class="t">일주</div><div class="g" style="background:#C7D2E4;color:#64748B">庚</div><div class="g" style="background:#C7D2E4;color:#64748B">申</div></div>
       </div>
       <p class="reson">전통 오행에서는 목(木) 기운이 강한 곳이 당신과 공명한다고 여겨져요.</p>
     </div>
     <div class="glass" style="padding:18px">
-      <div class="bar"><span>목 木</span><span class="trk"><span style="width:20%;background:#1E7A6B"></span></span><span class="num">1</span></div>
-      <div class="bar"><span>화 火</span><span class="trk"><span style="width:20%;background:#C6402F"></span></span><span class="num">1</span></div>
-      <div class="bar"><span>토 土</span><span class="trk"><span style="width:20%;background:#C79A3A"></span></span><span class="num">1</span></div>
-      <div class="bar"><span style="font-weight:600">금 金</span><span class="trk"><span style="width:40%;background:#9AA1A9"></span></span><span class="num">2</span></div>
-      <div class="bar"><span style="font-weight:600">수 水</span><span class="trk"><span style="width:20%;background:#26476B"></span></span><span class="num">1</span></div>
+      <div class="bar"><span>목 木</span><span class="trk"><span style="width:20%;background:#6EE7B7"></span></span><span class="num">1</span></div>
+      <div class="bar"><span>화 火</span><span class="trk"><span style="width:20%;background:#FDA4AF"></span></span><span class="num">1</span></div>
+      <div class="bar"><span>토 土</span><span class="trk"><span style="width:20%;background:#FCD34D"></span></span><span class="num">1</span></div>
+      <div class="bar"><span style="font-weight:600">금 金</span><span class="trk"><span style="width:40%;background:#C7D2E4"></span></span><span class="num">2</span></div>
+      <div class="bar"><span style="font-weight:600">수 水</span><span class="trk"><span style="width:20%;background:#A5B4FC"></span></span><span class="num">1</span></div>
       <div class="chips">
-        <div class="chip" style="border:1px solid #1E7A6B"><div style="font-size:15px;font-weight:600;color:#1E7A6B">목 木</div><div style="font-size:12px;color:var(--muted)">가장 부족 · 채우기</div></div>
-        <div class="chip" style="border:1px solid #9AA1A9"><div style="font-size:15px;font-weight:600;color:#9AA1A9">금 金</div><div style="font-size:12px;color:var(--muted)">가장 넘침 · 공명</div></div>
+        <div class="chip" style="background:#6EE7B740"><div style="font-size:15px;font-weight:700;color:#047857">목 木</div><div style="font-size:12px;color:var(--muted)">가장 부족 · 채우기</div></div>
+        <div class="chip" style="background:#C7D2E440"><div style="font-size:15px;font-weight:700;color:#64748B">금 金</div><div style="font-size:12px;color:var(--muted)">가장 넘침 · 공명</div></div>
       </div>
     </div>
     <div class="glass" style="padding:18px">
       <h2>나의 K-star <span style="font-size:12px;font-weight:400;color:var(--muted-2)">· 재미로</span></h2>
-      <div class="star"><div class="av" style="background:#1E7A6B"></div><div style="flex:1"><div style="font-size:14px;font-weight:600">소울메이트 K스타: Star A</div><div style="font-size:12px;color:var(--muted)">내게 부족한 기운이 강한 별</div></div><span style="font-size:12px;font-weight:600;color:#fff;background:#1E7A6B;border-radius:999px;padding:4px 10px">목 木</span></div>
-      <div class="star"><div class="av" style="background:#9AA1A9"></div><div style="flex:1"><div style="font-size:14px;font-weight:600">나와 닮은 K스타: Star E</div><div style="font-size:12px;color:var(--muted)">나와 같은 강한 기운</div></div><span style="font-size:12px;font-weight:600;color:#fff;background:#9AA1A9;border-radius:999px;padding:4px 10px">금 金</span></div>
+      <div class="star"><div class="av" style="background:linear-gradient(135deg,#6EE7B7,#A7F3D0)"></div><div style="flex:1"><div style="font-size:14px;font-weight:600">소울메이트 K스타: Star A</div><div style="font-size:12px;color:var(--muted)">내게 부족한 기운이 강한 별</div></div><span style="font-size:12px;font-weight:700;color:#047857;background:#6EE7B7;border-radius:999px;padding:4px 10px">목 木</span></div>
+      <div class="star"><div class="av" style="background:linear-gradient(135deg,#C7D2E4,#E2E8F0)"></div><div style="flex:1"><div style="font-size:14px;font-weight:600">나와 닮은 K스타: Star E</div><div style="font-size:12px;color:var(--muted)">나와 같은 강한 기운</div></div><span style="font-size:12px;font-weight:700;color:#64748B;background:#C7D2E4;border-radius:999px;padding:4px 10px">금 金</span></div>
     </div>
     <a class="cta">공명하는 장소 찾기 →</a>
   </div>

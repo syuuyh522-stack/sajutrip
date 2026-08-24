@@ -37,6 +37,7 @@ export interface Dictionary {
     back: string;
     loading: string;
     error: string;
+    retry: string;
   };
   saju: {
     chartTitle: string;
@@ -172,6 +173,7 @@ const en: Dictionary = {
     back: 'Back',
     loading: 'Reading your chart…',
     error: 'Could not read your chart. Please try again.',
+    retry: 'Try again',
   },
   saju: {
     chartTitle: 'Your saju chart',
@@ -311,6 +313,7 @@ const ko: Dictionary = {
     back: '뒤로',
     loading: '사주를 읽는 중…',
     error: '사주를 불러오지 못했어요. 다시 시도해 주세요.',
+    retry: '다시 시도',
   },
   saju: {
     chartTitle: '나의 사주 명식',
