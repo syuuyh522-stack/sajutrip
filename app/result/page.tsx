@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
-import { elGradient, EL_COLOR, EL_INK } from '../../lib/ui/elements';
+import { elGradient, EL_COLOR, EL_INK, EL_ON, EL_ON_MUTED } from '../../lib/ui/elements';
 import { track } from '../../lib/analytics/track';
 import type { Element, ElementDistribution, Pillar, SajuProfile } from '../../types/saju';
 import { STEM_ELEMENT, BRANCH_ELEMENT } from '../../config/saju-tables';
@@ -29,7 +29,7 @@ const ELEMENT_COLOR = EL_COLOR; // 파스텔 팔레트
 const sectionH2: React.CSSProperties = { fontSize: 18, fontWeight: 600, margin: '0 0 12px' };
 
 function ResultInner() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const params = useSearchParams();
   const birth = useMemo(
     () => ({
@@ -61,7 +61,8 @@ function ResultInner() {
         <Link href="/" style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.result.back}</Link>
       </header>
 
-      <p style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--accent)', margin: 0 }}>
+      {/* 한글엔 자간 벌림이 어색 — ko는 letterSpacing 0 */}
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', color: 'var(--color-water)', margin: 0 }}>
         {t.result.eyebrow}
       </p>
 
@@ -86,13 +87,13 @@ function ResultInner() {
       {data && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 20 }}>
           {/* 캐릭터 한마디 — 과잉(가장 강한) 원소 기준 (FAQ Q3 성격 규정형) */}
-          <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '26px 22px', color: EL_INK[data.excess], overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
-            <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.55), transparent 70%)' }} aria-hidden="true" />
+          <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '26px 22px', color: EL_ON[data.excess], overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />
             <div style={{ position: 'relative' }}>
-              {/* H3: 파스텔 위 텍스트는 진한 잉크색으로 대비 확보(opacity로 낮추지 않음) */}
-              <div style={{ fontFamily: 'var(--mono)', fontSize: 11, letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
-              <div style={{ fontSize: 27, fontWeight: 700, margin: '6px 0 10px', letterSpacing: '-0.4px' }}>{t.character[data.excess].label}</div>
-              <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0 }}>{t.character[data.excess].desc}</p>
+              {/* fill 위 텍스트 = EL_ON (§1.1 — 水는 어두운 fill이라 흰색, 나머지는 잉크) */}
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 27, fontWeight: 600, margin: '6px 0 10px', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
+              <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0, color: EL_ON_MUTED[data.excess] }}>{t.character[data.excess].desc}</p>
             </div>
           </section>
 
@@ -178,10 +179,11 @@ function PillarCard({ label, pillar }: { label: string; pillar: Pillar }) {
   return (
     <div style={{ flex: 1, border: '1px solid var(--glass-brd)', borderRadius: 14, overflow: 'hidden', textAlign: 'center', background: 'rgba(255,255,255,.4)' }}>
       <div style={{ fontSize: 11, color: 'var(--muted-2)', padding: '7px 0 4px' }}>{label}</div>
-      <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.15, color: EL_INK[stemEl], background: ELEMENT_COLOR[stemEl], padding: '8px 0' }}>
+      {/* fill 위 간지 = EL_ON (水 fill은 어두워 흰 글자, §1.1) */}
+      <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.15, color: EL_ON[stemEl], background: ELEMENT_COLOR[stemEl], padding: '8px 0' }}>
         {pillar.stem}
       </div>
-      <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.15, color: EL_INK[branchEl], background: ELEMENT_COLOR[branchEl], padding: '8px 0' }}>
+      <div style={{ fontSize: 30, fontWeight: 700, lineHeight: 1.15, color: EL_ON[branchEl], background: ELEMENT_COLOR[branchEl], padding: '8px 0' }}>
         {pillar.branch}
       </div>
     </div>
@@ -196,7 +198,7 @@ function StarRow({ match, title, desc, elementLabel }: { match: KStarMatch; titl
         <div style={{ fontSize: 14, fontWeight: 600 }}>{title}: {match.name}</div>
         <div style={{ fontSize: 12, color: 'var(--muted)' }}>{desc}</div>
       </div>
-      <span style={{ fontSize: 12, fontWeight: 700, color: EL_INK[match.element], background: EL_COLOR[match.element], borderRadius: 999, padding: '4px 10px' }}>{elementLabel}</span>
+      <span style={{ fontSize: 12, fontWeight: 700, color: EL_ON[match.element], background: EL_COLOR[match.element], borderRadius: 999, padding: '4px 10px' }}>{elementLabel}</span>
     </div>
   );
 }
