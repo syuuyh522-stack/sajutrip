@@ -8,10 +8,11 @@ import { useI18n } from '../../../i18n/LanguageProvider';
 import { useItinerary } from '../../../i18n/ItineraryProvider';
 import { useProfile } from '../../../i18n/ProfileProvider';
 import { Aurora } from '../../../components/Aurora';
-import { EL_COLOR, elGradient } from '../../../lib/ui/elements';
+import { EL_COLOR, EL_INK, elGradient } from '../../../lib/ui/elements';
 import { track } from '../../../lib/analytics/track';
-import type { Element } from '../../../types/saju';
+import type { Element, ElementDistribution } from '../../../types/saju';
 import type { Place } from '../../../types/place';
+import type { Dictionary } from '../../../i18n/dictionaries';
 
 const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
 function isElement(v: string | null): v is Element {
@@ -20,6 +21,57 @@ function isElement(v: string | null): v is Element {
 // 혼잡/여유 demo 막대 (실시간 집중률 API 연동 전)
 const CROWD = [40, 30, 55, 70, 95, 88, 60];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+/** 근거 모듈 — 매치 타입 배지 + 내 오행 보완 게이지(실분포 v/6 + 방문 시 +1) + 문화적 근거(§5.8) */
+function MatchCard({ element, saju, t }: {
+  element: Element;
+  saju: { distribution: ElementDistribution; deficient: Element; excess: Element };
+  t: Dictionary;
+}) {
+  const isFill = element === saju.deficient;
+  const isEcho = element === saju.excess;
+  const badge = isFill ? t.pdp.fillMatch : isEcho ? t.pdp.echoMatch : t.pdp.balanceMatch;
+  const desc = (isFill ? t.pdp.fillMatchDesc : isEcho ? t.pdp.echoMatchDesc : t.pdp.balanceMatchDesc)
+    .replace('{element}', t.elements[element]);
+  const v = saju.distribution[element]; // 내 현재 이 원소 카운트 (0~6, 실산출값)
+  const cells = Array.from({ length: 6 }, (_, i) => (i < v ? 'filled' : i === v ? 'ghost' : 'empty'));
+
+  return (
+    <section className="glass" style={{ padding: 16, margin: '0 0 20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+        <span style={{ fontSize: 'var(--text-body-sm)', fontWeight: 600 }}>{t.pdp.matchTitle}</span>
+        <span style={{ marginLeft: 'auto', fontSize: 'var(--text-caption)', fontWeight: 700, color: EL_INK[element], background: `${EL_COLOR[element]}40`, borderRadius: 'var(--radius-pill)', padding: '4px 12px' }}>
+          {badge}
+        </span>
+      </div>
+
+      {/* 보완 게이지 — 채워진 칸 = 실분포, 점선 칸 = 이 장소가 채워줄 +1 (§7.1: 숫자엔 설명 병기) */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <span style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', flex: '0 0 auto' }}>
+          {t.pdp.yourLevel.replace('{element}', t.elements[element])}
+        </span>
+        <div style={{ display: 'flex', gap: 4, flex: 1 }} role="meter" aria-valuenow={v} aria-valuemin={0} aria-valuemax={6} aria-label={`${t.elements[element]} ${v}/6`}>
+          {cells.map((kind, i) => (
+            <span key={i} style={{
+              flex: 1, height: 10, borderRadius: 4,
+              background: kind === 'filled' ? EL_COLOR[element] : kind === 'ghost' ? `${EL_COLOR[element]}40` : 'rgba(185,180,199,.25)',
+              border: kind === 'ghost' ? `1.5px dashed ${EL_INK[element]}` : '1.5px solid transparent',
+            }} />
+          ))}
+        </div>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums', flex: '0 0 auto' }}>
+          {v}/6 → {Math.min(v + 1, 6)}/6
+        </span>
+      </div>
+      <p style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', margin: '6px 0 12px', textAlign: 'right' }}>{t.pdp.afterVisit}</p>
+
+      <p style={{ fontSize: 'var(--text-body-sm)', lineHeight: 'var(--text-body-sm-lh)', margin: 0 }}>{desc}</p>
+      <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: '8px 0 0', fontStyle: 'italic' }}>
+        {t.pdp.basis.replace('{element}', t.elements[element])}
+      </p>
+    </section>
+  );
+}
 
 export default function PlacePage() {
   const { t, locale } = useI18n();
@@ -39,6 +91,16 @@ export default function PlacePage() {
 
   const [place, setPlace] = useState<Place | null>(null);
   const [notFound, setNotFound] = useState(false);
+
+  // 내 사주(분포·결핍·과잉) — 매치·보완 게이지의 근거 데이터 (birth 파라미터 있을 때만)
+  const [saju, setSaju] = useState<{ distribution: ElementDistribution; deficient: Element; excess: Element } | null>(null);
+  useEffect(() => {
+    if (!backQuery.year) { setSaju(null); return; }
+    fetch(`/api/saju?${new URLSearchParams(backQuery).toString()}`)
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((j) => setSaju({ distribution: j.distribution, deficient: j.deficient, excess: j.excess }))
+      .catch(() => setSaju(null));
+  }, [backQuery]);
 
   const queryEl = search.get('element');
 
@@ -79,8 +141,12 @@ export default function PlacePage() {
             <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--muted-2)' }}>{place.region}</div>
             <h1 style={{ fontSize: 23, fontWeight: 600, margin: '4px 0 12px' }}>{place.name}</h1>
 
-            {element && (
-              <p style={{ fontSize: 14, lineHeight: 1.55, color: '#26364a', fontStyle: 'italic', margin: '0 0 20px' }}>
+            {/* 근거 모듈 — 매치 타입 + 보완 게이지 + 문화적 근거 (F-4 "추천 근거 공감") */}
+            {element && saju && (
+              <MatchCard element={element} saju={saju} t={t} />
+            )}
+            {element && !saju && (
+              <p style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--color-text)', fontStyle: 'italic', margin: '0 0 20px' }}>
                 {t.pdp.resonance.replace('{element}', t.elements[element])}
               </p>
             )}

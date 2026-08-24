@@ -71,6 +71,19 @@ export interface Dictionary {
   pdp: {
     /** {element} 치환 (§5.8) */
     resonance: string;
+    matchTitle: string;
+    fillMatch: string;
+    /** {element} 치환 */
+    fillMatchDesc: string;
+    echoMatch: string;
+    echoMatchDesc: string;
+    balanceMatch: string;
+    balanceMatchDesc: string;
+    /** {element} 치환 — 게이지 라벨 */
+    yourLevel: string;
+    afterVisit: string;
+    /** {element} 치환 — 문화적 근거(§5.8, 효과 단정 금지) */
+    basis: string;
     quiet: string;
     quietNote: string;
     demo: string;
@@ -113,7 +126,9 @@ export interface Dictionary {
     title: string;
     placeholder: string;
     recent: string;
+    recentChips: string[];
     festivals: string;
+    festivalsNote: string;
     empty: string;
     back: string;
   };
@@ -169,7 +184,7 @@ const en: Dictionary = {
     cta: 'Read my elements',
     note: 'No account needed to see your reading.',
   },
-  elements: { wood: 'Wood 木', fire: 'Fire 火', earth: 'Earth 土', metal: 'Metal 金', water: 'Water 水' },
+  elements: { wood: 'Wood', fire: 'Fire', earth: 'Earth', metal: 'Metal', water: 'Water' },
   result: {
     eyebrow: 'Your five-element balance',
     deficient: 'Lowest · fill it',
@@ -213,6 +228,16 @@ const en: Dictionary = {
   },
   pdp: {
     resonance: 'A {element}-rich place — said to resonate with a chart like yours.',
+    matchTitle: 'Why this fits you',
+    fillMatch: 'Fill match',
+    fillMatchDesc: 'Tops up {element} — the element that runs lowest in your chart.',
+    echoMatch: 'Echo match',
+    echoMatchDesc: 'Resonates with {element} — your strongest element.',
+    balanceMatch: 'Balance stop',
+    balanceMatchDesc: 'Adds a touch of {element} to round out your balance.',
+    yourLevel: 'Your {element}',
+    afterVisit: 'after this stop',
+    basis: 'In the five-element tradition, places like this are considered rich in {element} energy.',
     quiet: 'When it is quiet',
     quietNote: 'Quietest on weekday mornings',
     demo: 'demo · live congestion data coming',
@@ -253,7 +278,9 @@ const en: Dictionary = {
     title: 'Search',
     placeholder: 'Search places, regions',
     recent: 'Recent',
+    recentChips: ['Hot springs', 'Temple stay', 'Forest healing'],
     festivals: 'Festivals this week',
+    festivalsNote: 'Festival feed coming soon.',
     empty: 'No results.',
     back: 'Back',
   },
@@ -264,7 +291,7 @@ const en: Dictionary = {
     birth: 'Birth',
     savedTrip: 'Saved itinerary',
     savedTripDesc: 'places',
-    bookmarks: 'Saved · 찜',
+    bookmarks: 'Saved',
     noBookmarks: 'Tap the bookmark on a place to keep it here.',
     signUp: 'Sign up to save everything',
     editProfile: 'Edit profile',
@@ -355,6 +382,16 @@ const ko: Dictionary = {
   },
   pdp: {
     resonance: '{element} 기운이 강한 곳 — 당신의 사주와 공명한다고 여겨져요.',
+    matchTitle: '나와 잘 맞을까',
+    fillMatch: '채우기 매칭',
+    fillMatchDesc: '당신 사주에서 가장 부족한 {element} 기운을 채워줘요.',
+    echoMatch: '공명 매칭',
+    echoMatchDesc: '가장 강한 {element} 기운과 공명하는 곳이에요.',
+    balanceMatch: '균형 스팟',
+    balanceMatchDesc: '{element} 기운을 더해 오행 균형을 잡아줘요.',
+    yourLevel: '지금 나의 {element}',
+    afterVisit: '이 곳을 다녀오면',
+    basis: '전통 오행에서 이런 곳은 {element} 기운이 깃든 곳으로 여겨져요.',
     quiet: '여유로운 시간',
     quietNote: '평일 오전이 가장 한산해요',
     demo: 'demo · 실시간 혼잡도 연동 예정',
@@ -395,7 +432,9 @@ const ko: Dictionary = {
     title: '검색',
     placeholder: '장소·지역 검색',
     recent: '최근 검색',
+    recentChips: ['온천', '템플스테이', '숲치유'],
     festivals: '이번 주 축제',
+    festivalsNote: '축제 API 연동 예정.',
     empty: '결과가 없어요.',
     back: '뒤로',
   },

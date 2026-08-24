@@ -12,7 +12,8 @@ function tourEnabled(): boolean {
   return Boolean(process.env.TOURAPI_SERVICE_KEY);
 }
 
-/** 웰니스 외 보강 소스: 일반관광 키워드(fire/metal/earth) + 두루누비(wood 걷기) */
+/** 웰니스 외 보강 소스: 일반관광 키워드(5원소) + 두루누비(wood 걷기).
+ *  장소명은 고유명사(데이터) — 영문판에서도 그대로 노출한다(UI 텍스트만 영문 원칙). */
 async function getExtraPlaces(element: Element, locale: PlaceLocale): Promise<Place[]> {
   const parts: Promise<Place[]>[] = [getEnrichmentPlaces(element, locale)];
   if (element === 'wood') parts.push(getDurunubiCourses(locale));

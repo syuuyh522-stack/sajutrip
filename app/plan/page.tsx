@@ -49,6 +49,7 @@ function PlanInner() {
     return null;
   }, [state.items]);
   useEffect(() => {
+    // 장소명은 고유명사(데이터) — 로케일 무관 노출. UI 라벨만 i18n.
     if (!firstArea) { setRelated([]); return; }
     fetch(`/api/related?areaCd=${firstArea.areaCd}&signguCd=${firstArea.signguCd}`)
       .then((r) => r.json())

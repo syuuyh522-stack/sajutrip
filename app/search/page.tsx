@@ -12,7 +12,6 @@ import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 
 const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
-const RECENT = ['온천', '템플스테이', '숲치유'];
 
 function SearchInner() {
   const { t, locale } = useI18n();
@@ -63,14 +62,14 @@ function SearchInner() {
           <section>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{t.search.recent}</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {RECENT.map((r) => (
+              {t.search.recentChips.map((r) => (
                 <button key={r} type="button" onClick={() => setQ(r)} style={chip}>{r}</button>
               ))}
             </div>
           </section>
           <section>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{t.search.festivals}</div>
-            <p style={{ fontSize: 12.5, color: 'var(--muted-2)', margin: 0 }}>축제 API 연동 예정 (Phase 2).</p>
+            <p style={{ fontSize: 12.5, color: 'var(--muted-2)', margin: 0 }}>{t.search.festivalsNote}</p>
           </section>
         </div>
       )}
