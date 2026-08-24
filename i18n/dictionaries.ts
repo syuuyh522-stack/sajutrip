@@ -131,6 +131,10 @@ export interface Dictionary {
     guest: string;
     settings: string;
     language: string;
+    /** {name} 치환 — 로그인 상태 인사 */
+    signedInAs: string;
+    /** 단수 단위 (1곳/1 place) */
+    placeOne: string;
     back: string;
   };
   signup: {
@@ -267,6 +271,8 @@ const en: Dictionary = {
     guest: 'Guest',
     settings: 'Settings',
     language: 'Language',
+    signedInAs: 'Signed in as {name}',
+    placeOne: 'place',
     back: 'Back',
   },
   signup: {
@@ -406,6 +412,8 @@ const ko: Dictionary = {
     editProfile: '프로필 수정',
     settings: '설정',
     language: '언어',
+    signedInAs: '{name} 님',
+    placeOne: '곳',
     guest: '게스트',
     back: '뒤로',
   },

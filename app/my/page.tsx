@@ -41,7 +41,11 @@ function MyInner() {
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <Aurora />
       <header style={{ marginBottom: 20 }}>
-        <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{signedUp && nickname ? nickname : t.my.title}</h1>
+        {/* 제목은 항상 페이지명 — 닉네임은 보조 인사말로 (닉네임이 제목을 대체하면 맥락 상실) */}
+        <h1 style={{ fontSize: 22, fontWeight: 600, margin: 0 }}>{t.my.title}</h1>
+        {signedUp && nickname && (
+          <p style={{ fontSize: 13, color: 'var(--color-text-muted)', margin: '4px 0 0' }}>{t.my.signedInAs.replace('{name}', nickname)}</p>
+        )}
       </header>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
@@ -64,14 +68,14 @@ function MyInner() {
         <section style={{ border: '1px solid var(--line)', borderRadius: 14, padding: '4px 16px' }}>
           {deficient && <Row k={t.my.resonatesWith} v={t.elements[deficient]} />}
           {b.year && <Row k={t.my.birth} v={`${b.year}.${b.month}.${b.day}`} />}
-          <Row k={t.my.savedTrip} v={`${state.items.length} ${t.my.savedTripDesc}`} last />
+          <Row k={t.my.savedTrip} v={`${state.items.length} ${state.items.length === 1 ? t.my.placeOne : t.my.savedTripDesc}`} last />
         </section>
 
         {state.items.length > 0 && (
           <Link href={{ pathname: '/plan', query }} style={{ textDecoration: 'none', color: 'inherit' }}>
             <div style={{ border: '1px solid var(--line)', borderRadius: 14, padding: 14 }}>
               <div style={{ fontSize: 15, fontWeight: 600 }}>{t.my.savedTrip}</div>
-              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{state.start || '—'} · {state.items.length} {t.my.savedTripDesc}</div>
+              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>{state.start || '—'} · {state.items.length} {state.items.length === 1 ? t.my.placeOne : t.my.savedTripDesc}</div>
             </div>
           </Link>
         )}
