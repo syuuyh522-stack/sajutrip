@@ -220,7 +220,7 @@ function ShareInner() {
           {t.share.save}
         </button>
         {/* primary = 火 pill (§1) */}
-        <button type="button" onClick={share} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, background: 'var(--color-fire-strong)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', boxShadow: 'var(--shadow-fab)' }}>
+        <button type="button" onClick={share} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, background: 'var(--color-text)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', boxShadow: 'var(--shadow-fab)' }}>
           {t.share.share}
         </button>
       </div>

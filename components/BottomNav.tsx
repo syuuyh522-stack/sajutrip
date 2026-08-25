@@ -37,7 +37,7 @@ export function BottomNav() {
             aria-current={on ? 'page' : undefined}
             style={{ textDecoration: 'none', flex: 1 }}
           >
-            <span style={{ ...itemStyle, color: on ? 'var(--color-water)' : 'var(--color-text-muted)' }}>
+            <span style={{ ...itemStyle, color: on ? 'var(--color-accent)' : 'var(--color-text-muted)' }}>
               <Icon size={22} />
               {t.nav[id]}
             </span>

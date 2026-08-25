@@ -1,7 +1,7 @@
 'use client';
 
 // 로케일 선택 UI. LOCALES를 순회하므로 언어 추가 시 자동 노출(§6.3).
-// 디자인시스템: 토큰 색만 사용, 탭타깃 44px(§8), 활성=water.
+// 디자인시스템 v2: 활성(선택 상태)=accent 소프트 tint + accent 텍스트(§1 — accent fill 위 흰 글자는 대비 미달).
 import { useI18n } from '../i18n/LanguageProvider';
 import { LOCALES, LOCALE_LABELS } from '../i18n/dictionaries';
 
@@ -29,8 +29,8 @@ export function LanguageSwitch() {
               borderRadius: 'var(--radius-pill)',
               fontSize: 13,
               fontWeight: active ? 600 : 500,
-              background: active ? 'var(--color-water)' : 'transparent',
-              color: active ? '#fff' : 'var(--color-text-muted)',
+              background: active ? 'rgba(108,63,224,.10)' : 'transparent',
+              color: active ? 'var(--color-accent)' : 'var(--color-text-muted)',
               transition: 'all var(--motion-fast)',
             }}
           >

@@ -30,6 +30,7 @@ export interface Dictionary {
     note: string;
     /** 개인정보 마이크로카피 (§7.2 — 생년월일 필드 직하단 필수) */
     privacy: string;
+    dateError: string;
   };
   elements: Record<'wood' | 'fire' | 'earth' | 'metal' | 'water', string>;
   result: {
@@ -204,6 +205,7 @@ const en: Dictionary = {
     cta: 'Read my elements',
     note: 'No account needed to see your reading.',
     privacy: 'We use this only to calculate your elements. It is not shared, and you can delete it anytime in Settings.',
+    dateError: "That date doesn't look right — check the day and month.",
   },
   elements: { wood: 'Wood', fire: 'Fire', earth: 'Earth', metal: 'Metal', water: 'Water' },
   result: {
@@ -389,6 +391,7 @@ const ko: Dictionary = {
     cta: '내 오행 보기',
     note: '회원가입 없이 결과를 볼 수 있어요.',
     privacy: '입력한 생년월일은 오행 계산에만 사용해요. 외부에 공유되지 않으며 설정에서 언제든 삭제할 수 있어요.',
+    dateError: '날짜가 맞지 않아요 — 일과 월을 확인해 주세요.',
   },
   elements: { wood: '목 木', fire: '화 火', earth: '토 土', metal: '금 金', water: '수 水' },
   result: {

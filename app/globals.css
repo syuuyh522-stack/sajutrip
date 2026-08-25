@@ -8,8 +8,8 @@
   --muted-2: #9B99A6;
   --line: rgba(185, 180, 199, 0.35);
   --paper: var(--color-surface);
-  --accent: var(--color-water);
-  --accent-soft: rgba(74, 85, 120, 0.10);
+  --accent: var(--color-accent); /* v2: 링크·선택 상태 = 보라 accent (§1) */
+  --accent-soft: rgba(108, 63, 224, 0.10);
   --sans: var(--font-ui);
   --mono: var(--font-mono);
   --serif: var(--font-display);

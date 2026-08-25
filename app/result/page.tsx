@@ -73,7 +73,7 @@ function ResultInner() {
       </header>
 
       {/* 한글엔 자간 벌림이 어색 — ko는 letterSpacing 0 */}
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', color: 'var(--color-water)', margin: 0 }}>
+      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', color: 'var(--color-text-muted)', margin: 0 }}>
         {t.result.eyebrow}
       </p>
 
@@ -110,7 +110,7 @@ function ResultInner() {
           <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '26px 22px', color: EL_ON[data.excess], overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
             <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />
             <div style={{ position: 'relative' }}>
-              {/* fill 위 텍스트 = EL_ON (§1.1 — 水는 어두운 fill이라 흰색, 나머지는 잉크) */}
+              {/* fill 위 텍스트 = EL_ON (v2 §1.1 — 파스텔 fill 전부 잉크 텍스트) */}
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '6px 0 10px', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
               <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0, color: EL_ON_MUTED[data.excess] }}>{t.character[data.excess].desc}</p>
@@ -199,7 +199,7 @@ function ResultInner() {
               </div>
               <Link
                 href={{ pathname: '/explore', query: birth }}
-                style={{ display: 'block', textAlign: 'center', marginTop: 14, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-fire-strong)', color: '#fff', fontSize: 16, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
+                style={{ display: 'block', textAlign: 'center', marginTop: 14, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-text)', color: '#fff', fontSize: 16, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
               >
                 {t.result.seeAll} →
               </Link>
@@ -218,7 +218,7 @@ function PillarCard({ label, pillar }: { label: string; pillar: Pillar }) {
   return (
     <div style={{ flex: 1, border: '1px solid var(--glass-brd)', borderRadius: 14, overflow: 'hidden', textAlign: 'center', background: 'rgba(255,255,255,.4)' }}>
       <div style={{ fontSize: 13, color: 'var(--muted-2)', padding: '7px 0 4px' }}>{label}</div>
-      {/* fill 위 간지 = EL_ON (水 fill은 어두워 흰 글자, §1.1) */}
+      {/* fill 위 간지 = EL_ON (v2: 파스텔 fill 위 잉크 텍스트, §1.1) */}
       <div style={{ fontSize: 32, fontWeight: 700, lineHeight: 1.15, color: EL_ON[stemEl], background: ELEMENT_COLOR[stemEl], padding: '8px 0' }}>
         {pillar.stem}
       </div>

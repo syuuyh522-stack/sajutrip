@@ -175,10 +175,10 @@ export default function PlacePage() {
 
             <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>{t.pdp.quiet}</h2>
             <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 8 }}>{t.pdp.demo}</div>
-            {/* 혼잡 표시 — 전용 semantic 토큰(§7.3), 원소색 재사용 금지 */}
+            {/* 혼잡 표시 — v2 §1: status는 뉴트럴(잉크 농도), 색으로 의미 전달 금지. 높이+농도가 정보 */}
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 56 }}>
               {CROWD.map((h, i) => (
-                <div key={DAYS[i]} style={{ flex: 1, height: `${h}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'var(--color-crowd-high)' : h <= 40 ? 'var(--color-crowd-low)' : 'rgba(185,180,199,.35)' }} />
+                <div key={DAYS[i]} style={{ flex: 1, height: `${h}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'rgba(28,27,31,.5)' : h <= 40 ? 'rgba(28,27,31,.12)' : 'rgba(28,27,31,.26)' }} />
               ))}
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)', marginTop: 4 }}>
@@ -207,7 +207,7 @@ export default function PlacePage() {
                     style={{
                       width: '100%', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', cursor: added ? 'default' : 'pointer',
                       fontSize: 16, fontWeight: 600, border: 0,
-                      background: 'var(--color-fire-strong)', color: '#fff',
+                      background: 'var(--color-text)', color: '#fff',
                       opacity: added ? 0.4 : 1, boxShadow: added ? 'none' : 'var(--shadow-fab)',
                       transition: 'opacity var(--motion-fast)',
                     }}
@@ -215,7 +215,7 @@ export default function PlacePage() {
                     {added ? `✓ ${t.pdp.added}` : `${t.pdp.addPlan} +`}
                   </button>
                   {added && (
-                    <Link href={{ pathname: '/plan', query: backQuery }} style={{ display: 'block', textAlign: 'center', marginTop: 10, fontSize: 13, color: 'var(--color-water)', textDecoration: 'none' }}>
+                    <Link href={{ pathname: '/plan', query: backQuery }} style={{ display: 'block', textAlign: 'center', marginTop: 10, fontSize: 13, color: 'var(--color-accent)', textDecoration: 'none' }}>
                       {t.pdp.viewPlan} →
                     </Link>
                   )}
@@ -233,7 +233,7 @@ export default function PlacePage() {
                           type="button"
                           disabled={!draftStart || !draftEnd}
                           onClick={() => { setDates(draftStart, draftEnd); setDateSheet(false); doAdd(); }}
-                          style={{ width: '100%', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', background: 'var(--color-fire-strong)', opacity: !draftStart || !draftEnd ? 0.4 : 1, boxShadow: 'var(--shadow-fab)' }}
+                          style={{ width: '100%', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', background: 'var(--color-text)', opacity: !draftStart || !draftEnd ? 0.4 : 1, boxShadow: 'var(--shadow-fab)' }}
                         >
                           {t.pdp.dateConfirm}
                         </button>

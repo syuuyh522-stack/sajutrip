@@ -78,7 +78,7 @@ function PlanInner() {
           <div className="glass" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 14px' }}>
             <span aria-hidden="true" style={{ width: 28, height: 28, borderRadius: 8, background: ELEMENT_COLOR[deficient], flex: '0 0 auto' }} />
             <span style={{ flex: 1, fontSize: 13 }}>{t.plan.target}: <b style={{ color: EL_INK[deficient] }}>{t.elements[deficient]}</b></span>
-            <span style={{ fontSize: 13, color: 'var(--color-water)', fontWeight: 600 }}>🔒 {t.plan.locked}</span>
+            <span style={{ fontSize: 13, color: 'var(--color-text-muted)', fontWeight: 600 }}>🔒 {t.plan.locked}</span>
           </div>
         )}
 
@@ -100,7 +100,8 @@ function PlanInner() {
             return (
               <section key={d}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
-                  <span style={{ width: 24, height: 24, borderRadius: 7, background: 'var(--accent)', color: '#fff', display: 'grid', placeItems: 'center', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 600 }}>{d}</span>
+                  {/* Day 마커 — v2 §7.4: 레일 마커는 mono, 잉크 fill(원소색·accent 금지) */}
+                  <span style={{ width: 24, height: 24, borderRadius: 7, background: 'var(--color-text)', color: '#fff', display: 'grid', placeItems: 'center', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 600 }}>{d}</span>
                   <span style={{ fontSize: 16, fontWeight: 600 }}>{t.plan.day} {d}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -109,17 +110,17 @@ function PlanInner() {
                     // PO 피드백 #9: 체크인을 Day 스탑에 통합 — 체크 = 엘리먼트 수집
                     return (
                       <div key={it.contentId} className="glass" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px' }}>
+                        {/* 체크(수집) = 선택 상태 → accent (§1). 스탑 카드에 원소 fill 금지(§1 절제 규칙) */}
                         <input
                           type="checkbox"
                           checked={collected}
                           onChange={() => { toggleCollect(it.contentId, it.element); if (!collected) track('checkin', { contentId: it.contentId, element: it.element }); }}
                           aria-label={`${t.checkin.title}: ${it.name}`}
-                          style={{ width: 18, height: 18, accentColor: 'var(--color-water)', flex: '0 0 auto' }}
+                          style={{ width: 18, height: 18, accentColor: 'var(--color-accent)', flex: '0 0 auto' }}
                         />
-                        {it.element && <span style={{ width: 8, height: 34, borderRadius: 4, background: ELEMENT_COLOR[it.element], flex: '0 0 auto' }} />}
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: collected ? 'line-through' : 'none', opacity: collected ? 0.7 : 1 }}>{it.name}</div>
-                          <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+                          <div style={{ fontSize: 13, color: collected && it.element ? EL_INK[it.element] : 'var(--muted)', fontWeight: collected ? 600 : 400 }}>
                             {collected && it.element ? `+1 ${t.elements[it.element]}` : it.region}
                           </div>
                         </div>
@@ -164,7 +165,7 @@ function PlanInner() {
               const regionalIncluded = state.items.some((it) => !CAPITAL.some((c) => it.region.includes(c)));
               track('plan_complete', { items: state.items.length, regionalIncluded, days: dayCount });
             }}
-            style={{ display: 'block', textAlign: 'center', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-fire-strong)', color: '#fff', fontSize: 16, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
+            style={{ display: 'block', textAlign: 'center', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-text)', color: '#fff', fontSize: 16, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
           >
             {t.plan.finish} →
           </Link>

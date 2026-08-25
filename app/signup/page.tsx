@@ -59,7 +59,7 @@ function SignupInner() {
         </span>
       </label>
 
-      <button type="button" onClick={create} style={{ width: '100%', minHeight: 48, marginTop: 24, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', background: 'var(--color-fire-strong)', boxShadow: 'var(--shadow-fab)' }}>
+      <button type="button" onClick={create} style={{ width: '100%', minHeight: 48, marginTop: 24, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', background: 'var(--color-text)', boxShadow: 'var(--shadow-fab)' }}>
         {t.signup.create}
       </button>
       <Link href={{ pathname: '/my', query }} style={{ display: 'block', textAlign: 'center', marginTop: 10, fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>{t.signup.later}</Link>

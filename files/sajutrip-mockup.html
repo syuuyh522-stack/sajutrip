@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>K-Saju Compass — Screen Mockups</title>
+<style>
+  @font-face { font-family:'Pretendard'; src:url('./fonts/Pretendard-Regular.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face { font-family:'Pretendard'; src:url('./fonts/Pretendard-Medium.woff2') format('woff2'); font-weight:500; font-display:swap; }
+  @font-face { font-family:'Pretendard'; src:url('./fonts/Pretendard-SemiBold.woff2') format('woff2'); font-weight:600; font-display:swap; }
+  @font-face { font-family:'Pretendard'; src:url('./fonts/Pretendard-Bold.woff2') format('woff2'); font-weight:700; font-display:swap; }
+  @font-face { font-family:'Fraunces'; src:url('./fonts/Fraunces-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+  @font-face { font-family:'Fraunces'; src:url('./fonts/Fraunces-600.woff2') format('woff2'); font-weight:600; font-display:swap; }
+  @font-face { font-family:'IBM Plex Mono'; src:url('./fonts/IBMPlexMono-400.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face { font-family:'IBM Plex Mono'; src:url('./fonts/IBMPlexMono-500.woff2') format('woff2'); font-weight:500; font-display:swap; }
+</style>
+<style>
+  :root {
+    --color-bg: #F8F6FB;
+    --color-surface: #FFFFFF;
+    --color-wood: #5FE0A8;
+    --color-fire: #FF9B85;
+    --color-earth: #FFC768;
+    --color-metal: #B9A4F7;
+    --color-water: #7CB4F8;
+    --color-text: #1C1B1F;
+    --color-accent: #6C3FE0;
+    --color-text-muted: #6E6C7A;
+    --color-wood-strong: #0F7A4C;
+    --color-fire-strong: #C64328;
+    --color-earth-strong: #9C6B0A;
+    --color-metal-strong: #5A3FB0;
+    --color-water-strong: #2C63B0;
+    --color-status-bg: rgba(28,27,31,0.06);
+    --color-status-text: #1C1B1F;
+    --color-error: #C23B3B;
+    --font-display: 'Fraunces', serif;
+    --font-ui: 'Pretendard', -apple-system, sans-serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --shadow-card: 0 4px 16px rgba(43,42,51,0.06);
+    --shadow-card-raised: 0 8px 24px rgba(43,42,51,0.10);
+    --shadow-fab: 0 6px 20px rgba(28,27,31,0.25);
+    --surface-glass-fill: rgba(255,255,255,0.72);
+    --border-glass: 1px solid rgba(255,255,255,0.5);
+  }
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    background: #E9E4F0;
+    font-family: var(--font-ui);
+    color: var(--color-text);
+    padding: 48px 24px;
+  }
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    justify-content: center;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .frame-wrap { text-align: center; }
+  .frame-label {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    margin-bottom: 12px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.02em;
+  }
+  .phone {
+    width: 320px;
+    height: 690px;
+    background: var(--color-bg);
+    border-radius: 44px;
+    border: 8px solid #1c1b1f;
+    box-shadow: 0 20px 60px rgba(43,42,51,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .statusbar {
+    display:flex; justify-content: space-between; align-items:center;
+    padding: 16px 24px 4px; font-size:13px; font-weight:600;
+  }
+  .screen { height: 100%; display:flex; flex-direction:column; }
+  .content { flex:1; overflow:hidden; padding: 0 20px 20px; }
+
+  /* ---- Orb ---- */
+  .orb {
+    border-radius: 50%;
+    background: conic-gradient(
+      from 200deg,
+      var(--color-wood) 0deg 108deg,
+      var(--color-fire) 108deg 144deg,
+      var(--color-earth) 144deg 216deg,
+      var(--color-metal) 216deg 270deg,
+      var(--color-water) 270deg 360deg
+    );
+    filter: blur(0.5px) saturate(1.3);
+    position: relative;
+  }
+  .orb::after {
+    content:'';
+    position:absolute; inset:0; border-radius:50%;
+    background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.85), rgba(255,255,255,0) 45%),
+                radial-gradient(circle at 65% 70%, rgba(255,255,255,0.15), rgba(255,255,255,0) 60%);
+    mix-blend-mode: screen;
+    animation: pulse 6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:0.7} 50%{opacity:1} }
+
+  /* ---- Screen 1: Onboarding / Birth Input ---- */
+  .s1 .content { display:flex; flex-direction:column; padding-top: 20px; }
+  .s1 h1 { font-family: var(--font-display); font-size: 26px; line-height:34px; font-weight:500; margin-bottom:6px; }
+  .s1 p.sub { font-size:14px; color:var(--color-text-muted); margin-bottom:28px; }
+  .field-label { font-size:13px; color:var(--color-text-muted); margin-bottom:6px; font-weight:500; }
+  .field {
+    background: var(--color-surface); border-radius:12px; padding:14px 16px;
+    font-family: var(--font-mono); font-size:16px; margin-bottom:16px;
+    box-shadow: var(--shadow-card); display:flex; justify-content:space-between; align-items:center;
+  }
+  .cal-toggle {
+    display:flex; gap:8px; margin-bottom: 20px;
+  }
+  .chip {
+    font-size:13px; padding:6px 14px; border-radius:999px; background: rgba(185,180,199,0.25); color: var(--color-text-muted);
+  }
+  .chip.active { background: var(--color-metal); color: var(--color-text); font-weight:600; }
+  .unsure-link {
+    font-size:13px; color: var(--color-accent); text-decoration:underline; margin-bottom: 6px; display:inline-block;
+  }
+  .privacy-note { font-size:12px; color: var(--color-text-muted); line-height:17px; margin-top:auto; margin-bottom:16px; }
+  .btn-primary {
+    background: var(--color-text); color:white; border:none; padding:16px; border-radius:999px;
+    font-family: var(--font-ui); font-size:16px; font-weight:600; width:100%; box-shadow: 0 6px 20px rgba(28,27,31,0.25);
+  }
+
+  /* ---- Screen 2: Reading Result ---- */
+  .s2 .content { display:flex; flex-direction:column; align-items:center; padding-top:24px; }
+  .s2 .eyebrow { font-size:13px; color: var(--color-text-muted); font-family: var(--font-mono); margin-bottom: 8px; }
+  .s2 h1 { font-family: var(--font-display); font-size:28px; text-align:center; line-height:36px; margin-bottom: 28px; font-weight:500;}
+  .s2 .orb { width:180px; height:180px; margin-bottom: 28px; }
+  .breakdown { width:100%; }
+  .bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .bar-label { font-size:13px; width:56px; color:var(--color-text-muted); }
+  .bar-track { flex:1; height:8px; border-radius:4px; background:rgba(185,180,199,0.2); overflow:hidden; }
+  .bar-fill { height:100%; border-radius:4px; }
+  .bar-pct { font-family: var(--font-mono); font-size:13px; width:34px; text-align:right; }
+  .trait-card {
+    background: var(--surface-glass-fill); backdrop-filter: blur(20px); border: var(--border-glass);
+    box-shadow: var(--shadow-card); border-radius:20px; padding:18px; margin-top:20px; width:100%;
+  }
+  .trait-card p { font-size:14px; line-height:21px; color: var(--color-text); }
+  .trait-card .tag { font-size:12px; color: var(--color-water-strong); font-weight:600; margin-bottom:6px; display:block; }
+
+  /* ---- Screen 3: Home / Recommendations ---- */
+  .s3 .content { padding-top: 8px; overflow-y:auto; }
+  .s3 .greet { font-family: var(--font-display); font-size:22px; margin: 12px 0 4px; }
+  .s3 .greet-sub { font-size:13px; color:var(--color-text-muted); margin-bottom:18px; }
+  .mini-orb-row { display:flex; align-items:center; gap:10px; margin-bottom: 22px; background: var(--surface-glass-fill); backdrop-filter: blur(20px); border: var(--border-glass); border-radius:16px; padding:12px 14px; box-shadow: var(--shadow-card);}
+  .mini-orb { width:36px; height:36px; flex-shrink:0; }
+  .mini-orb-row .txt { font-size:12px; color: var(--color-text-muted); }
+  .mini-orb-row .txt b { color: var(--color-text); font-size:13px; }
+  .section-title { font-size:15px; font-weight:600; margin-bottom:12px; }
+  .dest-card {
+    background: var(--color-surface); border-radius:20px; overflow:hidden; box-shadow: var(--shadow-card); margin-bottom:16px;
+  }
+  .dest-photo { height:120px; background-size:cover; background-position:center; position:relative; }
+  .badge {
+    position:absolute; top:10px; left:10px; font-size:11px; font-weight:700; padding:5px 10px; border-radius:999px;
+    display:flex; align-items:center; gap:4px;
+  }
+  .badge { background: rgba(255,255,255,0.92); color: var(--color-text); }
+  .dest-body { padding:12px 14px 14px; }
+  .dest-body h3 { font-size:15px; margin-bottom:4px; }
+  .dest-body p { font-size:12px; color: var(--color-text-muted); }
+
+  /* ---- Screen 4: Itinerary Timeline ---- */
+  .s4 .content { padding-top:8px; overflow-y:auto; }
+  .s4 h1 { font-size:18px; font-weight:700; margin: 12px 0 18px; }
+  .day-row { display:flex; gap:14px; margin-bottom:18px; }
+  .rail { width:56px; flex-shrink:0; text-align:right; }
+  .rail .time { font-family: var(--font-mono); font-size:13px; color: var(--color-water-strong); font-weight:600; }
+  .stop-card {
+    flex:1; background: var(--color-surface); border-radius:16px; padding:14px; box-shadow: var(--shadow-card);
+    position: relative;
+  }
+  .stop-card.route-alt::before {
+    content:''; position:absolute; left:-22px; top:-18px; width:2px; height:18px;
+    background: repeating-linear-gradient(to bottom, var(--color-water) 0 4px, transparent 4px 8px);
+  }
+  .stop-card:not(.route-alt)::before {
+    content:''; position:absolute; left:-22px; top:-18px; width:2px; height:18px; background: var(--color-water);
+  }
+  .stop-card h4 { font-size:14px; margin-bottom:3px; }
+  .stop-card .meta { font-size:12px; color: var(--color-text-muted); margin-bottom:8px; }
+  .checkin-btn {
+    width:100%; padding:10px; border-radius:999px; border:none; background: rgba(28,27,31,0.06);
+    color: var(--color-text); font-weight:700; font-size:13px;
+  }
+</style>
+</head>
+<body>
+<div class="gallery">
+
+  <div class="frame-wrap">
+    <div class="frame-label">01 · Birth Input (Onboarding)</div>
+    <div class="phone s1">
+      <div class="screen">
+        <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+        <div class="content">
+          <h1>When were you born?</h1>
+          <p class="sub">We'll calculate your elemental profile from this.</p>
+
+          <div class="field-label">Date of birth</div>
+          <div class="field"><span>1996 · 07 · 14</span><span style="color:var(--color-metal)">▾</span></div>
+
+          <div class="cal-toggle">
+            <div class="chip active">Solar</div>
+            <div class="chip">Lunar</div>
+          </div>
+
+          <div class="field-label">Time of birth</div>
+          <div class="field" style="color:var(--color-text-muted)"><span>--:--</span><span style="color:var(--color-metal)">▾</span></div>
+          <a class="unsure-link">Not sure of your birth time?</a>
+
+          <div class="privacy-note">We use this only to calculate your elements. It's not shared and you can delete it anytime in Settings.</div>
+          <button class="btn-primary">See your elements</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="frame-wrap">
+    <div class="frame-label">02 · Element Reading Result</div>
+    <div class="phone s2">
+      <div class="screen">
+        <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+        <div class="content">
+          <div class="eyebrow">YOUR ELEMENTAL PROFILE</div>
+          <h1>A grounded soul<br>with quiet fire.</h1>
+          <div class="orb"></div>
+          <div class="breakdown">
+            <div class="bar-row"><span class="bar-label">Wood</span><div class="bar-track"><div class="bar-fill" style="width:30%;background:var(--color-wood)"></div></div><span class="bar-pct">30%</span></div>
+            <div class="bar-row"><span class="bar-label">Fire</span><div class="bar-track"><div class="bar-fill" style="width:10%;background:var(--color-fire)"></div></div><span class="bar-pct">10%</span></div>
+            <div class="bar-row"><span class="bar-label">Earth</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--color-earth)"></div></div><span class="bar-pct">20%</span></div>
+            <div class="bar-row"><span class="bar-label">Metal</span><div class="bar-track"><div class="bar-fill" style="width:15%;background:var(--color-metal)"></div></div><span class="bar-pct">15%</span></div>
+            <div class="bar-row"><span class="bar-label">Water</span><div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--color-water)"></div></div><span class="bar-pct">25%</span></div>
+          </div>
+          <div class="trait-card">
+            <span class="tag">WOOD — YOUR STRONGEST ELEMENT</span>
+            <p>You grow steadily and plan ahead. Destinations with nature and open pace tend to suit you best.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="frame-wrap">
+    <div class="frame-label">03 · Home / Recommendations</div>
+    <div class="phone s3">
+      <div class="screen">
+        <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+        <div class="content">
+          <div class="greet">Hi, Sonya</div>
+          <div class="greet-sub">Your trip to Jeju is 12 days away</div>
+
+          <div class="mini-orb-row">
+            <div class="orb mini-orb"></div>
+            <div class="txt">Strongest element<br><b>Wood — grounded &amp; growth-seeking</b></div>
+          </div>
+
+          <div class="section-title">Picked for your elements</div>
+
+          <div class="dest-card">
+            <div class="dest-photo" style="background:linear-gradient(160deg,#cdd9c9,#9fb8a6,#6f8f86)">
+              <div class="badge">↓ Off-peak pick</div>
+            </div>
+            <div class="dest-body">
+              <h3>Bijarim Forest</h3>
+              <p>Quiet, slow-paced — fits your Wood energy</p>
+            </div>
+          </div>
+
+          <div class="dest-card">
+            <div class="dest-photo" style="background:linear-gradient(160deg,#e8c9b0,#dba184,#b97355)">
+              <div class="badge">↑ Busy right now</div>
+            </div>
+            <div class="dest-body">
+              <h3>Seongsan Ilchulbong</h3>
+              <p>Iconic, but consider early morning</p>
+            </div>
+          </div>
+
+          <div class="dest-card">
+            <div class="dest-photo" style="background:linear-gradient(160deg,#d7d3e0,#a9a2bd,#7d7396)">
+              <div class="badge">✦ Hidden gem</div>
+            </div>
+            <div class="dest-body">
+              <h3>Sinsan-ri Coastline</h3>
+              <p>Rarely crowded, near your route</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="frame-wrap">
+    <div class="frame-label">04 · Itinerary Timeline</div>
+    <div class="phone s4">
+      <div class="screen">
+        <div class="statusbar"><span>9:41</span><span>●●●</span></div>
+        <div class="content">
+          <h1>Day 2 — Jeju East</h1>
+
+          <div class="day-row">
+            <div class="rail"><span class="time">09:00</span></div>
+            <div class="stop-card">
+              <h4>Bijarim Forest</h4>
+              <div class="meta">Quiet path · 45 min walk</div>
+              <button class="checkin-btn">Check in here</button>
+            </div>
+          </div>
+
+          <div class="day-row">
+            <div class="rail"><span class="time">11:30</span></div>
+            <div class="stop-card route-alt">
+              <h4>Sinsan-ri Coastline</h4>
+              <div class="meta">Alternate route — avoids Seongsan crowds</div>
+              <button class="checkin-btn">Check in here</button>
+            </div>
+          </div>
+
+          <div class="day-row">
+            <div class="rail"><span class="time">14:00</span></div>
+            <div class="stop-card">
+              <h4>Woljeongri Beach Cafe</h4>
+              <div class="meta">Lunch stop · 12 min from previous</div>
+              <button class="checkin-btn">Check in here</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

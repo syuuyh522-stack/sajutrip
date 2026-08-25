@@ -1,12 +1,70 @@
 /*
-  K-Saju Compass — Design Tokens (v2)
+  K-Saju Compass — Design Tokens
   Source of truth for all color/shadow/blur/type values referenced in
   sajutrip-design-system.md. Import this file rather than re-declaring
   values inline — keeps design doc and code from drifting apart.
 
-  폰트는 layout.tsx에서 셀프호스팅 로드(pretendard dynamic subset + @fontsource)
-  — 원본 패키지의 @font-face 블록과 동일 서체·웨이트라 여기서는 생략(§2.1 의도 충족).
+  Font files ship alongside this CSS in ./fonts — self-hosted per §2.1,
+  no CDN dependency. Place the /fonts folder next to wherever this CSS
+  is served from, or update the url() paths below to match your build.
 */
+
+@font-face {
+  font-family: 'Pretendard';
+  src: url('./fonts/Pretendard-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('./fonts/Pretendard-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('./fonts/Pretendard-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pretendard';
+  src: url('./fonts/Pretendard-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Fraunces';
+  src: url('./fonts/Fraunces-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Fraunces';
+  src: url('./fonts/Fraunces-600.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('./fonts/IBMPlexMono-400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  src: url('./fonts/IBMPlexMono-500.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   color-scheme: light; /* forces light mode, see design doc §0 */
@@ -148,6 +206,28 @@
   padding: 5px 10px;
   font-size: var(--text-caption);
   font-weight: var(--weight-label);
+}
+
+/* Element Orb — the one place all five element colors appear together (see §5) */
+.element-orb {
+  border-radius: 50%;
+  background: conic-gradient(
+    from 200deg,
+    var(--color-wood) var(--wood-deg, 0deg),
+    var(--color-fire) var(--wood-deg, 0deg) var(--fire-deg, 108deg),
+    var(--color-earth) var(--fire-deg, 108deg) var(--earth-deg, 144deg),
+    var(--color-metal) var(--earth-deg, 144deg) var(--metal-deg, 216deg),
+    var(--color-water) var(--metal-deg, 216deg) 360deg
+  );
+  position: relative;
+}
+.element-orb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.9), rgba(255,255,255,0) 50%);
+  mix-blend-mode: screen;
 }
 
 /* Glass card utility — apply all four properties together per design doc §3.1 */

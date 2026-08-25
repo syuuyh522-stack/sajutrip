@@ -112,7 +112,7 @@ function MyInner() {
           </div>
         </section>
 
-        <Link href={{ pathname: '/signup', query }} style={{ display: 'block', textAlign: 'center', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', textDecoration: 'none', fontSize: 16, fontWeight: 600, ...(signedUp ? { border: '1.5px solid rgba(185,180,199,.5)', color: 'var(--color-text)', background: 'var(--color-surface)' } : { background: 'var(--color-fire-strong)', color: '#fff', boxShadow: 'var(--shadow-fab)' }) }}>
+        <Link href={{ pathname: '/signup', query }} style={{ display: 'block', textAlign: 'center', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', textDecoration: 'none', fontSize: 16, fontWeight: 600, ...(signedUp ? { border: '1.5px solid rgba(185,180,199,.5)', color: 'var(--color-text)', background: 'var(--color-surface)' } : { background: 'var(--color-text)', color: '#fff', boxShadow: 'var(--shadow-fab)' }) }}>
           {signedUp ? t.my.editProfile : t.my.signUp}
         </Link>
 
