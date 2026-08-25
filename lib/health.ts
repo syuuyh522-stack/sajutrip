@@ -9,13 +9,24 @@ export interface ApiCheck {
   note?: string;
 }
 
+async function once(url: string, validate: (body: string) => boolean): Promise<{ ok: boolean; status: number; note?: string }> {
+  const res = await fetch(url, { cache: 'no-store' });
+  const body = await res.text();
+  const ok = res.ok && validate(body);
+  return { ok, status: res.status, note: ok ? undefined : body.slice(0, 140) };
+}
+
+// KTO 게이트웨이가 간헐적으로 단발 500을 반환함(직접 재현·재시도 시 정상) — 1회 재시도로 플래핑 흡수.
+// 재시도 역시 실시간 호출이라 공모전 실시간 요건과 무관.
 async function timed(name: string, url: string, validate: (body: string) => boolean): Promise<ApiCheck> {
   const start = Date.now();
   try {
-    const res = await fetch(url, { cache: 'no-store' });
-    const body = await res.text();
-    const ok = res.ok && validate(body);
-    return { name, ok, status: res.status, latencyMs: Date.now() - start, note: ok ? undefined : body.slice(0, 140) };
+    let r = await once(url, validate);
+    if (!r.ok) {
+      await new Promise((res) => setTimeout(res, 400));
+      r = await once(url, validate);
+    }
+    return { name, ok: r.ok, status: r.status, latencyMs: Date.now() - start, note: r.note };
   } catch (e) {
     return { name, ok: false, status: 0, latencyMs: Date.now() - start, note: String(e).slice(0, 140) };
   }
