@@ -12,14 +12,18 @@ import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import { ElementOrb } from '../../components/ElementOrb';
+import { displayName } from '../../lib/ui/romanize';
+import { useResolvedPlaceNames } from '../../lib/ui/useResolvedPlaceNames';
 import type { Element, ElementDistribution } from '../../types/saju';
 
 const ORDER: Element[] = ['wood', 'fire', 'earth', 'metal', 'water'];
 const COLOR = EL_COLOR; // 공식 팔레트
 
 function MyInner() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { birth, signedUp, nickname, bookmarks, collectedCount } = useProfile();
+  // 찜도 저장 시점 로케일 스냅샷 — 현재 로케일 이름으로 재조회
+  const resolvedBm = useResolvedPlaceNames(bookmarks, locale);
   const { state } = useItinerary();
   const params = useSearchParams();
 
@@ -98,17 +102,20 @@ function MyInner() {
           <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>{t.my.bookmarks}</div>
           {bookmarks.length === 0 && <p style={{ fontSize: 13, color: 'var(--muted-2)', margin: 0 }}>{t.my.noBookmarks}</p>}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {bookmarks.map((bm) => (
-              <Link key={bm.contentId} href={{ pathname: `/place/${bm.contentId}`, query: { ...query, ...(bm.element ? { element: bm.element } : {}) } }} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, border: '1px solid var(--line)', borderRadius: 12, padding: '10px 12px' }}>
-                  {bm.element && <span style={{ width: 8, height: 30, borderRadius: 4, background: COLOR[bm.element], flex: '0 0 auto' }} />}
-                  <div style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{bm.name}</div>
-                    <div style={{ fontSize: 13, color: 'var(--muted)' }}>{bm.region}</div>
+            {bookmarks.map((bm) => {
+              const raw = resolvedBm[bm.contentId] ?? { name: bm.name, region: bm.region };
+              const dn = displayName(raw.name, locale);
+              return (
+                <Link key={bm.contentId} href={{ pathname: `/place/${bm.contentId}`, query: { ...query, ...(bm.element ? { element: bm.element } : {}) } }} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, border: '1px solid var(--line)', borderRadius: 12, padding: '10px 12px' }}>
+                    <div style={{ minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dn.primary}</div>
+                      <div style={{ fontSize: 13, color: 'var(--muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{[dn.hangul, raw.region].filter(Boolean).join(' · ')}</div>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </section>
 

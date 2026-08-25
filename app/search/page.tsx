@@ -7,11 +7,8 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
-import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
-import type { Element } from '../../types/saju';
+import { displayName } from '../../lib/ui/romanize';
 import type { Place } from '../../types/place';
-
-const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
 
 interface Festival { contentId: string; name: string; region: string; start: string; end: string; image?: string }
 
@@ -125,18 +122,21 @@ function SearchInner() {
         <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', gap: 12 }}>
           {loading && <p style={{ color: 'var(--muted)' }}>…</p>}
           {!loading && results.length === 0 && <p style={{ color: 'var(--muted)' }}>{t.search.empty}</p>}
-          {results.map((p) => (
-            <Link key={p.contentId} href={{ pathname: `/place/${p.contentId}`, query: { ...birth, ...(p.primaryElement ? { element: p.primaryElement } : {}) } }} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center', border: '1px solid var(--line)', borderRadius: 14, padding: 10 }}>
-                {/* 썸네일 폴백 뉴트럴 — 검색 결과에 원소색 다색 노출 금지 (v2 §1 절제 규칙) */}
-                <div style={{ width: 54, height: 54, borderRadius: 12, flex: '0 0 auto', background: p.image ? `center/cover no-repeat url(${p.image})` : 'rgba(185,180,199,.35)' }} />
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--muted)' }}>{p.region}</div>
+          {results.map((p) => {
+            const dn = displayName(p.name, locale);
+            return (
+              <Link key={p.contentId} href={{ pathname: `/place/${p.contentId}`, query: { ...birth, ...(p.primaryElement ? { element: p.primaryElement } : {}) } }} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', border: '1px solid var(--line)', borderRadius: 14, padding: 10 }}>
+                  {/* 썸네일 폴백 뉴트럴 — 검색 결과에 원소색 다색 노출 금지 (v2 §1 절제 규칙) */}
+                  <div style={{ width: 54, height: 54, borderRadius: 12, flex: '0 0 auto', background: p.image ? `center/cover no-repeat url(${p.image})` : 'rgba(185,180,199,.35)' }} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dn.primary}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{[dn.hangul, p.region].filter(Boolean).join(' · ')}</div>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       )}
       <BottomNav />

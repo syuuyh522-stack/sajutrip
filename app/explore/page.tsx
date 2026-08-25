@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK, elGradient } from '../../lib/ui/elements';
+import { displayName } from '../../lib/ui/romanize';
 import { track } from '../../lib/analytics/track';
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
@@ -79,7 +80,7 @@ function ExploreInner() {
             href={{ pathname: `/place/${p.contentId}`, query: { ...birth, ...(activeElement ? { element: activeElement } : {}) } }}
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            <PlaceCard place={p} element={activeElement} />
+            <PlaceCard place={p} element={activeElement} locale={locale} />
           </Link>
         ))}
       </div>
@@ -110,14 +111,16 @@ function Tab({ active, element, label, onClick }: { active: boolean; element: El
 }
 
 // 장소 카드 — 글래스 서피스, 이미지 폴백은 원소 그라디언트(§7.3)
-function PlaceCard({ place, element }: { place: Place; element: Element | null }) {
+// 순한글 고유명(두루누비 등)은 en에서 로마자 主표기 + 한글 병기
+function PlaceCard({ place, element, locale }: { place: Place; element: Element | null; locale: string }) {
   const fallback = element ? elGradient(element) : 'var(--color-metal)';
+  const dn = displayName(place.name, locale);
   return (
     <div className="glass" style={{ overflow: 'hidden' }}>
       <div style={{ height: 130, background: place.image ? `center/cover no-repeat url(${place.image})` : fallback }} />
       <div style={{ padding: '12px 16px' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-text-muted)' }}>{place.region}</div>
-        <div style={{ fontSize: 16, fontWeight: 600, marginTop: 3 }}>{place.name}</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-text-muted)' }}>{[place.region, dn.hangul].filter(Boolean).join(' · ')}</div>
+        <div style={{ fontSize: 16, fontWeight: 600, marginTop: 3 }}>{dn.primary}</div>
       </div>
     </div>
   );

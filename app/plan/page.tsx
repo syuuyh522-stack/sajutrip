@@ -12,6 +12,8 @@ import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import { relatedAreaFor } from '../../config/related-region';
 import { track } from '../../lib/analytics/track';
+import { displayName } from '../../lib/ui/romanize';
+import { useResolvedPlaceNames } from '../../lib/ui/useResolvedPlaceNames';
 import type { Element } from '../../types/saju';
 
 const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
@@ -19,7 +21,7 @@ const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
 interface RelatedSpot { name: string; region: string; category: string; rank: number }
 
 function PlanInner() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { state, dayCount, setDates, setItemDay, removeItem } = useItinerary();
   const { toggleCollect, isCollected } = useProfile();
   const params = useSearchParams();
@@ -62,6 +64,9 @@ function PlanInner() {
   const days = Array.from({ length: dayCount }, (_, i) => i + 1);
   // PO 피드백 #10: 공유 카드는 여행 종료일이 지난 뒤에만 (종료일 당일 저녁 포함)
   const tripEnded = Boolean(state.end) && new Date(`${state.end}T00:00:00`).getTime() <= Date.now();
+
+  // 저장된 이름은 담는 시점 로케일 스냅샷 — 현재 로케일 이름으로 재조회(못 찾으면 스냅샷 유지)
+  const resolved = useResolvedPlaceNames(state.items, locale);
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
@@ -107,6 +112,9 @@ function PlanInner() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {dayItems.map((it) => {
                     const collected = isCollected(it.contentId);
+                    // 이름: 로케일 재조회 우선 → 순한글 고유명은 en에서 로마자 主표기 + 한글 병기
+                    const raw = resolved[it.contentId] ?? { name: it.name, region: it.region };
+                    const dn = displayName(raw.name, locale);
                     // PO 피드백 #9: 체크인을 Day 스탑에 통합 — 체크 = 엘리먼트 수집
                     return (
                       <div key={it.contentId} className="glass" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px' }}>
@@ -119,9 +127,9 @@ function PlanInner() {
                           style={{ width: 18, height: 18, accentColor: 'var(--color-accent)', flex: '0 0 auto' }}
                         />
                         <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: collected ? 'line-through' : 'none', opacity: collected ? 0.7 : 1 }}>{it.name}</div>
-                          <div style={{ fontSize: 13, color: collected && it.element ? EL_INK[it.element] : 'var(--muted)', fontWeight: collected ? 600 : 400 }}>
-                            {collected && it.element ? `+1 ${t.elements[it.element]}` : it.region}
+                          <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: collected ? 'line-through' : 'none', opacity: collected ? 0.7 : 1 }}>{dn.primary}</div>
+                          <div style={{ fontSize: 13, color: collected && it.element ? EL_INK[it.element] : 'var(--muted)', fontWeight: collected ? 600 : 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {collected && it.element ? `+1 ${t.elements[it.element]}` : [dn.hangul, raw.region].filter(Boolean).join(' · ')}
                           </div>
                         </div>
                         <select value={it.day} onChange={(e) => setItemDay(it.contentId, Number(e.target.value))} aria-label={t.plan.day} style={daySelect}>
@@ -142,12 +150,19 @@ function PlanInner() {
           <section>
             <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>{t.plan.related}</div>
             <div style={{ display: 'flex', gap: 8, overflowX: 'auto', paddingBottom: 4 }}>
-              {related.map((s) => (
-                <div key={s.name} style={{ flex: '0 0 auto', minWidth: 130, border: '1px solid var(--line)', borderRadius: 12, padding: '10px 12px' }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{s.name}</div>
-                  <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>{s.region}{s.category ? ` · ${s.category}` : ''}</div>
-                </div>
-              ))}
+              {/* 연관관광지 API는 한국어 전용 → en에서는 로마자 主표기 + 한글 병기 */}
+              {related.map((s) => {
+                const dn = displayName(s.name, locale);
+                const region = displayName(s.region, locale).primary;
+                return (
+                  <div key={s.name} style={{ flex: '0 0 auto', minWidth: 130, maxWidth: 180, border: '1px solid var(--line)', borderRadius: 12, padding: '10px 12px' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dn.primary}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {[dn.hangul, region, s.category || null].filter(Boolean).join(' · ')}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
         )}

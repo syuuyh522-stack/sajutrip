@@ -9,6 +9,7 @@ import { useItinerary } from '../../../i18n/ItineraryProvider';
 import { useProfile } from '../../../i18n/ProfileProvider';
 import { Aurora } from '../../../components/Aurora';
 import { EL_COLOR, EL_INK, elGradient } from '../../../lib/ui/elements';
+import { displayName } from '../../../lib/ui/romanize';
 import { track } from '../../../lib/analytics/track';
 import type { Element, ElementDistribution } from '../../../types/saju';
 import type { Place } from '../../../types/place';
@@ -160,8 +161,15 @@ export default function PlacePage() {
             </button>
           </div>
           <div style={{ padding: '18px 22px 40px' }}>
-            <div style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)' }}>{place.region}</div>
-            <h1 style={{ fontSize: 24, fontWeight: 600, margin: '4px 0 12px' }}>{place.name}</h1>
+            {(() => {
+              const dn = displayName(place.name, locale);
+              return (
+                <>
+                  <div style={{ fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)' }}>{[place.region, dn.hangul].filter(Boolean).join(' \u00b7 ')}</div>
+                  <h1 style={{ fontSize: 24, fontWeight: 600, margin: '4px 0 12px' }}>{dn.primary}</h1>
+                </>
+              );
+            })()}
 
             {/* 근거 모듈 — 매치 타입 + 보완 게이지 + 문화적 근거 (F-4 "추천 근거 공감") */}
             {element && saju && (

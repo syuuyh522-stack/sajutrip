@@ -9,6 +9,7 @@ import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { ElementOrb } from '../../components/ElementOrb';
 import { elGradient, EL_COLOR, EL_INK, EL_ON, EL_ON_MUTED } from '../../lib/ui/elements';
+import { displayName } from '../../lib/ui/romanize';
 import { track } from '../../lib/analytics/track';
 import type { Element, ElementDistribution, Pillar, SajuProfile } from '../../types/saju';
 import type { Place } from '../../types/place';
@@ -190,8 +191,8 @@ function ResultInner() {
                     <div className="glass" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: 10 }}>
                       <div style={{ width: 64, height: 64, borderRadius: 'var(--radius-input)', flex: '0 0 auto', background: p.image ? `center/cover no-repeat url(${p.image})` : elGradient(data.deficient) }} />
                       <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
-                        <div style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{p.region}</div>
+                        <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{displayName(p.name, locale).primary}</div>
+                        <div style={{ fontSize: 13, color: 'var(--color-text-muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{[displayName(p.name, locale).hangul, p.region].filter(Boolean).join(' \u00b7 ')}</div>
                       </div>
                     </div>
                   </Link>
