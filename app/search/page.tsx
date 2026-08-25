@@ -13,6 +13,19 @@ import type { Place } from '../../types/place';
 
 const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
 
+interface Festival { contentId: string; name: string; region: string; start: string; end: string; image?: string }
+
+const RECENT_KEY = 'sajutrip.recentSearches';
+function loadRecent(): string[] {
+  try {
+    const v = JSON.parse(localStorage.getItem(RECENT_KEY) ?? '[]');
+    return Array.isArray(v) ? v.filter((s): s is string => typeof s === 'string') : [];
+  } catch { return []; }
+}
+function fmtDate(yyyymmdd: string): string {
+  return yyyymmdd.length === 8 ? `${yyyymmdd.slice(4, 6)}.${yyyymmdd.slice(6, 8)}` : '';
+}
+
 function SearchInner() {
   const { t, locale } = useI18n();
   const params = useSearchParams();
@@ -24,6 +37,17 @@ function SearchInner() {
   const [results, setResults] = useState<Place[] | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // 검색홈 (PRD P1): 최근 검색 = localStorage 실기록, 축제 = searchFestival2 실시간
+  const [recent, setRecent] = useState<string[]>([]);
+  const [festivals, setFestivals] = useState<Festival[]>([]);
+  useEffect(() => { setRecent(loadRecent()); }, []);
+  useEffect(() => {
+    fetch(`/api/festivals?lang=${locale}`)
+      .then((r) => r.json())
+      .then((j) => setFestivals(j.festivals ?? []))
+      .catch(() => setFestivals([]));
+  }, [locale]);
+
   useEffect(() => {
     const query = q.trim();
     if (!query) {
@@ -34,7 +58,15 @@ function SearchInner() {
     const id = setTimeout(() => {
       fetch(`/api/search?q=${encodeURIComponent(query)}&lang=${locale}`)
         .then((r) => r.json())
-        .then((j) => setResults(j.places ?? []))
+        .then((j) => {
+          setResults(j.places ?? []);
+          // 결과가 있는 검색어만 최근 검색에 기록 (최대 6, 중복 제거)
+          if ((j.places ?? []).length > 0) {
+            const next = [query, ...loadRecent().filter((s) => s !== query)].slice(0, 6);
+            localStorage.setItem(RECENT_KEY, JSON.stringify(next));
+            setRecent(next);
+          }
+        })
         .catch(() => setResults([]))
         .finally(() => setLoading(false));
     }, 350);
@@ -56,20 +88,34 @@ function SearchInner() {
         style={{ width: '100%', minHeight: 44, padding: '13px 16px', borderRadius: 'var(--radius-pill)', border: '1px solid rgba(185,180,199,.4)', background: 'var(--color-surface)', fontSize: 14, color: 'var(--color-text)', outline: 'none' }}
       />
 
-      {/* 검색어 없을 때 = 검색홈 */}
+      {/* 검색어 없을 때 = 검색홈 (PRD: 최근 검색결과 + 이번 주 진행중인 축제) */}
       {results === null && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 24, marginTop: 24 }}>
           <section>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{t.search.recent}</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {t.search.recentChips.map((r) => (
+              {(recent.length > 0 ? recent : t.search.recentChips).map((r) => (
                 <button key={r} type="button" onClick={() => setQ(r)} style={chip}>{r}</button>
               ))}
             </div>
           </section>
           <section>
             <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 10 }}>{t.search.festivals}</div>
-            <p style={{ fontSize: 13, color: 'var(--muted-2)', margin: 0 }}>{t.search.festivalsNote}</p>
+            {festivals.length === 0 && <p style={{ fontSize: 13, color: 'var(--muted-2)', margin: 0 }}>{t.search.festivalsNote}</p>}
+            {/* 축제명은 고유명사(데이터) — 로케일 무관 노출, en은 EngService2 원문 */}
+            <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
+              {festivals.map((f) => (
+                <div key={f.contentId} className="glass" style={{ flex: '0 0 auto', width: 168, overflow: 'hidden' }}>
+                  <div aria-hidden="true" style={{ height: 88, background: f.image ? `center/cover no-repeat url(${f.image})` : 'var(--color-metal)' }} />
+                  <div style={{ padding: '9px 11px 11px' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.name}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                      {f.region}{f.start ? ` · ${fmtDate(f.start)}–${fmtDate(f.end)}` : ''}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         </div>
       )}

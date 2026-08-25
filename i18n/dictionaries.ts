@@ -177,6 +177,15 @@ export interface Dictionary {
     back: string;
   };
   checkin: { title: string; done: string; hint: string };
+  legal: {
+    privacyTitle: string;
+    termsTitle: string;
+    updated: string;
+    aiNote: string;
+    back: string;
+    privacyBody: string[];
+    termsBody: string[];
+  };
 }
 
 const en: Dictionary = {
@@ -339,6 +348,29 @@ const en: Dictionary = {
     done: "Today's activity done — auto-prompt at 8 PM",
     hint: 'Check off elements as you collect them.',
   },
+  legal: {
+    privacyTitle: 'Privacy policy',
+    termsTitle: 'Terms of service',
+    updated: 'Last updated: Aug 2026',
+    aiNote: 'This document was drafted with AI assistance and is provided for the SajuTrip proof of concept.',
+    back: 'Back',
+    privacyBody: [
+      'SajuTrip collects only the minimum information needed to generate your element reading: gender and date of birth. We do not ask for your name, email, phone number, or precise location.',
+      'During this proof-of-concept phase, your inputs and saved itineraries are stored only in your browser (localStorage). They are not transmitted to or stored on our servers, and clearing your browser data removes them completely.',
+      'Your birth date is sent to the Korea Astronomy and Space Science Institute (KASI) open API solely to calculate your traditional calendar pillars. It is not stored by SajuTrip after the calculation.',
+      'Anonymous usage events (page views, funnel steps) may be logged without any personal identifier to improve the service.',
+      'Your reading is a cultural interpretation based on traditional Five Elements thought, offered for enjoyment — it is not medical, financial, or life advice.',
+      'For questions about this policy, contact the SajuTrip team.',
+    ],
+    termsBody: [
+      'SajuTrip is a web service that suggests travel destinations in Korea framed by the traditional Five Elements (Saju) reading derived from your gender and date of birth.',
+      'Readings and recommendations are cultural and entertainment content. In traditional Five Elements thought certain places are considered to resonate with certain energies; SajuTrip presents this as playful interpretation, not as verified effect.',
+      'Place information (names, images, congestion, festivals) comes from Korea Tourism Organization open APIs and may change or contain errors. Always confirm details with the venue before visiting.',
+      'Booking links may lead to third-party services (e.g. OTA partners). Reservations and payments are handled entirely by those services under their own terms; SajuTrip may earn an affiliate commission.',
+      'The service is provided as is during the proof-of-concept period and may change or be discontinued without notice.',
+      'By using SajuTrip you agree to use it lawfully and accept these terms.',
+    ],
+  },
 };
 
 const ko: Dictionary = {
@@ -500,6 +532,29 @@ const ko: Dictionary = {
     title: '여행 중 · 체크인',
     done: '오늘 활동 완료 — 오후 8시 자동 알림',
     hint: '기운을 채울 때마다 체크하세요.',
+  },
+  legal: {
+    privacyTitle: '개인정보처리방침',
+    termsTitle: '이용약관',
+    updated: '최종 수정: 2026년 8월',
+    aiNote: '이 문서는 AI의 도움으로 작성되었으며, 사주트립 POC를 위해 제공됩니다.',
+    back: '뒤로',
+    privacyBody: [
+      '사주트립은 오행 프로필 산출에 필요한 최소 정보인 성별과 생년월일만 수집합니다. 이름·이메일·전화번호·정밀 위치 정보는 요구하지 않습니다.',
+      'POC 기간 동안 입력값과 저장한 일정은 이용자의 브라우저(localStorage)에만 저장되며, 서버로 전송·보관되지 않습니다. 브라우저 데이터를 삭제하면 완전히 제거됩니다.',
+      '생년월일은 전통 역법 기둥(간지) 계산을 위해 한국천문연구원(KASI) 공공 API로만 전송되며, 계산 후 사주트립이 별도로 저장하지 않습니다.',
+      '서비스 개선을 위해 개인 식별자 없는 익명 사용 이벤트(페이지 조회, 퍼널 단계)가 기록될 수 있습니다.',
+      '사주 결과는 전통 오행 사상에 기반한 문화적 해석으로 재미를 위해 제공되며, 의료·재정·인생에 대한 조언이 아닙니다.',
+      '본 방침에 대한 문의는 사주트립 팀으로 연락해 주세요.',
+    ],
+    termsBody: [
+      '사주트립은 성별·생년월일로 산출한 전통 오행(사주) 프로필을 바탕으로 한국 여행지를 제안하는 웹 서비스입니다.',
+      '사주 풀이와 추천은 문화·오락 콘텐츠입니다. 전통 오행 사상에서 특정 공간이 특정 기운과 공명한다고 여겨지는 해석을 놀이로 제공하는 것이며, 검증된 효과를 주장하지 않습니다.',
+      '장소 정보(명칭·이미지·혼잡도·축제)는 한국관광공사 공공 API에서 제공받으며 변경되거나 오류가 있을 수 있습니다. 방문 전 반드시 현장 정보를 확인해 주세요.',
+      '예약 링크는 제3자 서비스(OTA 제휴사 등)로 연결될 수 있습니다. 예약·결제는 해당 서비스의 약관에 따라 전적으로 그 서비스에서 처리되며, 사주트립은 제휴 커미션을 받을 수 있습니다.',
+      'POC 기간 동안 서비스는 있는 그대로 제공되며, 사전 고지 없이 변경·중단될 수 있습니다.',
+      '사주트립을 이용함으로써 적법한 이용과 본 약관에 동의하는 것으로 간주됩니다.',
+    ],
   },
 };
 

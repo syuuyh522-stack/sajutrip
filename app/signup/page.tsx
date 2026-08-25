@@ -52,9 +52,9 @@ function SignupInner() {
         <input type="checkbox" defaultChecked style={{ marginTop: 2 }} />
         <span>
           {t.signup.agree}{' '}
-          <span style={{ color: 'var(--accent)', textDecoration: 'underline' }}>{t.signup.privacy}</span>
+          <Link href="/privacy" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>{t.signup.privacy}</Link>
           {' · '}
-          <span style={{ color: 'var(--accent)', textDecoration: 'underline' }}>{t.signup.terms}</span>
+          <Link href="/terms" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>{t.signup.terms}</Link>
           {' '}({t.signup.aiGen})
         </span>
       </label>
