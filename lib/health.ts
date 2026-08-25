@@ -16,20 +16,21 @@ async function once(url: string, validate: (body: string) => boolean): Promise<{
   return { ok, status: res.status, note: ok ? undefined : body.slice(0, 140) };
 }
 
-// KTO 게이트웨이가 간헐적으로 단발 500을 반환함(직접 재현·재시도 시 정상) — 1회 재시도로 플래핑 흡수.
-// 재시도 역시 실시간 호출이라 공모전 실시간 요건과 무관.
+// 공공데이터포털 게이트웨이가 간헐적으로 단발 500/타임아웃을 반환함(직접 재현: 재시도 시 정상).
+// 최대 3회 시도(600ms 백오프, 예외 포함)로 플래핑 흡수 — 재시도 역시 실시간 호출이라 공모전 요건과 무관.
 async function timed(name: string, url: string, validate: (body: string) => boolean): Promise<ApiCheck> {
   const start = Date.now();
-  try {
-    let r = await once(url, validate);
-    if (!r.ok) {
-      await new Promise((res) => setTimeout(res, 400));
-      r = await once(url, validate);
+  let last: { ok: boolean; status: number; note?: string } = { ok: false, status: 0 };
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) await new Promise((res) => setTimeout(res, 600));
+    try {
+      last = await once(url, validate);
+      if (last.ok) break;
+    } catch (e) {
+      last = { ok: false, status: 0, note: String(e).slice(0, 140) };
     }
-    return { name, ok: r.ok, status: r.status, latencyMs: Date.now() - start, note: r.note };
-  } catch (e) {
-    return { name, ok: false, status: 0, latencyMs: Date.now() - start, note: String(e).slice(0, 140) };
   }
+  return { name, ok: last.ok, status: last.status, latencyMs: Date.now() - start, note: last.note };
 }
 
 function url(base: string, path: string, params: Record<string, string>): string {
