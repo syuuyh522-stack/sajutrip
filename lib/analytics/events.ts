@@ -12,7 +12,8 @@ export type EventName =
   | 'plan_complete' //       일정 완성(공유로 이동) — 지방 포함이면 NorthStar
   | 'share_action' //        공유/저장
   | 'bookmark_add' //        찜
-  | 'checkin'; //            여행 중 체크인
+  | 'checkin' //             여행 중 체크인
+  | 'book_click'; //         예약 딥링크 클릭 (어필리에이트 CTR, §8.4)
 
 export interface TrackEvent {
   name: EventName;
