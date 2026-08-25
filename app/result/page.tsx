@@ -11,6 +11,7 @@ import { ElementOrb } from '../../components/ElementOrb';
 import { elGradient, EL_COLOR, EL_INK, EL_ON, EL_ON_MUTED } from '../../lib/ui/elements';
 import { track } from '../../lib/analytics/track';
 import type { Element, ElementDistribution, Pillar, SajuProfile } from '../../types/saju';
+import type { Place } from '../../types/place';
 import { STEM_ELEMENT, BRANCH_ELEMENT } from '../../config/saju-tables';
 
 interface KStarMatch {
@@ -43,6 +44,15 @@ function ResultInner() {
   );
   const [data, setData] = useState<SajuResponse | null>(null);
   const [error, setError] = useState(false);
+  // 추천 직노출 (PO 피드백 #5 — explore 진입 전 결과 하단에서 바로)
+  const [recs, setRecs] = useState<Place[]>([]);
+  useEffect(() => {
+    if (!data) return;
+    fetch(`/api/places?element=${data.deficient}&lang=${locale}&max=3`)
+      .then((r) => r.json())
+      .then((j) => setRecs(j.places ?? []))
+      .catch(() => setRecs([]));
+  }, [data, locale]);
 
   const load = useCallback(() => {
     setData(null);
@@ -115,11 +125,8 @@ function ResultInner() {
               <PillarCard label={t.saju.month} pillar={data.profile.month} />
               <PillarCard label={t.saju.day} pillar={data.profile.day} />
             </div>
-            {/* 공명 카피 — 결핍 원소 기준 (§5.8) */}
-            <p style={{ fontSize: 14, lineHeight: 1.6, color: '#26364a', fontStyle: 'italic', margin: '16px 0 0' }}>
-              {t.saju.resonance.replace('{element}', t.elements[data.deficient])}
-            </p>
           </section>
+          {/* PO 피드백 #4: 결핍/과잉 반복 문구 제거 — 차트 인라인 태그와 캐릭터 카드로만 전달 */}
 
           {/* 오행 분포 + 타깃(결핍·과잉) */}
           <section className="glass" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 18 }}>
@@ -130,13 +137,19 @@ function ResultInner() {
                 return (
                   <div
                     key={el}
-                    style={{ display: 'grid', gridTemplateColumns: '92px 1fr 20px', alignItems: 'center', gap: 12 }}
+                    style={{ display: 'grid', gridTemplateColumns: '148px 1fr 20px', alignItems: 'center', gap: 12 }}
                     role="meter" aria-valuenow={v} aria-valuemin={0} aria-valuemax={6} aria-label={`${t.elements[el]} ${v}`}
                   >
-                    {/* 색 스와치 + 라벨 (§6: 한자 UI 금지 — 색+텍스트 라벨로 구분) */}
-                    <span style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: emphasized ? 700 : 400 }}>
+                    {/* 색 스와치 + 라벨 + 인라인 태그(lowest/strongest — 반복 문구 대신 여기 한 곳, #4) */}
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: emphasized ? 700 : 400, whiteSpace: 'nowrap' }}>
                       <span aria-hidden="true" style={{ width: 12, height: 12, borderRadius: 4, background: EL_COLOR[el], flex: '0 0 auto' }} />
                       {t.elements[el]}
+                      {el === data.deficient && (
+                        <span style={{ fontSize: 11, fontWeight: 700, color: EL_INK[el], background: `${EL_COLOR[el]}40`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>{t.result.lowestTag}</span>
+                      )}
+                      {el === data.excess && (
+                        <span style={{ fontSize: 11, fontWeight: 700, color: EL_INK[el], background: `${EL_COLOR[el]}40`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>{t.result.strongestTag}</span>
+                      )}
                     </span>
                     <span style={{ height: 12, borderRadius: 999, background: 'rgba(148,163,184,.22)', overflow: 'hidden' }}>
                       {/* D2: 0이면 막대 없음 */}
@@ -147,11 +160,8 @@ function ResultInner() {
                 );
               })}
             </div>
-            <div style={{ display: 'flex', gap: 12 }}>
-              <Chip element={data.deficient} label={t.elements[data.deficient]} tag={t.result.deficient} />
-              <Chip element={data.excess} label={t.elements[data.excess]} tag={t.result.excess} />
-            </div>
           </section>
+          {/* PO 피드백 #4: 결핍/과잉 칩 제거 — 차트 인라인 태그로 통합 */}
 
           {/* K-star (F-2) */}
           {(data.kstar.soulmate || data.kstar.twin) && (
@@ -170,12 +180,31 @@ function ResultInner() {
             </section>
           )}
 
-          <Link
-            href={{ pathname: '/explore', query: birth }}
-            style={{ display: 'block', textAlign: 'center', padding: '16px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-fire-strong)', color: '#fff', fontSize: 16, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
-          >
-            {t.explore.cta} →
-          </Link>
+          {/* 추천 직노출 (PO 피드백 #5) — explore 이동 없이 결과 하단에서 바로 탐색 시작 */}
+          {recs.length > 0 && (
+            <section>
+              <h2 style={sectionH2}>{t.result.recsTitle}</h2>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {recs.map((p) => (
+                  <Link key={p.contentId} href={{ pathname: `/place/${p.contentId}`, query: { ...birth, element: data.deficient } }} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <div className="glass" style={{ display: 'flex', gap: 12, alignItems: 'center', padding: 10 }}>
+                      <div style={{ width: 64, height: 64, borderRadius: 'var(--radius-input)', flex: '0 0 auto', background: p.image ? `center/cover no-repeat url(${p.image})` : elGradient(data.deficient) }} />
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
+                        <div style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{p.region}</div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <Link
+                href={{ pathname: '/explore', query: birth }}
+                style={{ display: 'block', textAlign: 'center', marginTop: 14, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', background: 'var(--color-fire-strong)', color: '#fff', fontSize: 16, fontWeight: 600, textDecoration: 'none', boxShadow: 'var(--shadow-fab)' }}
+              >
+                {t.result.seeAll} →
+              </Link>
+            </section>
+          )}
         </div>
       )}
       <BottomNav />
@@ -209,15 +238,6 @@ function StarRow({ match, title, desc, elementLabel }: { match: KStarMatch; titl
         <div style={{ fontSize: 13, color: 'var(--muted)' }}>{desc}</div>
       </div>
       <span style={{ fontSize: 13, fontWeight: 700, color: EL_ON[match.element], background: EL_COLOR[match.element], borderRadius: 999, padding: '4px 10px' }}>{elementLabel}</span>
-    </div>
-  );
-}
-
-function Chip({ element, label, tag }: { element: Element; label: string; tag: string }) {
-  return (
-    <div style={{ flex: 1, border: '1px solid var(--glass-brd)', background: `${EL_COLOR[element]}40`, borderRadius: 14, padding: '12px 14px' }}>
-      <div style={{ fontSize: 16, fontWeight: 700, color: EL_INK[element] }}>{label}</div>
-      <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2 }}>{tag}</div>
     </div>
   );
 }

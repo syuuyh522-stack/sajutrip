@@ -75,8 +75,19 @@ function MatchCard({ element, saju, t }: {
 
 export default function PlacePage() {
   const { t, locale } = useI18n();
-  const { addItem, hasItem } = useItinerary();
+  const { state: itin, setDates, addItem, hasItem } = useItinerary();
   const { toggleBookmark, hasBookmark } = useProfile();
+
+  // PO 피드백 #8: 담기 시 페이지 유지 + 토스트 / #11: 첫 담기 시 여행 일자부터 받기
+  const [toast, setToast] = useState(false);
+  const [dateSheet, setDateSheet] = useState(false);
+  const [draftStart, setDraftStart] = useState('');
+  const [draftEnd, setDraftEnd] = useState('');
+  useEffect(() => {
+    if (!toast) return;
+    const id = setTimeout(() => setToast(false), 2500);
+    return () => clearTimeout(id);
+  }, [toast]);
   const routeParams = useParams<{ contentId: string }>();
   const search = useSearchParams();
 
@@ -116,17 +127,28 @@ export default function PlacePage() {
   const color = element ? ELEMENT_COLOR[element] : '#94A3B8';
 
   return (
-    <main style={{ maxWidth: 460, margin: '0 auto', minHeight: '100dvh' }}>
+    // PO 피드백 #6: PDP = 바텀시트 프레젠테이션 — 상단 딤 영역 탭/닫기 버튼으로 쉽게 복귀 (route는 유지: 딥링크·Phase 2 호환)
+    <main style={{ maxWidth: 460, margin: '0 auto', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
       <Aurora />
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '14px 22px' }}>
-        <Link href={{ pathname: '/explore', query: backQuery }} style={{ fontSize: 14, color: 'var(--color-text-muted)', textDecoration: 'none' }}>← {t.pdp.back}</Link>
-      </div>
+      <Link
+        href={{ pathname: '/explore', query: backQuery }}
+        aria-label={t.pdp.back}
+        style={{ height: 44, flex: '0 0 auto', display: 'block' }}
+      />
 
       {notFound && <p style={{ padding: '0 22px', color: 'var(--color-text-muted)' }}>{t.pdp.notFound}</p>}
 
       {place && (
-        <>
+        <div className="pdp-sheet" style={{ flex: 1, borderRadius: '20px 20px 0 0', overflow: 'hidden', background: 'var(--color-surface)', boxShadow: '0 -12px 40px rgba(43,42,51,.18)' }}>
           <div style={{ height: 220, position: 'relative', background: place.image ? `center/cover no-repeat url(${place.image})` : (element ? elGradient(element) : 'var(--color-metal)') }}>
+            {/* 닫기 — 시트 좌상단 (§8 탭타깃) */}
+            <Link
+              href={{ pathname: '/explore', query: backQuery }}
+              aria-label={t.pdp.back}
+              style={{ position: 'absolute', top: 14, left: 16, width: 40, height: 40, borderRadius: '50%', display: 'grid', placeItems: 'center', fontSize: 20, lineHeight: 1, background: 'rgba(255,255,255,.85)', color: 'var(--color-text)', textDecoration: 'none' }}
+            >
+              ×
+            </Link>
             <button
               type="button"
               onClick={() => toggleBookmark({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null })}
@@ -164,16 +186,24 @@ export default function PlacePage() {
             </div>
             <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 6 }}>{t.pdp.quietNote}</p>
 
-            {/* 일정에 담기 (F-5) */}
+            {/* 일정에 담기 (F-5) — #11: 일자 미설정이면 날짜부터 받고, #8: 담은 뒤 페이지 유지+토스트 */}
             {(() => {
               const added = hasItem(place.contentId);
+              const doAdd = () => {
+                addItem({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null });
+                track('plan_add', { contentId: place.contentId, region: place.region });
+                setToast(true);
+              };
               return (
                 <div style={{ marginTop: 24 }}>
                   {/* primary CTA = 火 단색 pill (§1: 앱 전체 유일). disabled = 40% opacity(§4) */}
                   <button
                     type="button"
                     disabled={added}
-                    onClick={() => { addItem({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null }); track('plan_add', { contentId: place.contentId, region: place.region }); }}
+                    onClick={() => {
+                      if (!itin.start || !itin.end) { setDraftStart(itin.start); setDraftEnd(itin.end); setDateSheet(true); return; }
+                      doAdd();
+                    }}
                     style={{
                       width: '100%', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', cursor: added ? 'default' : 'pointer',
                       fontSize: 16, fontWeight: 600, border: 0,
@@ -189,6 +219,34 @@ export default function PlacePage() {
                       {t.pdp.viewPlan} →
                     </Link>
                   )}
+
+                  {/* #11: 첫 담기 시 여행 일자 입력 바텀시트 */}
+                  {dateSheet && (
+                    <div role="dialog" aria-label={t.pdp.datePrompt} style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(43,42,51,.35)' }} onClick={() => setDateSheet(false)}>
+                      <div className="glass" style={{ width: '100%', maxWidth: 460, borderRadius: '20px 20px 0 0', padding: '20px 22px 28px', background: 'rgba(255,255,255,.92)' }} onClick={(e) => e.stopPropagation()}>
+                        <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 12 }}>{t.pdp.datePrompt}</div>
+                        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+                          <input type="date" value={draftStart} onChange={(e) => setDraftStart(e.target.value)} aria-label={t.plan.start} style={sheetDateInput} />
+                          <input type="date" value={draftEnd} min={draftStart || undefined} onChange={(e) => setDraftEnd(e.target.value)} aria-label={t.plan.end} style={sheetDateInput} />
+                        </div>
+                        <button
+                          type="button"
+                          disabled={!draftStart || !draftEnd}
+                          onClick={() => { setDates(draftStart, draftEnd); setDateSheet(false); doAdd(); }}
+                          style={{ width: '100%', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', background: 'var(--color-fire-strong)', opacity: !draftStart || !draftEnd ? 0.4 : 1, boxShadow: 'var(--shadow-fab)' }}
+                        >
+                          {t.pdp.dateConfirm}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* #8: 담기 토스트 — 페이지 이동 없이 피드백 */}
+                  {toast && (
+                    <div role="status" style={{ position: 'fixed', left: '50%', bottom: 96, transform: 'translateX(-50%)', zIndex: 70, background: 'rgba(43,42,51,.9)', color: '#fff', borderRadius: 'var(--radius-pill)', padding: '11px 18px', fontSize: 14, fontWeight: 600, boxShadow: 'var(--shadow-fab)', whiteSpace: 'nowrap' }}>
+                      ✓ {t.pdp.addedToast}
+                    </div>
+                  )}
                 </div>
               );
             })()}
@@ -203,8 +261,13 @@ export default function PlacePage() {
             </button>
             <p style={{ fontSize: 13, color: 'var(--color-text-muted)', textAlign: 'center', marginTop: 8 }}>{t.pdp.bookNote}</p>
           </div>
-        </>
+        </div>
       )}
     </main>
   );
 }
+
+const sheetDateInput: React.CSSProperties = {
+  flex: 1, minHeight: 44, padding: 12, borderRadius: 'var(--radius-input)', border: '1px solid rgba(185,180,199,.4)',
+  fontFamily: 'var(--font-mono)', fontSize: 14, color: 'var(--color-text)', background: 'var(--color-surface)',
+};

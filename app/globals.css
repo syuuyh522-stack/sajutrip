@@ -71,6 +71,10 @@ button { font-family: inherit; }
 }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
+/* ---- PDP 바텀시트 (PO 피드백 #6 — 페이지지만 시트처럼 슬라이드업) ---- */
+.pdp-sheet { animation: sheet-up 0.28s cubic-bezier(0.22, 1, 0.36, 1); }
+@keyframes sheet-up { from { transform: translateY(28px); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition-duration: 50ms !important; }
 }

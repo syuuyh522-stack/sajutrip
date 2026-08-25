@@ -40,6 +40,12 @@ export interface Dictionary {
     loading: string;
     error: string;
     retry: string;
+    /** 분포 차트 인라인 태그 (중복 문구 제거 — PO 피드백 #4) */
+    lowestTag: string;
+    strongestTag: string;
+    /** 결과 하단 추천 직노출 (PO 피드백 #5) */
+    recsTitle: string;
+    seeAll: string;
   };
   saju: {
     chartTitle: string;
@@ -93,6 +99,9 @@ export interface Dictionary {
     bookNote: string;
     addPlan: string;
     added: string;
+    addedToast: string;
+    datePrompt: string;
+    dateConfirm: string;
     viewPlan: string;
     back: string;
     notFound: string;
@@ -196,6 +205,10 @@ const en: Dictionary = {
     loading: 'Reading your chart…',
     error: 'Could not read your chart. Please try again.',
     retry: 'Try again',
+    lowestTag: 'lowest',
+    strongestTag: 'strongest',
+    recsTitle: 'Places that resonate',
+    seeAll: 'See all',
   },
   saju: {
     chartTitle: 'Your saju chart',
@@ -248,6 +261,9 @@ const en: Dictionary = {
     bookNote: 'Booking link coming soon',
     addPlan: 'Add to itinerary',
     added: 'Added to itinerary',
+    addedToast: 'Added to your itinerary',
+    datePrompt: 'When is your trip?',
+    dateConfirm: 'Save & add',
     viewPlan: 'View itinerary',
     back: 'Back',
     notFound: 'Place not found.',
@@ -351,6 +367,10 @@ const ko: Dictionary = {
     loading: '사주를 읽는 중…',
     error: '사주를 불러오지 못했어요. 다시 시도해 주세요.',
     retry: '다시 시도',
+    lowestTag: '가장 부족',
+    strongestTag: '가장 강함',
+    recsTitle: '공명하는 장소',
+    seeAll: '전체 보기',
   },
   saju: {
     chartTitle: '나의 사주 명식',
@@ -403,6 +423,9 @@ const ko: Dictionary = {
     bookNote: '예약 링크는 곧 연결됩니다',
     addPlan: '일정에 담기',
     added: '일정에 담겼어요',
+    addedToast: '일정에 담았어요',
+    datePrompt: '여행 일자를 알려주세요',
+    dateConfirm: '저장하고 담기',
     viewPlan: '일정 보기',
     back: '뒤로',
     notFound: '장소를 찾을 수 없어요.',

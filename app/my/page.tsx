@@ -30,13 +30,14 @@ function MyInner() {
   const query = useMemo(() => ({ gender: b.gender, year: b.year, month: b.month, day: b.day }), [b.gender, b.year, b.month, b.day]);
 
   const [deficient, setDeficient] = useState<Element | null>(null);
+  const [excess, setExcess] = useState<Element | null>(null);
   const [dist, setDist] = useState<ElementDistribution | null>(null);
   useEffect(() => {
     if (!b.year) return;
     fetch(`/api/saju?${new URLSearchParams(query).toString()}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => { setDeficient(j.deficient); setDist(j.distribution); })
-      .catch(() => { setDeficient(null); setDist(null); });
+      .then((j) => { setDeficient(j.deficient); setExcess(j.excess); setDist(j.distribution); })
+      .catch(() => { setDeficient(null); setExcess(null); setDist(null); });
   }, [query, b.year]);
 
   return (
@@ -77,10 +78,11 @@ function MyInner() {
           </div>
         </section>
 
+        {/* PO 피드백 #12: 결과 페이지와 동일 정보(결핍+과잉)로 정리, 저장 일정 중복 표기 제거(아래 카드만) */}
         <section style={{ border: '1px solid var(--line)', borderRadius: 14, padding: '4px 16px' }}>
-          {deficient && <Row k={t.my.resonatesWith} v={t.elements[deficient]} />}
-          {b.year && <Row k={t.my.birth} v={`${b.year}.${b.month}.${b.day}`} />}
-          <Row k={t.my.savedTrip} v={`${state.items.length} ${state.items.length === 1 ? t.my.placeOne : t.my.savedTripDesc}`} last />
+          {deficient && <Row k={`${t.my.resonatesWith} · ${t.result.lowestTag}`} v={t.elements[deficient]} />}
+          {excess && <Row k={t.result.strongestTag} v={t.elements[excess]} />}
+          {b.year && <Row k={t.my.birth} v={`${b.year}.${b.month}.${b.day}`} last />}
         </section>
 
         {state.items.length > 0 && (

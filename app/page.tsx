@@ -71,8 +71,8 @@ export default function LandingPage() {
         </div>
       </div>
 
+      {/* PO 피드백 #3: 논의되지 않은 안내 문구 제거 — 프라이버시 카피(§7.2 문서 근거)만 유지 */}
       <button type="button" onClick={submit} style={{ ...cta, marginTop: 28 }}>{t.landing.cta} →</button>
-      <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 10, textAlign: 'center' }}>{t.landing.note}</p>
     </main>
   );
 }

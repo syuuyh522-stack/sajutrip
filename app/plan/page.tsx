@@ -60,6 +60,8 @@ function PlanInner() {
   }, [firstArea]);
 
   const days = Array.from({ length: dayCount }, (_, i) => i + 1);
+  // PO 피드백 #10: 공유 카드는 여행 종료일이 지난 뒤에만 (종료일 당일 저녁 포함)
+  const tripEnded = Boolean(state.end) && new Date(`${state.end}T00:00:00`).getTime() <= Date.now();
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
@@ -102,19 +104,32 @@ function PlanInner() {
                   <span style={{ fontSize: 16, fontWeight: 600 }}>{t.plan.day} {d}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {dayItems.map((it) => (
-                    <div key={it.contentId} style={{ display: 'flex', alignItems: 'center', gap: 10, border: '1px solid var(--line)', borderRadius: 12, padding: '10px 12px' }}>
-                      {it.element && <span style={{ width: 8, height: 34, borderRadius: 4, background: ELEMENT_COLOR[it.element], flex: '0 0 auto' }} />}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{it.name}</div>
-                        <div style={{ fontSize: 13, color: 'var(--muted)' }}>{it.region}</div>
+                  {dayItems.map((it) => {
+                    const collected = isCollected(it.contentId);
+                    // PO 피드백 #9: 체크인을 Day 스탑에 통합 — 체크 = 엘리먼트 수집
+                    return (
+                      <div key={it.contentId} className="glass" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px' }}>
+                        <input
+                          type="checkbox"
+                          checked={collected}
+                          onChange={() => { toggleCollect(it.contentId, it.element); if (!collected) track('checkin', { contentId: it.contentId, element: it.element }); }}
+                          aria-label={`${t.checkin.title}: ${it.name}`}
+                          style={{ width: 18, height: 18, accentColor: 'var(--color-water)', flex: '0 0 auto' }}
+                        />
+                        {it.element && <span style={{ width: 8, height: 34, borderRadius: 4, background: ELEMENT_COLOR[it.element], flex: '0 0 auto' }} />}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: collected ? 'line-through' : 'none', opacity: collected ? 0.7 : 1 }}>{it.name}</div>
+                          <div style={{ fontSize: 13, color: 'var(--muted)' }}>
+                            {collected && it.element ? `+1 ${t.elements[it.element]}` : it.region}
+                          </div>
+                        </div>
+                        <select value={it.day} onChange={(e) => setItemDay(it.contentId, Number(e.target.value))} aria-label={t.plan.day} style={daySelect}>
+                          {days.map((n) => <option key={n} value={n}>{t.plan.day} {n}</option>)}
+                        </select>
+                        <button type="button" onClick={() => removeItem(it.contentId)} aria-label={t.plan.remove} style={{ border: 0, background: 'transparent', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: 18, lineHeight: 1, width: 44, height: 44, display: 'grid', placeItems: 'center' }}>×</button>
                       </div>
-                      <select value={it.day} onChange={(e) => setItemDay(it.contentId, Number(e.target.value))} aria-label={t.plan.day} style={daySelect}>
-                        {days.map((n) => <option key={n} value={n}>{t.plan.day} {n}</option>)}
-                      </select>
-                      <button type="button" onClick={() => removeItem(it.contentId)} aria-label={t.plan.remove} style={{ border: 0, background: 'transparent', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: 18, lineHeight: 1, width: 44, height: 44, display: 'grid', placeItems: 'center' }}>×</button>
-                    </div>
-                  ))}
+                    );
+                  })}
                   {dayItems.length === 0 && <p style={{ fontSize: 13, color: 'var(--muted-2)', margin: 0 }}>—</p>}
                 </div>
               </section>
@@ -138,37 +153,9 @@ function PlanInner() {
 
         {state.items.length > 0 && <p style={{ fontSize: 13, color: 'var(--muted-2)' }}>{t.plan.nearby}</p>}
 
-        {/* 여행 중 체크인 (P1) */}
-        {state.items.length > 0 && (
-          <section>
-            <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{t.checkin.title}</div>
-            <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 10 }}>{t.checkin.hint}</div>
-            {/* 체크인 = 엘리먼트 수집 (컨셉: 모으는 여행). 체크 시 그 장소의 원소를 수집 */}
-            <div className="glass" style={{ display: 'flex', flexDirection: 'column', gap: 2, padding: '4px 14px' }}>
-              {state.items.map((it) => {
-                const collected = isCollected(it.contentId);
-                return (
-                  <label key={it.contentId} style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 44, padding: '4px 0', fontSize: 'var(--text-body-sm)', borderBottom: '1px solid rgba(185,180,199,.25)', cursor: 'pointer' }}>
-                    <input
-                      type="checkbox"
-                      checked={collected}
-                      onChange={() => { toggleCollect(it.contentId, it.element); if (!collected) track('checkin', { contentId: it.contentId, element: it.element }); }}
-                      style={{ width: 18, height: 18, accentColor: 'var(--color-water)' }}
-                    />
-                    <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{it.name}</span>
-                    {collected && it.element && (
-                      <span style={{ fontSize: 'var(--text-caption)', fontWeight: 700, color: EL_INK[it.element], background: `${EL_COLOR[it.element]}40`, borderRadius: 'var(--radius-pill)', padding: '3px 10px', flex: '0 0 auto' }}>
-                        +1 {t.elements[it.element]}
-                      </span>
-                    )}
-                  </label>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {state.items.length > 0 && (
+        {/* PO 피드백 #9: 별도 체크인 섹션 제거 — Day 스탑에 통합됨 */}
+        {/* PO 피드백 #10: 공유 카드 CTA는 상시 노출 금지 — 여행 종료일 이후에만 */}
+        {state.items.length > 0 && tripEnded && (
           <Link
             href={{ pathname: '/share', query: birth }}
             onClick={() => {

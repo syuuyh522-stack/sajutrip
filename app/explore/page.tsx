@@ -5,7 +5,6 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
-import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK, elGradient } from '../../lib/ui/elements';
 import { track } from '../../lib/analytics/track';
@@ -55,7 +54,7 @@ function ExploreInner() {
   }, [activeElement, locale]);
 
   return (
-    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
+    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
       <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <Link href={{ pathname: '/result', query: birth }} style={{ fontSize: 14, color: 'var(--color-text-muted)', textDecoration: 'none' }}>← {t.explore.back}</Link>
@@ -84,7 +83,7 @@ function ExploreInner() {
           </Link>
         ))}
       </div>
-      <BottomNav />
+      {/* PO 피드백 #7: 첫 탭이 아닌 화면엔 GNB 미노출 */}
     </main>
   );
 }
