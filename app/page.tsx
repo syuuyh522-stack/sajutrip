@@ -69,7 +69,7 @@ export default function LandingPage() {
           </div>
         </div>
 
-        <div>
+        <div role="group" aria-label={t.landing.dob}>
           <label style={label}>{t.landing.dob}</label>
           <div style={{ display: 'flex', gap: 8 }}>
             <input value={year} onChange={(e) => { setYear(e.target.value); setDateError(false); }} inputMode="numeric" aria-label={t.landing.year} style={{ ...dobInput, ...(dateError ? errBorder : {}) }} />

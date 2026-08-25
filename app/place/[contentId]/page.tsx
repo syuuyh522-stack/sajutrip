@@ -3,7 +3,7 @@
 // F-4 PDP — 장소 상세: 공명 근거 + 혼잡/여유 시간(demo) + 예약하기(딥링크 later). (PRD F-4)
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useI18n } from '../../../i18n/LanguageProvider';
 import { useItinerary } from '../../../i18n/ItineraryProvider';
 import { useProfile } from '../../../i18n/ProfileProvider';
@@ -108,6 +108,12 @@ export default function PlacePage() {
   }, [toast]);
   const routeParams = useParams<{ contentId: string }>();
   const search = useSearchParams();
+  const router = useRouter();
+  // 닫기 = 진입 출처로 (검색·찜·추천 등 다양) — 히스토리 없으면 explore 폴백 (휴리스틱 #6)
+  const goBack = () => {
+    if (window.history.length > 1) router.back();
+    else router.push(`/explore?${new URLSearchParams(backQuery).toString()}`);
+  };
 
   const backQuery = useMemo(() => {
     const q: Record<string, string> = {};
@@ -142,35 +148,47 @@ export default function PlacePage() {
   }, [routeParams.contentId, locale, queryEl]);
 
   const element: Element | undefined = isElement(queryEl) ? queryEl : place?.primaryElement;
-  const color = element ? ELEMENT_COLOR[element] : '#94A3B8';
 
   return (
     // PO 피드백 #6: PDP = 바텀시트 프레젠테이션 — 상단 딤 영역 탭/닫기 버튼으로 쉽게 복귀 (route는 유지: 딥링크·Phase 2 호환)
     <main style={{ maxWidth: 460, margin: '0 auto', minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
       <Aurora />
-      <Link
-        href={{ pathname: '/explore', query: backQuery }}
-        aria-label={t.pdp.back}
-        style={{ height: 44, flex: '0 0 auto', display: 'block' }}
+      <div
+        aria-hidden="true"
+        onClick={goBack}
+        style={{ height: 44, flex: '0 0 auto', cursor: 'pointer' }}
       />
 
       {notFound && <p style={{ padding: '0 22px', color: 'var(--color-text-muted)' }}>{t.pdp.notFound}</p>}
 
+      {/* 로딩 스켈레톤 — 빈 시트 방지 (휴리스틱 #4, §4 loading) */}
+      {!place && !notFound && (
+        <div className="pdp-sheet" aria-busy="true" style={{ flex: 1, borderRadius: '20px 20px 0 0', overflow: 'hidden', background: 'var(--color-surface)', boxShadow: '0 -12px 40px rgba(43,42,51,.18)' }}>
+          <div className="skeleton" style={{ height: 220 }} />
+          <div style={{ padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <div className="skeleton" style={{ height: 20, width: '55%', borderRadius: 8 }} />
+            <div className="skeleton" style={{ height: 140, borderRadius: 'var(--radius-card-sm)' }} />
+            <div className="skeleton" style={{ height: 48, borderRadius: 'var(--radius-pill)' }} />
+          </div>
+        </div>
+      )}
+
       {place && (
         <div className="pdp-sheet" style={{ flex: 1, borderRadius: '20px 20px 0 0', overflow: 'hidden', background: 'var(--color-surface)', boxShadow: '0 -12px 40px rgba(43,42,51,.18)' }}>
           <div style={{ height: 220, position: 'relative', background: place.image ? `center/cover no-repeat url(${place.image})` : (element ? elGradient(element) : 'var(--color-metal)') }}>
-            {/* 닫기 — 시트 좌상단 (§8 탭타깃) */}
-            <Link
-              href={{ pathname: '/explore', query: backQuery }}
+            {/* 닫기 — 시트 좌상단 (§8 탭타깃). 진입 출처로 복귀(back), 직접 진입 시 explore 폴백 */}
+            <button
+              type="button"
+              onClick={goBack}
               aria-label={t.pdp.back}
-              style={{ position: 'absolute', top: 14, left: 16, width: 40, height: 40, borderRadius: '50%', display: 'grid', placeItems: 'center', fontSize: 20, lineHeight: 1, background: 'rgba(255,255,255,.85)', color: 'var(--color-text)', textDecoration: 'none' }}
+              style={{ position: 'absolute', top: 14, left: 16, width: 40, height: 40, borderRadius: '50%', border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', fontSize: 20, lineHeight: 1, background: 'rgba(255,255,255,.85)', color: 'var(--color-text)' }}
             >
               ×
-            </Link>
+            </button>
             <button
               type="button"
               onClick={() => toggleBookmark({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null })}
-              aria-label="Bookmark"
+              aria-label={t.pdp.bookmark}
               aria-pressed={hasBookmark(place.contentId)}
               style={{ position: 'absolute', top: 14, right: 16, width: 40, height: 40, borderRadius: '50%', border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', fontSize: 18, background: 'rgba(255,255,255,.85)', color: hasBookmark(place.contentId) ? 'var(--accent)' : 'var(--muted)' }}
             >
@@ -201,7 +219,7 @@ export default function PlacePage() {
             <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>{t.pdp.quiet}</h2>
             <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 8 }}>{t.pdp.demo}</div>
             {/* 혼잡 표시 — v2 §1: status는 뉴트럴(잉크 농도), 색으로 의미 전달 금지. 높이+농도가 정보 */}
-            <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 56 }}>
+            <div role="img" aria-label={`${t.pdp.quiet} — ${t.pdp.quietNote}`} style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 56 }}>
               {CROWD.map((h, i) => (
                 <div key={DAYS[i]} style={{ flex: 1, height: `${h}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'rgba(28,27,31,.5)' : h <= 40 ? 'rgba(28,27,31,.12)' : 'rgba(28,27,31,.26)' }} />
               ))}

@@ -2,7 +2,7 @@
 
 // 하단 고정 네비 (PRD IA): 사주 · 내 일정 · 검색 · 마이. 라인 아이콘(§6, 한자 금지).
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useI18n } from '../i18n/LanguageProvider';
 import { useProfile } from '../i18n/ProfileProvider';
 import { IconSaju, IconRoute, IconSearch, IconUser } from './icons';
@@ -23,8 +23,14 @@ export function BottomNav() {
   const { t } = useI18n();
   const { birth } = useProfile();
   const pathname = usePathname();
+  const sp = useSearchParams();
   const active = ACTIVE_BY_PATH[pathname];
-  const query = birth ? { gender: birth.gender, year: birth.year, month: birth.month, day: birth.day } : {};
+  // birth query: 현재 URL 우선(딥링크/공유 진입 시 프로필 없어도 유지), 프로필 폴백 (휴리스틱 #2)
+  const query: Record<string, string> = {};
+  for (const k of ['gender', 'year', 'month', 'day'] as const) {
+    const v = sp.get(k) ?? (birth ? birth[k] : '');
+    if (v) query[k] = v;
+  }
 
   return (
     <nav style={navStyle} aria-label="Main">

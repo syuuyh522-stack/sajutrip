@@ -13,9 +13,9 @@ import type { Dictionary } from '../../i18n/dictionaries';
 import type { Element } from '../../types/saju';
 import type { ItineraryItem } from '../../types/itinerary';
 
-// 공유 카드(Canvas)용 팔레트 — 공식 원소색. 카드 배경(어두운 남색) 위라 원색 fill 사용.
+// 공유 카드(Canvas)용 팔레트 — v2 파스텔(lib/ui/elements와 동일 값). 어두운 남색 카드 위라 밝은 fill이 잘 산다.
 const ELEMENT_COLOR: Record<Element, string> = {
-  wood: '#8FBFA3', fire: '#E8927C', earth: '#E3B873', metal: '#B9B4C7', water: '#6B7699',
+  wood: '#5FE0A8', fire: '#FF9B85', earth: '#FFC768', metal: '#B9A4F7', water: '#7CB4F8',
 };
 const GLYPH: Record<Element, string> = { wood: '木', fire: '火', earth: '土', metal: '金', water: '水' };
 const ORDER: Element[] = ['fire', 'metal', 'wood', 'earth', 'water'];
@@ -208,18 +208,26 @@ function ShareInner() {
 
       <h1 style={{ fontSize: 20, fontWeight: 600, margin: '0 0 16px' }}>{t.share.title}</h1>
 
-      <canvas
-        ref={canvasRef}
-        width={W}
-        height={H}
-        style={{ width: '100%', maxWidth: 380, display: 'block', margin: '0 auto', borderRadius: 18, boxShadow: '0 20px 44px -22px rgba(30,41,59,.5)' }}
-      />
+      {/* target 미확정(로딩·birth 누락) 동안 빈 흰 카드 방지 — 스켈레톤 오버레이 (휴리스틱 #5) */}
+      <div style={{ position: 'relative' }}>
+        <canvas
+          ref={canvasRef}
+          width={W}
+          height={H}
+          style={{ width: '100%', maxWidth: 380, display: 'block', margin: '0 auto', borderRadius: 18, boxShadow: '0 20px 44px -22px rgba(30,41,59,.5)', opacity: target ? 1 : 0 }}
+        />
+        {!target && (
+          <div className="skeleton" aria-busy="true" aria-label={t.result.loading} style={{ position: 'absolute', inset: 0, maxWidth: 380, margin: '0 auto', borderRadius: 18, display: 'grid', placeItems: 'center' }}>
+            <span style={{ fontSize: 14, color: 'var(--color-text-muted)' }}>{t.result.loading}</span>
+          </div>
+        )}
+      </div>
 
       <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
         <button type="button" onClick={save} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: 'var(--color-text)' }}>
           {t.share.save}
         </button>
-        {/* primary = 火 pill (§1) */}
+        {/* primary = 잉크 pill (v2 §1) */}
         <button type="button" onClick={share} style={{ flex: 1, minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: 0, background: 'var(--color-text)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: '#fff', boxShadow: 'var(--shadow-fab)' }}>
           {t.share.share}
         </button>

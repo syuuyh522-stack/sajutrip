@@ -28,19 +28,22 @@ function ExploreInner() {
   );
 
   const [targets, setTargets] = useState<{ deficient: Element; excess: Element } | null>(null);
+  const [targetsError, setTargetsError] = useState(false);
   const [tab, setTab] = useState<'fill' | 'echo'>('fill');
   const [places, setPlaces] = useState<Place[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // 1) 사주 산출로 타깃 오행 결정
+  // 1) 사주 산출로 타깃 오행 결정 — 실패 시 무한 로딩 방지: 에러 상태 + 재시도 (휴리스틱 #1)
+  const [retryKey, setRetryKey] = useState(0);
   useEffect(() => {
     track('explore_view');
     const qs = new URLSearchParams(birth);
+    setTargetsError(false);
     fetch(`/api/saju?${qs.toString()}`)
-      .then((r) => r.json())
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((j) => setTargets({ deficient: j.deficient, excess: j.excess }))
-      .catch(() => setTargets(null));
-  }, [birth]);
+      .catch(() => { setTargets(null); setTargetsError(true); setLoading(false); });
+  }, [birth, retryKey]);
 
   // 2) 현재 탭의 타깃 원소로 장소 조회
   const activeElement: Element | null = targets ? (tab === 'fill' ? targets.deficient : targets.excess) : null;
@@ -70,8 +73,16 @@ function ExploreInner() {
         </div>
       )}
 
-      {loading && <p style={{ color: 'var(--muted)' }}>…</p>}
-      {!loading && places.length === 0 && <p style={{ color: 'var(--muted)' }}>{t.explore.empty}</p>}
+      {targetsError && (
+        <div style={{ textAlign: 'center', padding: '32px 0' }}>
+          <p style={{ color: 'var(--color-text-muted)', fontSize: 14, margin: '0 0 14px' }}>{t.result.error}</p>
+          <button type="button" onClick={() => setRetryKey((k) => k + 1)} style={{ minHeight: 44, padding: '11px 20px', borderRadius: 'var(--radius-input)', border: '1px solid var(--color-accent)', background: 'rgba(108,63,224,.08)', color: 'var(--color-accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            {t.result.retry}
+          </button>
+        </div>
+      )}
+      {!targetsError && loading && <p style={{ color: 'var(--muted)' }}>…</p>}
+      {!targetsError && !loading && places.length === 0 && <p style={{ color: 'var(--muted)' }}>{t.explore.empty}</p>}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {places.map((p) => (

@@ -70,7 +70,7 @@ function ResultInner() {
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-        <Link href="/" style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.result.back}</Link>
+        <Link href="/" style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.result.editBirth}</Link>
       </header>
 
       {/* 한글엔 자간 벌림이 어색 — ko는 letterSpacing 0 */}
@@ -146,13 +146,13 @@ function ResultInner() {
                       <span aria-hidden="true" style={{ width: 12, height: 12, borderRadius: 4, background: EL_COLOR[el], flex: '0 0 auto' }} />
                       {t.elements[el]}
                       {el === data.deficient && (
-                        <span style={{ fontSize: 11, fontWeight: 700, color: EL_INK[el], background: `${EL_COLOR[el]}40`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>{t.result.lowestTag}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: EL_INK[el], background: `${EL_COLOR[el]}40`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>{t.result.lowestTag}</span>
                       )}
                       {el === data.excess && (
-                        <span style={{ fontSize: 11, fontWeight: 700, color: EL_INK[el], background: `${EL_COLOR[el]}40`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>{t.result.strongestTag}</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: EL_INK[el], background: `${EL_COLOR[el]}40`, borderRadius: 'var(--radius-pill)', padding: '2px 8px' }}>{t.result.strongestTag}</span>
                       )}
                     </span>
-                    <span style={{ height: 12, borderRadius: 999, background: 'rgba(148,163,184,.22)', overflow: 'hidden' }}>
+                    <span style={{ height: 12, borderRadius: 999, background: 'rgba(185,180,199,.25)', overflow: 'hidden' }}>
                       {/* D2: 0이면 막대 없음 */}
                       {v > 0 && <span style={{ display: 'block', height: '100%', width: `${(v / 6) * 100}%`, background: ELEMENT_COLOR[el], borderRadius: 999 }} />}
                     </span>

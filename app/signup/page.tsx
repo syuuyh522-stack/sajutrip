@@ -36,7 +36,7 @@ function SignupInner() {
       <p style={{ color: 'var(--muted)', margin: '0 0 24px', lineHeight: 1.6 }}>{t.signup.subtitle}</p>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <Field label="Gender / Birth · pre-filled">
+        <Field label={t.signup.prefill}>
           <div style={{ display: 'flex', gap: 8 }}>
             <ReadonlyBox v={b.gender || '—'} />
             <ReadonlyBox v={b.year ? `${b.year}.${b.month}.${b.day}` : '—'} flex={2} />
@@ -76,7 +76,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 function ReadonlyBox({ v, flex = 1 }: { v: string; flex?: number }) {
-  return <div style={{ flex, padding: 13, borderRadius: 12, border: '1px solid var(--line)', background: '#F8FAFC', fontFamily: 'var(--mono)', fontSize: 14, color: 'var(--muted)', textAlign: 'center' }}>{v}</div>;
+  return <div style={{ flex, padding: 13, borderRadius: 12, border: '1px solid var(--line)', background: 'var(--color-bg)', fontFamily: 'var(--mono)', fontSize: 14, color: 'var(--muted)', textAlign: 'center' }}>{v}</div>;
 }
 
 export default function SignupPage() {

@@ -15,7 +15,8 @@ export function LegalPage({ kind }: { kind: 'privacy' | 'terms' }) {
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
       <Aurora />
       <header style={{ marginBottom: 20 }}>
-        <button type="button" onClick={() => router.back()} style={{ border: 0, background: 'transparent', cursor: 'pointer', fontSize: 14, color: 'var(--color-text-muted)', padding: 0, minHeight: 44 }}>
+        {/* 직접 진입(히스토리 없음) 시 홈 폴백 — 이탈 방지 (휴리스틱 #10) */}
+        <button type="button" onClick={() => { if (window.history.length > 1) router.back(); else router.push('/'); }} style={{ border: 0, background: 'transparent', cursor: 'pointer', fontSize: 14, color: 'var(--color-text-muted)', padding: 0, minHeight: 44 }}>
           ← {t.legal.back}
         </button>
       </header>

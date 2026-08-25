@@ -27,7 +27,6 @@ export interface Dictionary {
     month: string;
     day: string;
     cta: string;
-    note: string;
     /** 개인정보 마이크로카피 (§7.2 — 생년월일 필드 직하단 필수) */
     privacy: string;
     dateError: string;
@@ -44,6 +43,8 @@ export interface Dictionary {
     /** 분포 차트 인라인 태그 (중복 문구 제거 — PO 피드백 #4) */
     lowestTag: string;
     strongestTag: string;
+    /** 헤더 좌측 — 홈(입력)으로 돌아가 수정 (라벨=동작 일치, 휴리스틱 #8) */
+    editBirth: string;
     /** 결과 하단 추천 직노출 (PO 피드백 #5) */
     recsTitle: string;
     seeAll: string;
@@ -108,6 +109,7 @@ export interface Dictionary {
     datePrompt: string;
     dateConfirm: string;
     viewPlan: string;
+    bookmark: string;
     back: string;
     notFound: string;
   };
@@ -161,7 +163,6 @@ export interface Dictionary {
     noBookmarks: string;
     signUp: string;
     editProfile: string;
-    guest: string;
     settings: string;
     language: string;
     /** {name} 치환 — 로그인 상태 인사 */
@@ -173,6 +174,7 @@ export interface Dictionary {
   signup: {
     title: string;
     subtitle: string;
+    prefill: string;
     nickname: string;
     nicknameHint: string;
     agree: string;
@@ -210,7 +212,6 @@ const en: Dictionary = {
     month: 'Month',
     day: 'Day',
     cta: 'Read my elements',
-    note: 'No account needed to see your reading.',
     privacy: 'We use this only to calculate your elements. It is not shared, and you can delete it anytime in Settings.',
     dateError: "That date doesn't look right — check the day and month.",
   },
@@ -225,6 +226,7 @@ const en: Dictionary = {
     retry: 'Try again',
     lowestTag: 'lowest',
     strongestTag: 'strongest',
+    editBirth: 'Edit birth info',
     recsTitle: 'Places that resonate',
     seeAll: 'See all',
   },
@@ -286,6 +288,7 @@ const en: Dictionary = {
     datePrompt: 'When is your trip?',
     dateConfirm: 'Save & add',
     viewPlan: 'View itinerary',
+    bookmark: 'Save this place',
     back: 'Back',
     notFound: 'Place not found.',
   },
@@ -336,7 +339,6 @@ const en: Dictionary = {
     noBookmarks: 'Tap the bookmark on a place to keep it here.',
     signUp: 'Sign up to save everything',
     editProfile: 'Edit profile',
-    guest: 'Guest',
     settings: 'Settings',
     language: 'Language',
     signedInAs: 'Signed in as {name}',
@@ -346,6 +348,7 @@ const en: Dictionary = {
   signup: {
     title: 'Create your account',
     subtitle: 'So your reading, saved places and trips are here next time.',
+    prefill: 'Gender / birth · pre-filled',
     nickname: 'Nickname · optional',
     nicknameHint: 'e.g. Fire Traveler',
     agree: 'I agree to the',
@@ -405,7 +408,6 @@ const ko: Dictionary = {
     month: '월',
     day: '일',
     cta: '내 오행 보기',
-    note: '회원가입 없이 결과를 볼 수 있어요.',
     privacy: '입력한 생년월일은 오행 계산에만 사용해요. 외부에 공유되지 않으며 설정에서 언제든 삭제할 수 있어요.',
     dateError: '날짜가 맞지 않아요 — 일과 월을 확인해 주세요.',
   },
@@ -420,6 +422,7 @@ const ko: Dictionary = {
     retry: '다시 시도',
     lowestTag: '가장 부족',
     strongestTag: '가장 강함',
+    editBirth: '입력 수정',
     recsTitle: '공명하는 장소',
     seeAll: '전체 보기',
   },
@@ -481,6 +484,7 @@ const ko: Dictionary = {
     datePrompt: '여행 일자를 알려주세요',
     dateConfirm: '저장하고 담기',
     viewPlan: '일정 보기',
+    bookmark: '이 장소 찜하기',
     back: '뒤로',
     notFound: '장소를 찾을 수 없어요.',
   },
@@ -535,12 +539,12 @@ const ko: Dictionary = {
     language: '언어',
     signedInAs: '{name} 님',
     placeOne: '곳',
-    guest: '게스트',
     back: '뒤로',
   },
   signup: {
     title: '회원가입',
     subtitle: '사주 결과·찜·일정을 다음에도 볼 수 있게 저장해요.',
+    prefill: '성별 / 생년월일 · 자동 입력됨',
     nickname: '닉네임 · 선택',
     nicknameHint: '예: Fire Traveler',
     agree: '동의합니다:',

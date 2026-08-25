@@ -34,9 +34,10 @@ export default function StatusPage() {
           <div style={{ fontFamily: 'var(--mono)', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--muted-2)' }}>SajuTrip · Live API status</div>
           <h1 style={{ fontSize: 24, fontWeight: 600, margin: '6px 0 0' }}>외부 API 실시간 점검</h1>
         </div>
+        {/* v2 §1: status는 뉴트럴 fill + 아이콘/라벨 (적녹 금지) */}
         {data && (
-          <span style={{ fontSize: 13, fontWeight: 600, padding: '6px 12px', borderRadius: 999, color: data.allOk ? '#12351f' : '#4a1512', background: data.allOk ? '#bfe6cd' : '#f2c4bd' }}>
-            {data.allOk ? '● ALL OK' : '● DEGRADED'}
+          <span style={{ fontSize: 13, fontWeight: 600, padding: '6px 12px', borderRadius: 999, color: 'var(--color-status-text)', background: 'var(--color-status-bg)' }}>
+            {data.allOk ? '✓ ALL OK' : '! DEGRADED'}
           </span>
         )}
       </div>
