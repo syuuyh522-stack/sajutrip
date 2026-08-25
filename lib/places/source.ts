@@ -3,7 +3,7 @@
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 import { getAllWellness, type PlaceLocale } from '../tour-api/wellness';
-import { getEnrichmentPlaces } from '../tour-api/general';
+import { getEnrichmentPlaces, getPlaceDetail } from '../tour-api/general';
 import { getDurunubiCourses } from '../tour-api/durunubi';
 import { rankPlaces } from '../recommend/rank';
 import { seedByElement, seedById } from './seed';
@@ -47,6 +47,9 @@ export async function getPlaceById(contentId: string, locale: PlaceLocale = 'ko'
         const inExtra = (await getExtraPlaces(element, locale)).find((p) => p.contentId === contentId);
         if (inExtra) return inExtra;
       }
+      // 검색 결과 등 임의 contentId — detailCommon2 단건 폴백 (검색→PDP 플로우 필수)
+      const detail = await getPlaceDetail(contentId, locale);
+      if (detail) return detail;
     } catch {
       // TourAPI 실패 시 시드 fallback
     }

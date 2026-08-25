@@ -8,7 +8,10 @@ import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { displayName } from '../../lib/ui/romanize';
+import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
+
+const ELEMENTS: Element[] = ['wood', 'fire', 'earth', 'metal', 'water'];
 
 interface Festival { contentId: string; name: string; region: string; start: string; end: string; image?: string }
 
@@ -33,6 +36,8 @@ function SearchInner() {
   const [q, setQ] = useState('');
   const [results, setResults] = useState<Place[] | null>(null);
   const [loading, setLoading] = useState(false);
+  // 오행 태그 검색 (PRD 검색 필드 3종 중 하나) — 텍스트 검색과 상호 배타
+  const [elFilter, setElFilter] = useState<Element | null>(null);
 
   // 검색홈 (PRD P1): 최근 검색 = localStorage 실기록, 축제 = searchFestival2 실시간
   const [recent, setRecent] = useState<string[]>([]);
@@ -45,12 +50,24 @@ function SearchInner() {
       .catch(() => setFestivals([]));
   }, [locale]);
 
+  // 오행 태그 선택 → 해당 원소 장소 리스트 (기존 추천 API 재사용, 신규 스펙 없음)
+  useEffect(() => {
+    if (!elFilter) return;
+    setLoading(true);
+    fetch(`/api/places?element=${elFilter}&lang=${locale}&max=20`)
+      .then((r) => r.json())
+      .then((j) => setResults(j.places ?? []))
+      .catch(() => setResults([]))
+      .finally(() => setLoading(false));
+  }, [elFilter, locale]);
+
   useEffect(() => {
     const query = q.trim();
     if (!query) {
-      setResults(null);
+      if (!elFilter) setResults(null);
       return;
     }
+    setElFilter(null); // 텍스트 입력 시 태그 필터 해제
     setLoading(true);
     const id = setTimeout(() => {
       fetch(`/api/search?q=${encodeURIComponent(query)}&lang=${locale}`)
@@ -68,7 +85,7 @@ function SearchInner() {
         .finally(() => setLoading(false));
     }, 350);
     return () => clearTimeout(id);
-  }, [q, locale]);
+  }, [q, locale, elFilter]);
 
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
@@ -84,6 +101,30 @@ function SearchInner() {
         aria-label={t.search.title}
         style={{ width: '100%', minHeight: 44, padding: '13px 16px', borderRadius: 'var(--radius-pill)', border: '1px solid rgba(185,180,199,.4)', background: 'var(--color-surface)', fontSize: 14, color: 'var(--color-text)', outline: 'none' }}
       />
+
+      {/* 오행 태그 검색 — 뉴트럴 칩, 활성=accent(§1: 선택 상태). 원소색 다색 노출 금지(절제 규칙) */}
+      <div style={{ marginTop: 14 }}>
+        <div style={{ fontSize: 13, color: 'var(--color-text-muted)', marginBottom: 8 }}>{t.search.byElement}</div>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }} role="group" aria-label={t.search.byElement}>
+          {ELEMENTS.map((el) => {
+            const active = elFilter === el;
+            return (
+              <button
+                key={el}
+                type="button"
+                aria-pressed={active}
+                onClick={() => { setQ(''); setElFilter(active ? null : el); if (active) setResults(null); }}
+                style={{
+                  ...chip,
+                  ...(active ? { border: '1.5px solid var(--color-accent)', background: 'rgba(108,63,224,.10)', color: 'var(--color-accent)', fontWeight: 600 } : {}),
+                }}
+              >
+                {t.elements[el]}
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
       {/* 검색어 없을 때 = 검색홈 (PRD: 최근 검색결과 + 이번 주 진행중인 축제) */}
       {results === null && (

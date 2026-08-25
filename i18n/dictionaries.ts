@@ -143,6 +143,8 @@ export interface Dictionary {
     placeholder: string;
     recent: string;
     recentChips: string[];
+    /** 오행 태그 검색 (PRD 검색 필드: 장소명·지역명·오행 태그) */
+    byElement: string;
     festivals: string;
     festivalsNote: string;
     empty: string;
@@ -182,6 +184,7 @@ export interface Dictionary {
     back: string;
   };
   checkin: { title: string; done: string; hint: string };
+  notFound: { title: string; desc: string; home: string };
   legal: {
     privacyTitle: string;
     termsTitle: string;
@@ -276,7 +279,7 @@ const en: Dictionary = {
     quietNote: 'Quietest on weekday mornings',
     demo: 'demo · live congestion data coming',
     book: 'Book',
-    bookNote: 'Booking link coming soon',
+    bookNote: 'Opens a Yeogi Attae search in a new tab',
     addPlan: 'Add to itinerary',
     added: 'Added to itinerary',
     addedToast: 'Added to your itinerary',
@@ -316,6 +319,7 @@ const en: Dictionary = {
     placeholder: 'Search places, regions',
     recent: 'Recent',
     recentChips: ['Hot springs', 'Temple stay', 'Forest healing'],
+    byElement: 'Browse by element',
     festivals: 'Festivals this week',
     festivalsNote: 'Festival feed coming soon.',
     empty: 'No results.',
@@ -356,6 +360,11 @@ const en: Dictionary = {
     title: 'While traveling · check in',
     done: "Today's activity done — auto-prompt at 8 PM",
     hint: 'Check off elements as you collect them.',
+  },
+  notFound: {
+    title: 'This path isn\u2019t on the map',
+    desc: 'The page moved or never existed. Start again from your reading.',
+    home: 'Back to home',
   },
   legal: {
     privacyTitle: 'Privacy policy',
@@ -465,7 +474,7 @@ const ko: Dictionary = {
     quietNote: '평일 오전이 가장 한산해요',
     demo: 'demo · 실시간 혼잡도 연동 예정',
     book: '예약하기',
-    bookNote: '예약 링크는 곧 연결됩니다',
+    bookNote: '여기어때 검색 결과로 연결돼요 (새 탭)',
     addPlan: '일정에 담기',
     added: '일정에 담겼어요',
     addedToast: '일정에 담았어요',
@@ -505,6 +514,7 @@ const ko: Dictionary = {
     placeholder: '장소·지역 검색',
     recent: '최근 검색',
     recentChips: ['온천', '템플스테이', '숲치유'],
+    byElement: '오행으로 찾기',
     festivals: '이번 주 축제',
     festivalsNote: '축제 API 연동 예정.',
     empty: '결과가 없어요.',
@@ -545,6 +555,11 @@ const ko: Dictionary = {
     title: '여행 중 · 체크인',
     done: '오늘 활동 완료 — 오후 8시 자동 알림',
     hint: '기운을 채울 때마다 체크하세요.',
+  },
+  notFound: {
+    title: '이 길은 지도에 없어요',
+    desc: '주소가 바뀌었거나 없는 페이지예요. 처음부터 다시 시작해 보세요.',
+    home: '홈으로',
   },
   legal: {
     privacyTitle: '개인정보처리방침',

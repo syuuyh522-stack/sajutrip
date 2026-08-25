@@ -276,10 +276,14 @@ export default function PlacePage() {
               );
             })()}
 
-            {/* 예약하기 — secondary(§1: primary는 fire만). 딥링크 later */}
+            {/* 예약하기 — secondary(§1: primary는 잉크뿐). 여기어때 검색 딥링크(F-6 P1) —
+                어필리에이트 정산 파라미터는 PO 확정 후 부착, 지금은 검색 연결 + CTR 계측(§8.4) */}
             <button
               type="button"
-              onClick={() => { /* TODO: 예약 딥링크 (여기어때/Klook 등) 연결 */ }}
+              onClick={() => {
+                track('book_click', { contentId: place.contentId, region: place.region });
+                window.open(`https://www.yeogi.com/domestic-accommodations?keyword=${encodeURIComponent(place.name)}`, '_blank', 'noopener');
+              }}
               style={{ width: '100%', minHeight: 48, marginTop: 12, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: 'var(--color-text)' }}
             >
               {t.pdp.book}

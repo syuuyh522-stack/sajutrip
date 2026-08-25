@@ -96,6 +96,33 @@ export async function searchPlaces(locale: PlaceLocale, query: string, max = 20)
   return out;
 }
 
+/** 단건 상세 (detailCommon2) — 검색 결과 등 임의 contentId의 PDP 폴백 조회. 원소는 이름 태깅. */
+export async function getPlaceDetail(contentId: string, locale: PlaceLocale): Promise<Place | null> {
+  const key = process.env.TOURAPI_SERVICE_KEY;
+  if (!key || !contentId) return null;
+  const base = locale === 'en' ? (process.env.TOURAPI_ENG_BASE ?? DEFAULT_ENG) : (process.env.TOURAPI_KOR_BASE ?? DEFAULT_KOR);
+  const qs = new URLSearchParams({
+    serviceKey: key, MobileOS: 'ETC', MobileApp: 'sajutrip', _type: 'json', contentId,
+  });
+  const realtime = process.env.REALTIME_API_MODE === 'true';
+  const res = await fetch(`${base}/detailCommon2?${qs.toString()}`, realtime ? { cache: 'no-store' } : { next: { revalidate: REVALIDATE } });
+  if (!res.ok) return null;
+  const json: unknown = await res.json();
+  const node = (json as { response?: { body?: { items?: { item?: GeneralRaw | GeneralRaw[] } } } })?.response?.body?.items?.item;
+  const raw = Array.isArray(node) ? node[0] : node;
+  if (!raw) return null;
+  const name = (raw.title ?? '').trim();
+  if (!name) return null;
+  return {
+    contentId,
+    name,
+    region: AREA_BY_CODE[String(raw.areacode ?? '')]?.[locale] ?? (locale === 'ko' ? (raw.addr1 ?? '').split(' ')[0] ?? '' : ''),
+    image: raw.firstimage || undefined,
+    tel: raw.tel || undefined,
+    primaryElement: tagByName(name),
+  };
+}
+
 /** 원소별 보강 후보 (fire/metal/earth). 키워드마다 검색 → contentId 중복 제거. */
 export async function getEnrichmentPlaces(element: Element, locale: PlaceLocale): Promise<Place[]> {
   const keywords = ENRICH[element]?.[locale];
