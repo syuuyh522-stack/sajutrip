@@ -88,11 +88,15 @@ export interface Dictionary {
     echoMatchDesc: string;
     balanceMatch: string;
     balanceMatchDesc: string;
-    /** {element} 치환 — 게이지 라벨 */
-    yourLevel: string;
+    /** 차트 진단 줄 (리프레이밍 A: 명식은 불변) — "{prefix}: 金 0/6 · lowest — {never}" */
+    chartPrefix: string;
+    chartNever: string;
+    /** {element} 치환 — 수집 게이지 라벨 (주어 = 이번 여행, 차트 아님) */
+    tripLevel: string;
     afterVisit: string;
-    /** {element} 치환 — 문화적 근거(§5.8, 효과 단정 금지) */
+    /** {element} 치환 — 문화적 근거(§5.8, 효과 단정 금지). basisFill=결핍 매치 전용(곁에 두기, 리프레이밍 B) */
     basis: string;
+    basisFill: string;
     quiet: string;
     quietNote: string;
     demo: string;
@@ -257,14 +261,17 @@ const en: Dictionary = {
     resonance: 'A {element}-rich place — said to resonate with a chart like yours.',
     matchTitle: 'Why this fits you',
     fillMatch: 'Fill match',
-    fillMatchDesc: 'Tops up {element} — the element that runs lowest in your chart.',
+    fillMatchDesc: 'Your chart runs low on {element} — so this stop surrounds you with it.',
     echoMatch: 'Echo match',
     echoMatchDesc: 'Resonates with {element} — your strongest element.',
     balanceMatch: 'Balance stop',
     balanceMatchDesc: 'Adds a touch of {element} to round out your balance.',
-    yourLevel: 'Your {element}',
-    afterVisit: 'after this stop',
+    chartPrefix: 'Your chart',
+    chartNever: 'this never changes',
+    tripLevel: '{element} on this trip',
+    afterVisit: 'when you check in',
     basis: 'In the five-element tradition, places like this are considered rich in {element} energy.',
+    basisFill: "In saju tradition, you don't rewrite your chart — you keep the missing element close. Places like this are where {element} runs strongest.",
     quiet: 'When it is quiet',
     quietNote: 'Quietest on weekday mornings',
     demo: 'demo · live congestion data coming',
@@ -443,14 +450,17 @@ const ko: Dictionary = {
     resonance: '{element} 기운이 강한 곳 — 당신의 사주와 공명한다고 여겨져요.',
     matchTitle: '나와 잘 맞을까',
     fillMatch: '채우기 매칭',
-    fillMatchDesc: '당신 사주에서 가장 부족한 {element} 기운을 채워줘요.',
+    fillMatchDesc: '명식에 {element} 기운이 적은 당신 — 이곳이 그 기운을 곁에 채워줘요.',
     echoMatch: '공명 매칭',
     echoMatchDesc: '가장 강한 {element} 기운과 공명하는 곳이에요.',
     balanceMatch: '균형 스팟',
     balanceMatchDesc: '{element} 기운을 더해 오행 균형을 잡아줘요.',
-    yourLevel: '지금 나의 {element}',
-    afterVisit: '이 곳을 다녀오면',
+    chartPrefix: '내 명식',
+    chartNever: '명식은 변하지 않아요',
+    tripLevel: '이번 여행의 {element}',
+    afterVisit: '체크인하면',
     basis: '전통 오행에서 이런 곳은 {element} 기운이 깃든 곳으로 여겨져요.',
+    basisFill: '전통 명리에서도 사주를 바꾸는 게 아니라, 부족한 기운을 곁에 두는 것으로 풀어요. 이곳은 {element} 기운이 가장 진하게 흐르는 곳.',
     quiet: '여유로운 시간',
     quietNote: '평일 오전이 가장 한산해요',
     demo: 'demo · 실시간 혼잡도 연동 예정',

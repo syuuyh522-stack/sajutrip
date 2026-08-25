@@ -23,19 +23,29 @@ function isElement(v: string | null): v is Element {
 const CROWD = [40, 30, 55, 70, 95, 88, 60];
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-/** 근거 모듈 — 매치 타입 배지 + 내 오행 보완 게이지(실분포 v/6 + 방문 시 +1) + 문화적 근거(§5.8) */
+/**
+ * 근거 모듈 (리프레이밍 A+B — 사주는 불변, 게이지의 주어는 "이번 여행"):
+ * ① 차트 진단 한 줄 = 실분포 v/6 + 불변 명시 ② 수집 게이지 = 이번 여행 체크인 수 + 이 스탑의 +1(점선)
+ * ③ 근거 카피 = 결핍 매치는 "곁에 두기"(basisFill), 그 외 공명 톤(§5.8)
+ */
 function MatchCard({ element, saju, t }: {
   element: Element;
   saju: { distribution: ElementDistribution; deficient: Element; excess: Element };
   t: Dictionary;
 }) {
+  const { collectedCount } = useProfile();
   const isFill = element === saju.deficient;
   const isEcho = element === saju.excess;
   const badge = isFill ? t.pdp.fillMatch : isEcho ? t.pdp.echoMatch : t.pdp.balanceMatch;
   const desc = (isFill ? t.pdp.fillMatchDesc : isEcho ? t.pdp.echoMatchDesc : t.pdp.balanceMatchDesc)
     .replace('{element}', t.elements[element]);
-  const v = saju.distribution[element]; // 내 현재 이 원소 카운트 (0~6, 실산출값)
-  const cells = Array.from({ length: 6 }, (_, i) => (i < v ? 'filled' : i === v ? 'ghost' : 'empty'));
+  const basis = (isFill ? t.pdp.basisFill : t.pdp.basis).replace('{element}', t.elements[element]);
+
+  const v = saju.distribution[element]; // 명식의 이 원소 카운트 (0~6, 불변 진단)
+  const chartTag = isFill ? t.result.lowestTag : isEcho ? t.result.strongestTag : null;
+
+  const got = Math.min(collectedCount(element), 6); // 이번 여행에서 체크인으로 모은 수
+  const cells = Array.from({ length: 6 }, (_, i) => (i < got ? 'filled' : i === got ? 'ghost' : 'empty'));
 
   return (
     <section className="glass" style={{ padding: 16, margin: '0 0 20px' }}>
@@ -46,12 +56,19 @@ function MatchCard({ element, saju, t }: {
         </span>
       </div>
 
-      {/* 보완 게이지 — 채워진 칸 = 실분포, 점선 칸 = 이 장소가 채워줄 +1 (§7.1: 숫자엔 설명 병기) */}
+      {/* ① 차트 진단 — 불변임을 명시 (사주가 바뀐다는 오독 차단) */}
+      <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: '0 0 10px', paddingBottom: 10, borderBottom: '1px solid rgba(185,180,199,.3)' }}>
+        {t.pdp.chartPrefix}: <b style={{ color: 'var(--color-text)', fontVariantNumeric: 'tabular-nums' }}>{t.elements[element]} {v}/6</b>
+        {chartTag ? <> · <b style={{ color: EL_INK[element] }}>{chartTag}</b></> : null}
+        {' — '}{t.pdp.chartNever}
+      </p>
+
+      {/* ② 수집 게이지 — 채워진 칸 = 이번 여행 체크인, 점선 칸 = 이 스탑의 +1 (§7.1: 숫자엔 설명 병기) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', flex: '0 0 auto' }}>
-          {t.pdp.yourLevel.replace('{element}', t.elements[element])}
+          {t.pdp.tripLevel.replace('{element}', t.elements[element])}
         </span>
-        <div style={{ display: 'flex', gap: 4, flex: 1 }} role="meter" aria-valuenow={v} aria-valuemin={0} aria-valuemax={6} aria-label={`${t.elements[element]} ${v}/6`}>
+        <div style={{ display: 'flex', gap: 4, flex: 1 }} role="meter" aria-valuenow={got} aria-valuemin={0} aria-valuemax={6} aria-label={`${t.pdp.tripLevel.replace('{element}', t.elements[element])} ${got}`}>
           {cells.map((kind, i) => (
             <span key={i} style={{
               flex: 1, height: 10, borderRadius: 4,
@@ -61,14 +78,14 @@ function MatchCard({ element, saju, t }: {
           ))}
         </div>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums', flex: '0 0 auto' }}>
-          {v}/6 → {Math.min(v + 1, 6)}/6
+          +1
         </span>
       </div>
       <p style={{ fontSize: 'var(--text-caption)', color: 'var(--color-text-muted)', margin: '6px 0 12px', textAlign: 'right' }}>{t.pdp.afterVisit}</p>
 
       <p style={{ fontSize: 'var(--text-body-sm)', lineHeight: 'var(--text-body-sm-lh)', margin: 0 }}>{desc}</p>
       <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: '8px 0 0', fontStyle: 'italic' }}>
-        {t.pdp.basis.replace('{element}', t.elements[element])}
+        {basis}
       </p>
     </section>
   );
