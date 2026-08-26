@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useI18n } from '../i18n/LanguageProvider';
 import { useProfile } from '../i18n/ProfileProvider';
+import { useItinerary } from '../i18n/ItineraryProvider';
+import { track } from '../lib/analytics/track';
 import { IconSaju, IconRoute, IconSearch, IconUser } from './icons';
 import type { ComponentType } from 'react';
 
@@ -35,6 +37,15 @@ export function BottomNav() {
   // 사주 산출 전(생년월일 없음)이면 홈 탭 = 랜딩(입력)으로 — 빈 결과 화면에 떨어지지 않게 (Airbnb 로그인 전/후 탭 구분과 동일 원리)
   const hasBirth = Boolean(query.year);
 
+  // 여행 단계 — 탭 사용률을 단계별로 계측 (바텀 네비 유지/축소 판단 근거, §8.4)
+  const { state: itin } = useItinerary();
+  const now = Date.now();
+  const stage =
+    itin.items.length === 0 ? 'pre'
+    : itin.end && new Date(`${itin.end}T23:59:59`).getTime() < now ? 'post'
+    : itin.start && new Date(`${itin.start}T00:00:00`).getTime() <= now ? 'traveling'
+    : 'planned';
+
   return (
     <nav style={navStyle} aria-label="Main">
       {ITEMS.map(({ id, path, Icon }) => {
@@ -45,6 +56,7 @@ export function BottomNav() {
             key={id}
             href={{ pathname: dest, query }}
             aria-current={on ? 'page' : undefined}
+            onClick={() => track('nav_tab_click', { tab: id, stage, hasBirth })}
             style={{ textDecoration: 'none', flex: 1 }}
           >
             <span style={{ ...itemStyle, color: on ? 'var(--color-accent)' : 'var(--color-text-muted)' }}>

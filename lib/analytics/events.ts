@@ -13,7 +13,8 @@ export type EventName =
   | 'share_action' //        공유/저장
   | 'bookmark_add' //        찜
   | 'checkin' //             여행 중 체크인
-  | 'book_click'; //         예약 딥링크 클릭 (어필리에이트 CTR, §8.4)
+  | 'book_click' //          예약 딥링크 클릭 (어필리에이트 CTR, §8.4)
+  | 'nav_tab_click'; //      GNB 탭 클릭 (tab·stage) — 바텀 네비 유지/축소 판단 근거
 
 export interface TrackEvent {
   name: EventName;
