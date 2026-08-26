@@ -16,6 +16,7 @@ export default function LandingPage() {
   const { setBirth } = useProfile();
   const router = useRouter();
   const [gender, setGender] = useState<Gender>('female');
+  const [genderInfo, setGenderInfo] = useState(false);
   const [year, setYear] = useState('1996');
   const [month, setMonth] = useState('07');
   const [day, setDay] = useState('22');
@@ -59,7 +60,25 @@ export default function LandingPage() {
 
       <div className="glass" style={{ padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 18 }}>
         <div>
-          <label style={label}>{t.landing.gender}</label>
+          {/* 성별 라벨 + 이분 선택 설명 툴팁 — 서양권 젠더 다양성 배려: 전통 계산 방식일 뿐 정체성 판단이 아님을 명시 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <label style={{ ...label, marginBottom: 0 }}>{t.landing.gender}</label>
+            <button
+              type="button"
+              onClick={() => setGenderInfo((v) => !v)}
+              aria-expanded={genderInfo}
+              aria-label={t.landing.genderWhy}
+              style={{ border: 0, background: 'transparent', cursor: 'pointer', padding: '10px', margin: '-10px 0', lineHeight: 1, color: 'var(--color-accent)', fontSize: 14 }}
+            >
+              ⓘ
+            </button>
+          </div>
+          {genderInfo && (
+            <div role="note" className="glass" style={{ padding: '12px 14px', marginBottom: 10 }}>
+              <p style={{ fontSize: 13, fontWeight: 600, margin: '0 0 4px' }}>{t.landing.genderWhy}</p>
+              <p style={{ fontSize: 13, lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: 0 }}>{t.landing.genderNote}</p>
+            </div>
+          )}
           <div style={{ display: 'flex', gap: 8 }}>
             {(['female', 'male'] as const).map((g) => (
               <button key={g} type="button" onClick={() => setGender(g)} aria-pressed={gender === g} style={seg(gender === g)}>

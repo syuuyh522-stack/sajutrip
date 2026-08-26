@@ -20,6 +20,9 @@ export interface Dictionary {
     title: string;
     subtitle: string;
     gender: string;
+    /** 성별 이분 선택에 대한 문화적 설명 툴팁 (다양성 배려) — genderWhy=아이콘 라벨, genderNote=본문 */
+    genderWhy: string;
+    genderNote: string;
     female: string;
     male: string;
     dob: string;
@@ -215,6 +218,8 @@ const en: Dictionary = {
     subtitle:
       'Your birth chart maps five energies — wood, fire, earth, metal, water. We route your trip toward the ones you lack.',
     gender: 'Gender',
+    genderWhy: 'Why only two options?',
+    genderNote: 'Saju is a centuries-old system that calculates your chart through yin\u2013yang polarity, historically recorded as female or male at birth. This choice is used only for the traditional calculation \u2014 it is not a statement about who you are.',
     female: 'Female',
     male: 'Male',
     dob: 'Date of birth',
@@ -456,6 +461,8 @@ const ko: Dictionary = {
     subtitle:
       '사주는 다섯 기운(목·화·토·금·수)의 분포예요. 당신에게 부족한 기운으로 여행을 안내합니다.',
     gender: '성별',
+    genderWhy: '왜 두 가지만 있나요?',
+    genderNote: '사주는 음양 체계로 명식을 계산하는 수백 년 된 전통으로, 계산에 출생 시의 성별 구분을 사용해요. 이 선택은 전통 계산에만 쓰이며, 당신이 어떤 사람인지에 대한 판단이 아니에요.',
     female: '여성',
     male: '남성',
     dob: '생년월일',
