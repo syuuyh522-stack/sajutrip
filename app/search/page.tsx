@@ -1,11 +1,10 @@
 'use client';
 
-// F-5 P1 검색 — 장소·지역 검색 + 검색홈(최근·이번주 축제 placeholder). (PRD 검색홈)
+// (레거시) 검색 화면 — PO 결정으로 검색은 탐색(explore) 상단 검색바로 통합. 딥링크 호환용으로만 유지, GNB 미노출.
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
-import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { displayName } from '../../lib/ui/romanize';
 import type { Element } from '../../types/saju';
@@ -88,7 +87,7 @@ function SearchInner() {
   }, [q, locale, elFilter]);
 
   return (
-    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
+    <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
       <Aurora />
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <h1 style={{ fontSize: 'var(--text-title-lg)', lineHeight: 'var(--text-title-lg-lh)', fontWeight: 600, margin: 0 }}>{t.search.title}</h1>
@@ -180,7 +179,6 @@ function SearchInner() {
           })}
         </div>
       )}
-      <BottomNav />
     </main>
   );
 }

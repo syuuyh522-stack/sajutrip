@@ -8,11 +8,17 @@ import { useI18n } from '../../i18n/LanguageProvider';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK, elGradient } from '../../lib/ui/elements';
 import { displayName } from '../../lib/ui/romanize';
+import { loadRecent, saveRecent } from '../../lib/ui/recent-searches';
 import { track } from '../../lib/analytics/track';
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 
 const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, 텍스트는 EL_INK — §1.1)
+
+interface Festival { contentId: string; name: string; region: string; start: string; end: string; image?: string }
+function fmtDate(yyyymmdd: string): string {
+  return yyyymmdd.length === 8 ? `${yyyymmdd.slice(4, 6)}.${yyyymmdd.slice(6, 8)}` : '';
+}
 
 function ExploreInner() {
   const { t, locale } = useI18n();
@@ -45,6 +51,41 @@ function ExploreInner() {
       .catch(() => { setTargets(null); setTargetsError(true); setLoading(false); });
   }, [birth, retryKey]);
 
+  // 검색 (PO 결정: 별도 검색홈 대신 탐색 상단 검색바) — 입력 시 추천 리스트가 결과로 전환
+  const [q, setQ] = useState('');
+  const [searchResults, setSearchResults] = useState<Place[] | null>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => { setRecent(loadRecent()); }, []);
+  useEffect(() => {
+    const query = q.trim();
+    if (!query) { setSearchResults(null); return; }
+    setSearchLoading(true);
+    const id = setTimeout(() => {
+      fetch(`/api/search?q=${encodeURIComponent(query)}&lang=${locale}`)
+        .then((r) => r.json())
+        .then((j) => {
+          setSearchResults(j.places ?? []);
+          if ((j.places ?? []).length > 0) setRecent(saveRecent(query));
+        })
+        .catch(() => setSearchResults([]))
+        .finally(() => setSearchLoading(false));
+    }, 350);
+    return () => clearTimeout(id);
+  }, [q, locale]);
+
+  // 이번 주 축제 (검색홈에서 이사 — searchFestival2 실시간)
+  const [festivals, setFestivals] = useState<Festival[]>([]);
+  useEffect(() => {
+    fetch(`/api/festivals?lang=${locale}`)
+      .then((r) => r.json())
+      .then((j) => setFestivals(j.festivals ?? []))
+      .catch(() => setFestivals([]));
+  }, [locale]);
+
+  const searching = q.trim().length > 0;
+
   // 2) 현재 탭의 타깃 원소로 장소 조회
   const activeElement: Element | null = targets ? (tab === 'fill' ? targets.deficient : targets.excess) : null;
   useEffect(() => {
@@ -66,14 +107,58 @@ function ExploreInner() {
 
       <h1 style={{ fontSize: 'var(--text-title-lg)', lineHeight: 'var(--text-title-lg-lh)', fontWeight: 600, margin: '0 0 14px' }}>{t.explore.title}</h1>
 
-      {targets && (
+      {/* 검색바 — 추천 위 보조 도구. 입력하면 아래 리스트가 검색 결과로 전환 */}
+      <input
+        value={q}
+        onChange={(e) => setQ(e.target.value)}
+        onFocus={() => setSearchFocused(true)}
+        onBlur={() => setTimeout(() => setSearchFocused(false), 150)}
+        placeholder={t.search.placeholder}
+        aria-label={t.search.placeholder}
+        style={{ width: '100%', minHeight: 44, padding: '12px 16px', borderRadius: 'var(--radius-pill)', border: '1px solid rgba(185,180,199,.4)', background: 'var(--color-surface)', fontSize: 14, color: 'var(--color-text)', outline: 'none', marginBottom: 12 }}
+      />
+      {/* 검색바 포커스 + 미입력 → 최근 검색 칩 */}
+      {searchFocused && !searching && (recent.length > 0 ? recent : t.search.recentChips).length > 0 && (
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+          {(recent.length > 0 ? recent : t.search.recentChips).map((r) => (
+            <button key={r} type="button" onMouseDown={(e) => e.preventDefault()} onClick={() => setQ(r)}
+              style={{ fontSize: 13, minHeight: 36, padding: '7px 14px', borderRadius: 'var(--radius-pill)', border: '1px solid var(--line)', background: 'var(--color-surface)', color: 'var(--muted)', cursor: 'pointer' }}>
+              {r}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* 검색 결과 모드 */}
+      {searching && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {searchLoading && <p style={{ color: 'var(--muted)' }}>…</p>}
+          {!searchLoading && searchResults !== null && searchResults.length === 0 && <p style={{ color: 'var(--muted)' }}>{t.search.empty}</p>}
+          {(searchResults ?? []).map((p) => {
+            const dn = displayName(p.name, locale);
+            return (
+              <Link key={p.contentId} href={{ pathname: `/place/${p.contentId}`, query: { ...birth, ...(p.primaryElement ? { element: p.primaryElement } : {}) } }} style={{ textDecoration: 'none', color: 'inherit' }}>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', border: '1px solid var(--line)', borderRadius: 14, padding: 10 }}>
+                  <div style={{ width: 54, height: 54, borderRadius: 12, flex: '0 0 auto', background: p.image ? `center/cover no-repeat url(${p.image})` : 'rgba(185,180,199,.35)' }} />
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dn.primary}</div>
+                    <div style={{ fontSize: 13, color: 'var(--muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{[dn.hangul, p.region].filter(Boolean).join(' · ')}</div>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {!searching && targets && (
         <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
           <Tab active={tab === 'fill'} element={targets.deficient} label={t.explore.fill.replace('{element}', t.elements[targets.deficient])} onClick={() => setTab('fill')} />
           <Tab active={tab === 'echo'} element={targets.excess} label={t.explore.echo.replace('{element}', t.elements[targets.excess])} onClick={() => setTab('echo')} />
         </div>
       )}
 
-      {targetsError && (
+      {!searching && targetsError && (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
           <p style={{ color: 'var(--color-text-muted)', fontSize: 14, margin: '0 0 14px' }}>{t.result.error}</p>
           <button type="button" onClick={() => setRetryKey((k) => k + 1)} style={{ minHeight: 44, padding: '11px 20px', borderRadius: 'var(--radius-input)', border: '1px solid var(--color-accent)', background: 'rgba(108,63,224,.08)', color: 'var(--color-accent)', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
@@ -81,20 +166,42 @@ function ExploreInner() {
           </button>
         </div>
       )}
-      {!targetsError && loading && <p style={{ color: 'var(--muted)' }}>…</p>}
-      {!targetsError && !loading && places.length === 0 && <p style={{ color: 'var(--muted)' }}>{t.explore.empty}</p>}
+      {!searching && !targetsError && loading && <p style={{ color: 'var(--muted)' }}>…</p>}
+      {!searching && !targetsError && !loading && places.length === 0 && <p style={{ color: 'var(--muted)' }}>{t.explore.empty}</p>}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {places.map((p) => (
-          <Link
-            key={p.contentId}
-            href={{ pathname: `/place/${p.contentId}`, query: { ...birth, ...(activeElement ? { element: activeElement } : {}) } }}
-            style={{ textDecoration: 'none', color: 'inherit' }}
-          >
-            <PlaceCard place={p} element={activeElement} locale={locale} />
-          </Link>
-        ))}
-      </div>
+      {!searching && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {places.map((p) => (
+            <Link
+              key={p.contentId}
+              href={{ pathname: `/place/${p.contentId}`, query: { ...birth, ...(activeElement ? { element: activeElement } : {}) } }}
+              style={{ textDecoration: 'none', color: 'inherit' }}
+            >
+              <PlaceCard place={p} element={activeElement} locale={locale} />
+            </Link>
+          ))}
+        </div>
+      )}
+
+      {/* 이번 주 축제 (검색홈에서 이사) — 추천 아래 시의성 콘텐츠 */}
+      {!searching && festivals.length > 0 && (
+        <section style={{ marginTop: 28 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>{t.search.festivals}</div>
+          <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
+            {festivals.map((f) => (
+              <div key={f.contentId} className="glass" style={{ flex: '0 0 auto', width: 168, overflow: 'hidden' }}>
+                <div aria-hidden="true" style={{ height: 88, background: f.image ? `center/cover no-repeat url(${f.image})` : 'var(--color-metal)' }} />
+                <div style={{ padding: '9px 11px 11px' }}>
+                  <div style={{ fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{f.name}</div>
+                  <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 2, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {f.region}{f.start ? ` · ${fmtDate(f.start)}–${fmtDate(f.end)}` : ''}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
       {/* PO 피드백 #7: 첫 탭이 아닌 화면엔 GNB 미노출 */}
     </main>
   );

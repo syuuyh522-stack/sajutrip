@@ -7,18 +7,18 @@ import { useI18n } from '../i18n/LanguageProvider';
 import { useProfile } from '../i18n/ProfileProvider';
 import { useItinerary } from '../i18n/ItineraryProvider';
 import { track } from '../lib/analytics/track';
-import { IconSaju, IconRoute, IconSearch, IconUser } from './icons';
+import { IconSaju, IconRoute, IconUser } from './icons';
 import type { ComponentType } from 'react';
 
-type NavId = 'saju' | 'plan' | 'search' | 'my';
+// PO 결정: 검색은 독립 탭이 아니라 탐색(explore) 상단 검색바 — GNB 3탭
+type NavId = 'saju' | 'plan' | 'my';
 const ITEMS: { id: NavId; path: string; Icon: ComponentType<{ size?: number }> }[] = [
   { id: 'saju', path: '/result', Icon: IconSaju },
   { id: 'plan', path: '/plan', Icon: IconRoute },
-  { id: 'search', path: '/search', Icon: IconSearch },
   { id: 'my', path: '/my', Icon: IconUser },
 ];
 const ACTIVE_BY_PATH: Record<string, NavId> = {
-  '/result': 'saju', '/explore': 'saju', '/plan': 'plan', '/search': 'search', '/my': 'my',
+  '/result': 'saju', '/explore': 'saju', '/plan': 'plan', '/my': 'my',
 };
 
 export function BottomNav() {
