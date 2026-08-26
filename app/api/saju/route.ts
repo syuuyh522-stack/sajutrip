@@ -3,9 +3,13 @@
 import { NextResponse } from 'next/server';
 import { computeSaju } from '../../../lib/saju';
 import { findSoulmate, findTwin } from '../../../lib/saju/kstar';
+import { attachImages } from '../../../lib/saju/kstar-image';
 import { KSTARS } from '../../../config/kstars';
 
 export const dynamic = 'force-dynamic';
+
+const WIKI_BY_NAME = new Map(KSTARS.filter((s) => s.wiki).map((s) => [s.name, s.wiki as string]));
+
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -26,9 +30,11 @@ export async function GET(request: Request) {
 
   try {
     const result = await computeSaju(year, month, day, { hour });
+    const top = [findSoulmate(result, KSTARS), findTwin(result, KSTARS)].filter((m) => m !== null);
+    const withImg = await attachImages(top, WIKI_BY_NAME);
     const kstar = {
-      soulmate: findSoulmate(result, KSTARS), // 궁합 랭킹 1위 (더보기의 1위와 동일)
-      twin: findTwin(result, KSTARS), // 같은 기운 랭킹 1위
+      soulmate: withImg[0] ?? null, // 궁합 랭킹 1위 (더보기의 1위와 동일)
+      twin: withImg[1] ?? null, // 같은 기운 랭킹 1위
     };
     // 클라이언트로는 정제된 결과만 전달 (원본 키/내부 필드 노출 금지, §6.1)
     return NextResponse.json({ gender, birth: { year, month, day, hour: hour ?? null }, ...result, kstar });

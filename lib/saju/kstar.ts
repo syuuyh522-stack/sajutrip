@@ -11,6 +11,8 @@ export interface KStar {
   birth: { year: number; month: number; day: number };
   gender: 'female' | 'male';
   image?: string;
+  /** 위키피디아 문서 제목 오버라이드 — 검색 매칭이 실패하는 경우만 지정 */
+  wiki?: string;
 }
 
 export interface KStarMatch {
@@ -19,6 +21,8 @@ export interface KStarMatch {
   element: Element;
   /** 표시용 궁합/유사도 % (55~99, 결정적) */
   pct: number;
+  /** 프로필 사진 (위키미디어 커먼즈 썸네일, 없으면 원소색 아바타 폴백) */
+  image?: string;
 }
 
 export interface UserSaju {

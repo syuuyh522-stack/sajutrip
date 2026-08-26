@@ -2,9 +2,13 @@
 import { NextResponse } from 'next/server';
 import { computeSaju } from '../../../lib/saju';
 import { rankSoulmates, rankTwins } from '../../../lib/saju/kstar';
+import { attachImages } from '../../../lib/saju/kstar-image';
 import { KSTARS } from '../../../config/kstars';
 
 export const dynamic = 'force-dynamic';
+
+const WIKI_BY_NAME = new Map(KSTARS.filter((s) => s.wiki).map((s) => [s.name, s.wiki as string]));
+
 
 export async function GET(request: Request) {
   const sp = new URL(request.url).searchParams;
@@ -18,12 +22,12 @@ export async function GET(request: Request) {
   }
   try {
     const result = await computeSaju(year, month, day, { hour });
-    return NextResponse.json({
-      deficient: result.deficient,
-      excess: result.excess,
-      soulmates: rankSoulmates(result, KSTARS, 11),
-      twins: rankTwins(result, KSTARS, 11),
-    });
+    // 사진(위키미디어) 병렬 부착 — 실패한 항목은 원소색 아바타 폴백
+    const [soulmates, twins] = await Promise.all([
+      attachImages(rankSoulmates(result, KSTARS, 11), WIKI_BY_NAME),
+      attachImages(rankTwins(result, KSTARS, 11), WIKI_BY_NAME),
+    ]);
+    return NextResponse.json({ deficient: result.deficient, excess: result.excess, soulmates, twins });
   } catch {
     return NextResponse.json({ error: 'compute_failed' }, { status: 502 });
   }

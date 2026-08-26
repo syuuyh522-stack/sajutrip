@@ -91,6 +91,7 @@ export interface Dictionary {
     best: string;
     match: string;
     back: string;
+    photoCredit: string;
   };
   explore: {
     cta: string;
@@ -350,6 +351,7 @@ const en: Dictionary = {
     best: 'Top match',
     match: 'match',
     back: 'Back',
+    photoCredit: 'Photos: Wikipedia / Wikimedia Commons (CC)',
   },
   explore: {
     cta: 'Find places that resonate',
@@ -616,6 +618,7 @@ const ko: Dictionary = {
     best: '최고 매치',
     match: '궁합',
     back: '뒤로',
+    photoCredit: '사진: 위키피디아 / 위키미디어 커먼즈 (CC)',
   },
   explore: {
     cta: '공명하는 장소 찾기',

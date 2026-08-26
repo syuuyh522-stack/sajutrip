@@ -18,6 +18,7 @@ import { STEM_ELEMENT, BRANCH_ELEMENT } from '../../config/saju-tables';
 interface KStarMatch {
   name: string;
   element: Element;
+  image?: string;
 }
 interface SajuResponse {
   profile: SajuProfile;
@@ -240,7 +241,12 @@ function PillarCard({ label, pillar }: { label: string; pillar: Pillar }) {
 function StarRow({ match, title, desc, elementLabel }: { match: KStarMatch; title: string; desc: string; elementLabel: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, border: '1px solid var(--glass-brd)', background: 'rgba(255,255,255,.5)', borderRadius: 14, padding: '12px 14px' }}>
-      <div style={{ width: 44, height: 44, borderRadius: '50%', background: elGradient(match.element), flex: '0 0 auto' }} aria-hidden="true" />
+      {match.image ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={match.image} alt="" width={44} height={44} style={{ width: 44, height: 44, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto', border: `2px solid ${EL_COLOR[match.element]}` }} />
+      ) : (
+        <div style={{ width: 44, height: 44, borderRadius: '50%', background: elGradient(match.element), flex: '0 0 auto' }} aria-hidden="true" />
+      )}
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 14, fontWeight: 600 }}>{title}: {match.name}</div>
         <div style={{ fontSize: 13, color: 'var(--muted)' }}>{desc}</div>

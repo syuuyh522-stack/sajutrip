@@ -10,7 +10,7 @@ import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import type { Element } from '../../types/saju';
 
-interface Match { name: string; element: Element; pct: number }
+interface Match { name: string; element: Element; pct: number; image?: string }
 
 function KStarsInner() {
   const { t } = useI18n();
@@ -81,7 +81,12 @@ function KStarsInner() {
       {/* 1위 하이라이트 */}
       {top && (
         <section className="glass" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: 18, marginBottom: 14 }}>
-          <span aria-hidden="true" style={{ width: 52, height: 52, borderRadius: '50%', background: EL_COLOR[top.element], flex: '0 0 auto', display: 'grid', placeItems: 'center', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color: '#1C1B1F' }}>1</span>
+          {top.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={top.image} alt="" width={52} height={52} style={{ width: 52, height: 52, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto', border: `2px solid ${EL_COLOR[top.element]}` }} />
+          ) : (
+            <span aria-hidden="true" style={{ width: 52, height: 52, borderRadius: '50%', background: EL_COLOR[top.element], flex: '0 0 auto', display: 'grid', placeItems: 'center', fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color: '#1C1B1F' }}>1</span>
+          )}
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 13, color: 'var(--color-text-muted)' }}>{t.kstarsPage.best}</div>
             <div style={{ fontSize: 'var(--text-title-sm)', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{top.name}</div>
@@ -100,6 +105,12 @@ function KStarsInner() {
           {rest.map((m, i) => (
             <div key={m.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: i < rest.length - 1 ? '1px solid rgba(185,180,199,.25)' : 'none' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-text-muted)', width: 18, textAlign: 'right', fontVariantNumeric: 'tabular-nums', flex: '0 0 auto' }}>{i + 2}</span>
+              {m.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={m.image} alt="" width={32} height={32} style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', flex: '0 0 auto' }} />
+              ) : (
+                <span aria-hidden="true" style={{ width: 32, height: 32, borderRadius: '50%', background: EL_COLOR[m.element], flex: '0 0 auto' }} />
+              )}
               <span style={{ flex: 1, fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.name}</span>
               <span style={{ fontSize: 13, fontWeight: 600, color: EL_INK[m.element], flex: '0 0 auto' }}>{t.elements[m.element]}</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-text-muted)', fontVariantNumeric: 'tabular-nums', width: 40, textAlign: 'right', flex: '0 0 auto' }}>{m.pct}%</span>
@@ -107,6 +118,7 @@ function KStarsInner() {
           ))}
         </section>
       )}
+      <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 16, textAlign: 'center' }}>{t.kstarsPage.photoCredit}</p>
     </main>
   );
 }
