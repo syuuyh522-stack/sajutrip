@@ -39,20 +39,27 @@ export async function getPlacesByElement(element: Element, locale: PlaceLocale =
 
 export async function getPlaceById(contentId: string, locale: PlaceLocale = 'ko', element?: Element): Promise<Place | null> {
   if (tourEnabled()) {
+    // 단계별 독립 예외 처리 — 앞 소스가 실패/누락돼도 다음 폴백으로 진행
+    // (KTO 웰니스 원천은 배치 갱신으로 contentId가 빠질 수 있음 — 실측 2612889 케이스)
     try {
       const inWellness = (await getAllWellness(locale)).find((p) => p.contentId === contentId);
       if (inWellness) return inWellness;
+    } catch { /* 다음 소스로 */ }
+    try {
       // 보강 후보(일반관광)는 원소를 알아야 재조회 가능 — PDP 링크가 element를 전달
       if (element) {
         const inExtra = (await getExtraPlaces(element, locale)).find((p) => p.contentId === contentId);
         if (inExtra) return inExtra;
       }
+    } catch { /* 다음 소스로 */ }
+    try {
       // 검색 결과 등 임의 contentId — detailCommon2 단건 폴백 (검색→PDP 플로우 필수)
       const detail = await getPlaceDetail(contentId, locale);
       if (detail) return detail;
-    } catch {
-      // TourAPI 실패 시 시드 fallback
-    }
+      // 로케일 교차 진입(ko id를 en 화면으로 등) — 반대 로케일 서비스로 재시도
+      const other = await getPlaceDetail(contentId, locale === 'ko' ? 'en' : 'ko');
+      if (other) return other;
+    } catch { /* 시드로 */ }
   }
   return seedById(contentId);
 }

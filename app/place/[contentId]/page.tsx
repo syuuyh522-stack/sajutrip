@@ -140,7 +140,7 @@ function ElementGuide({ element, t }: { element: Element; t: Dictionary }) {
 export default function PlacePage() {
   const { t, locale } = useI18n();
   const { state: itin, setDates, addItem, hasItem } = useItinerary();
-  const { toggleBookmark, hasBookmark } = useProfile();
+  const { toggleBookmark, hasBookmark, bookmarks } = useProfile();
 
   // PO 피드백 #8: 담기 시 페이지 유지 + 토스트 / #11: 첫 담기 시 여행 일자부터 받기
   const [toast, setToast] = useState(false);
@@ -195,7 +195,18 @@ export default function PlacePage() {
     fetch(`/api/places/${routeParams.contentId}?lang=${locale}${elParam}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((j) => { setPlace(j.place); setAbout(j.about ?? null); track('pdp_view', { contentId: routeParams.contentId, element: queryEl ?? null }); })
-      .catch(() => setNotFound(true));
+      .catch(() => {
+        // 원천(KTO)에서 사라진 장소 — 찜·일정의 localStorage 스냅샷으로 최소 렌더 (404 방지)
+        const snap =
+          bookmarks.find((b) => b.contentId === routeParams.contentId) ??
+          itin.items.find((it) => it.contentId === routeParams.contentId);
+        if (snap) {
+          setPlace({ contentId: routeParams.contentId, name: snap.name, region: snap.region, primaryElement: snap.element ?? undefined });
+        } else {
+          setNotFound(true);
+        }
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeParams.contentId, locale, queryEl]);
 
   const element: Element | undefined = isElement(queryEl) ? queryEl : place?.primaryElement;
