@@ -23,14 +23,20 @@ function starExcess(star: KStar): Element {
   return computeSajuLocal(star.birth.year, star.birth.month, star.birth.day).excess;
 }
 
+/** 후보 중 유저별 결정적 선택 — seed(생일 기반)로 같은 유저는 항상 같은 별, 유저마다는 다양하게 */
+function pickBySeed(candidates: KStar[], seed: number): KStar | null {
+  if (candidates.length === 0) return null;
+  return candidates[Math.abs(seed) % candidates.length];
+}
+
 /** 내 결핍을 채워주는 별 (그 원소가 과잉인 스타) */
-export function findSoulmate(userDeficient: Element, stars: readonly KStar[]): KStarMatch | null {
-  const s = stars.find((star) => starExcess(star) === userDeficient);
+export function findSoulmate(userDeficient: Element, stars: readonly KStar[], seed = 0): KStarMatch | null {
+  const s = pickBySeed(stars.filter((star) => starExcess(star) === userDeficient), seed);
   return s ? { name: s.name, element: userDeficient } : null;
 }
 
 /** 나와 같은 강한 기운을 가진 별 (과잉 원소 일치) */
-export function findTwin(userExcess: Element, stars: readonly KStar[]): KStarMatch | null {
-  const s = stars.find((star) => starExcess(star) === userExcess);
+export function findTwin(userExcess: Element, stars: readonly KStar[], seed = 0): KStarMatch | null {
+  const s = pickBySeed(stars.filter((star) => starExcess(star) === userExcess), seed);
   return s ? { name: s.name, element: userExcess } : null;
 }
