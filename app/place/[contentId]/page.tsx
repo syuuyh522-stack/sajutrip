@@ -349,8 +349,7 @@ export default function PlacePage() {
 
             {/* 여행자 영상 — 서비스 내 후기가 없으니 외부(YouTube)에서. 썸네일 카드 → 새 탭 (마지막 섹션) */}
             <section style={{ marginTop: 24 }}>
-              <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 2px' }}>{t.pdp.videosTitle}</h2>
-              <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 10 }}>{t.pdp.videosNote}</div>
+              <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 10px' }}>{t.pdp.videosTitle}</h2>
               {videos.length > 0 ? (
                 <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
                   {videos.map((v) => (
