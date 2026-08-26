@@ -20,7 +20,7 @@ export interface Pillar {
   branch: EarthlyBranch;
 }
 
-/** 사주 프로필 = 연주·월주·일주 (시주 제외) */
+/** 사주 프로필 = 연주·월주·일주 (+ 시간을 아는 경우 시주) */
 export interface SajuProfile {
   /** 연주(세차) — KASI 음양력정보. 경계는 입춘 */
   year: Pillar;
@@ -28,9 +28,11 @@ export interface SajuProfile {
   month: Pillar;
   /** 일주(일진) — KASI 음양력정보. 그대로 사용 */
   day: Pillar;
+  /** 시주(오자시두법) — 태어난 시각을 아는 경우에만 (date-based 리딩은 미포함) */
+  hour?: Pillar;
 }
 
-/** 오행 분포 — 6글자(천간3+지지3) 카운트. 합계 6 (§5.2) */
+/** 오행 분포 — 글자 수 카운트. 시간 미상=6글자(합 6), 시간 포함=8글자(합 8) (§5.2) */
 export type ElementDistribution = Record<Element, number>;
 
 /** 산출 결과 — 타깃 오행은 결핍+과잉 둘 다 (§5.3) */

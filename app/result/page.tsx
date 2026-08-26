@@ -39,7 +39,7 @@ function ResultInner() {
       gender: params.get('gender') ?? '',
       year: params.get('year') ?? '',
       month: params.get('month') ?? '',
-      day: params.get('day') ?? '',
+      day: params.get('day') ?? '', hour: params.get('hour') ?? '',
     }),
     [params],
   );
@@ -125,15 +125,17 @@ function ResultInner() {
               <PillarCard label={t.saju.year} pillar={data.profile.year} />
               <PillarCard label={t.saju.month} pillar={data.profile.month} />
               <PillarCard label={t.saju.day} pillar={data.profile.day} />
+              {data.profile.hour && <PillarCard label={t.saju.hour} pillar={data.profile.hour} />}
             </div>
           </section>
           {/* PO 피드백 #4: 결핍/과잉 반복 문구 제거 — 차트 인라인 태그와 캐릭터 카드로만 전달 */}
 
-          {/* 오행 분포 + 타깃(결핍·과잉) */}
+          {/* 오행 분포 + 타깃(결핍·과잉) — 분모는 글자 수 총합(시간 미상 6, 시주 포함 8) */}
           <section className="glass" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 18 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {ELEMENT_ORDER.map((el) => {
                 const v = data.distribution[el];
+                const total = ELEMENT_ORDER.reduce((s, e) => s + data.distribution[e], 0);
                 const emphasized = el === data.deficient || el === data.excess;
                 return (
                   <div
@@ -154,7 +156,7 @@ function ResultInner() {
                     </span>
                     <span style={{ height: 12, borderRadius: 999, background: 'rgba(185,180,199,.25)', overflow: 'hidden' }}>
                       {/* D2: 0이면 막대 없음 */}
-                      {v > 0 && <span style={{ display: 'block', height: '100%', width: `${(v / 6) * 100}%`, background: ELEMENT_COLOR[el], borderRadius: 999 }} />}
+                      {v > 0 && <span style={{ display: 'block', height: '100%', width: `${(v / Math.max(total, 1)) * 100}%`, background: ELEMENT_COLOR[el], borderRadius: 999 }} />}
                     </span>
                     <span style={{ fontFamily: 'var(--mono)', fontSize: 13, color: v === 0 ? 'var(--muted-2)' : 'var(--muted)', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{v}</span>
                   </div>

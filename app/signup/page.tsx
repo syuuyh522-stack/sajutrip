@@ -16,9 +16,9 @@ function SignupInner() {
   const [nickname, setNickname] = useState('');
 
   const b = birth ?? {
-    gender: params.get('gender') ?? '', year: params.get('year') ?? '', month: params.get('month') ?? '', day: params.get('day') ?? '',
+    gender: params.get('gender') ?? '', year: params.get('year') ?? '', month: params.get('month') ?? '', day: params.get('day') ?? '', hour: params.get('hour') ?? '',
   };
-  const query = useMemo(() => ({ gender: b.gender, year: b.year, month: b.month, day: b.day }), [b.gender, b.year, b.month, b.day]);
+  const query = useMemo(() => ({ gender: b.gender, year: b.year, month: b.month, day: b.day, hour: b.hour ?? '' }), [b.gender, b.year, b.month, b.day]);
 
   const create = () => {
     signUp(nickname.trim());

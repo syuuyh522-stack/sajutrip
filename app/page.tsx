@@ -21,6 +21,9 @@ export default function LandingPage() {
   const [month, setMonth] = useState('07');
   const [day, setDay] = useState('22');
   const [dateError, setDateError] = useState(false);
+  // 태어난 시간 (선택, §7.2) — timeUnknown이면 date-based 리딩(완전한 모드로 프레이밍)
+  const [birthTime, setBirthTime] = useState('');
+  const [timeUnknown, setTimeUnknown] = useState(false);
 
   useEffect(() => { track('landing_view'); }, []);
 
@@ -36,9 +39,11 @@ export default function LandingPage() {
 
   const submit = () => {
     if (!isValidDate()) { setDateError(true); return; }
-    setBirth({ gender, year, month, day }); // 프로필 저장(하단 네비·마이 등에서 사용)
-    track('saju_submit', { gender });
-    const params = new URLSearchParams({ gender, year, month, day });
+    // 시간: 모름이 아니고 값이 있으면 시(hour)만 사주 산출에 사용 (시지는 2시간 단위)
+    const hour = !timeUnknown && birthTime ? String(Number(birthTime.split(':')[0])) : '';
+    setBirth({ gender, year, month, day, hour }); // 프로필 저장(하단 네비·마이 등에서 사용)
+    track('saju_submit', { gender, withTime: hour !== '' });
+    const params = new URLSearchParams({ gender, year, month, day, ...(hour ? { hour } : {}) });
     router.push(`/result?${params.toString()}`);
   };
 
@@ -105,6 +110,32 @@ export default function LandingPage() {
           <p style={{ fontSize: 13, lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: '8px 0 0' }}>
             {t.landing.privacy}
           </p>
+        </div>
+
+        {/* 태어난 시간 (선택) — 모름 = 일급 경로, 결과는 date-based로 온전히 렌더 (§7.2) */}
+        <div>
+          <label style={label} htmlFor="birth-time">{t.landing.tob}</label>
+          <input
+            id="birth-time"
+            type="time"
+            value={birthTime}
+            disabled={timeUnknown}
+            onChange={(e) => setBirthTime(e.target.value)}
+            style={{ ...dobInput, textAlign: 'left', opacity: timeUnknown ? 0.4 : 1 }}
+          />
+          <button
+            type="button"
+            onClick={() => setTimeUnknown((v) => !v)}
+            aria-pressed={timeUnknown}
+            style={{ border: 0, background: 'transparent', cursor: 'pointer', padding: '10px 0', margin: 0, fontSize: 13, color: 'var(--color-accent)', textDecoration: 'underline', display: 'block' }}
+          >
+            {t.landing.unknownTime}
+          </button>
+          {timeUnknown && (
+            <p role="note" style={{ fontSize: 13, lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: 0 }}>
+              {t.landing.dateBasedNote}
+            </p>
+          )}
         </div>
       </div>
 

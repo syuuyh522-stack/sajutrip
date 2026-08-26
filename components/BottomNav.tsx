@@ -27,7 +27,7 @@ export function BottomNav() {
   const active = ACTIVE_BY_PATH[pathname];
   // birth query: 현재 URL 우선(딥링크/공유 진입 시 프로필 없어도 유지), 프로필 폴백 (휴리스틱 #2)
   const query: Record<string, string> = {};
-  for (const k of ['gender', 'year', 'month', 'day'] as const) {
+  for (const k of ['gender', 'year', 'month', 'day', 'hour'] as const) {
     const v = sp.get(k) ?? (birth ? birth[k] : '');
     if (v) query[k] = v;
   }

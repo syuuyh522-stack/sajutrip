@@ -28,7 +28,7 @@ function PlanInner() {
   const birth = useMemo(
     () => ({
       gender: params.get('gender') ?? '', year: params.get('year') ?? '',
-      month: params.get('month') ?? '', day: params.get('day') ?? '',
+      month: params.get('month') ?? '', day: params.get('day') ?? '', hour: params.get('hour') ?? '',
     }),
     [params],
   );

@@ -5,6 +5,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import type { Element } from '../types/saju';
 
 export interface Birth {
+  /** 태어난 시각 0~23 (선택, 시주용) */
+  hour?: string;
   gender: string;
   year: string;
   month: string;

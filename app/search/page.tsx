@@ -30,7 +30,7 @@ function SearchInner() {
   const { t, locale } = useI18n();
   const params = useSearchParams();
   const birth = useMemo(
-    () => ({ gender: params.get('gender') ?? '', year: params.get('year') ?? '', month: params.get('month') ?? '', day: params.get('day') ?? '' }),
+    () => ({ gender: params.get('gender') ?? '', year: params.get('year') ?? '', month: params.get('month') ?? '', day: params.get('day') ?? '', hour: params.get('hour') ?? '' }),
     [params],
   );
   const [q, setQ] = useState('');

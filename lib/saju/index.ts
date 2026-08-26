@@ -8,12 +8,28 @@ import type { SajuProfile, SajuResult } from '../../types/saju';
 import { computeSajuLocal } from './local';
 import { elementDistribution, deficientElement, excessElement } from './distribution';
 import { fetchLunInfo } from './kasi';
+import { hourPillar } from './hour-pillar';
 
 export { computeSajuLocal } from './local';
 
 export interface ComputeOptions {
   /** false면 KASI 호출 없이 전부 자체계산 (테스트/오프라인) */
   useKasi?: boolean;
+  /** 태어난 시각(0~23) — 있으면 시주 포함 8글자 산출, 없으면 date-based 6글자 */
+  hour?: number;
+}
+
+/** 프로필에 (있다면) 시주를 붙이고 분포·타깃 재산출 */
+function finalize(base: SajuProfile, hour?: number): SajuResult {
+  const profile: SajuProfile =
+    hour === undefined ? base : { ...base, hour: hourPillar(base.day.stem, hour) };
+  const distribution = elementDistribution(profile);
+  return {
+    profile,
+    distribution,
+    deficient: deficientElement(distribution),
+    excess: excessElement(distribution),
+  };
 }
 
 export async function computeSaju(
@@ -23,20 +39,13 @@ export async function computeSaju(
   opts: ComputeOptions = {},
 ): Promise<SajuResult> {
   const local = computeSajuLocal(year, month, day);
-  if (opts.useKasi === false) return local;
+  if (opts.useKasi === false) return finalize(local.profile, opts.hour);
 
   try {
     const kasi = await fetchLunInfo(year, month, day);
-    // 일주만 KASI 일진으로 교체 후 분포 재산출 (일주 오행이 바뀔 수 있음)
-    const profile: SajuProfile = { ...local.profile, day: kasi.iljin };
-    const distribution = elementDistribution(profile);
-    return {
-      profile,
-      distribution,
-      deficient: deficientElement(distribution),
-      excess: excessElement(distribution),
-    };
+    // 일주만 KASI 일진으로 교체 (일주 오행이 바뀔 수 있음 — 시주도 일간 기준이라 교체 후 산출)
+    return finalize({ ...local.profile, day: kasi.iljin }, opts.hour);
   } catch {
-    return local; // KASI 실패 시 자체계산 fallback
+    return finalize(local.profile, opts.hour); // KASI 실패 시 자체계산 fallback
   }
 }

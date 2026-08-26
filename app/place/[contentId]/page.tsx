@@ -41,7 +41,8 @@ function MatchCard({ element, saju, t }: {
     .replace('{element}', t.elements[element]);
   const basis = (isFill ? t.pdp.basisFill : t.pdp.basis).replace('{element}', t.elements[element]);
 
-  const v = saju.distribution[element]; // 명식의 이 원소 카운트 (0~6, 불변 진단)
+  const v = saju.distribution[element]; // 명식의 이 원소 카운트 (불변 진단)
+  const total = (Object.values(saju.distribution) as number[]).reduce((a, b) => a + b, 0); // 6(시간 미상) 또는 8(시주 포함)
   const chartTag = isFill ? t.result.lowestTag : isEcho ? t.result.strongestTag : null;
 
   const got = Math.min(collectedCount(element), 6); // 이번 여행에서 체크인으로 모은 수
@@ -58,7 +59,7 @@ function MatchCard({ element, saju, t }: {
 
       {/* ① 차트 진단 + 보강 동기 — "부족하다"에서 끝내지 않고 "여기서 보강한다"로 (PO 피드백) */}
       <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: '0 0 10px', paddingBottom: 10, borderBottom: '1px solid rgba(185,180,199,.3)' }}>
-        {t.pdp.chartPrefix}: <b style={{ color: 'var(--color-text)', fontVariantNumeric: 'tabular-nums' }}>{t.elements[element]} {v}/6</b>
+        {t.pdp.chartPrefix}: <b style={{ color: 'var(--color-text)', fontVariantNumeric: 'tabular-nums' }}>{t.elements[element]} {v}/{total}</b>
         {chartTag ? <> · <b style={{ color: EL_INK[element] }}>{chartTag}</b></> : null}
         {(isFill || isEcho) && <> — <b style={{ color: 'var(--color-text)' }}>{isFill ? t.pdp.chartBoostFill : t.pdp.chartBoostEcho}</b></>}
       </p>
@@ -162,7 +163,7 @@ export default function PlacePage() {
 
   const backQuery = useMemo(() => {
     const q: Record<string, string> = {};
-    for (const k of ['gender', 'year', 'month', 'day']) {
+    for (const k of ['gender', 'year', 'month', 'day', 'hour']) {
       const v = search.get(k);
       if (v) q[k] = v;
     }

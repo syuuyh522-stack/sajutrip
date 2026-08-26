@@ -29,9 +29,9 @@ function MyInner() {
 
   // birth: 프로필 우선, 없으면 URL
   const b = birth ?? {
-    gender: params.get('gender') ?? '', year: params.get('year') ?? '', month: params.get('month') ?? '', day: params.get('day') ?? '',
+    gender: params.get('gender') ?? '', year: params.get('year') ?? '', month: params.get('month') ?? '', day: params.get('day') ?? '', hour: params.get('hour') ?? '',
   };
-  const query = useMemo(() => ({ gender: b.gender, year: b.year, month: b.month, day: b.day }), [b.gender, b.year, b.month, b.day]);
+  const query = useMemo(() => ({ gender: b.gender, year: b.year, month: b.month, day: b.day, hour: b.hour ?? '' }), [b.gender, b.year, b.month, b.day]);
 
   const [deficient, setDeficient] = useState<Element | null>(null);
   const [excess, setExcess] = useState<Element | null>(null);

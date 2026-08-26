@@ -22,7 +22,7 @@ function ExploreInner() {
       gender: params.get('gender') ?? '',
       year: params.get('year') ?? '',
       month: params.get('month') ?? '',
-      day: params.get('day') ?? '',
+      day: params.get('day') ?? '', hour: params.get('hour') ?? '',
     }),
     [params],
   );

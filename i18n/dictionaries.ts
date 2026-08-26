@@ -26,6 +26,10 @@ export interface Dictionary {
     female: string;
     male: string;
     dob: string;
+    /** 태어난 시간 (선택) — §7.2: 모름 = 일급 경로(date-based reading) */
+    tob: string;
+    unknownTime: string;
+    dateBasedNote: string;
     year: string;
     month: string;
     day: string;
@@ -57,6 +61,7 @@ export interface Dictionary {
     year: string;
     month: string;
     day: string;
+    hour: string;
     stem: string;
     branch: string;
     /** {element} 자리에 원소명 삽입 (§5.8 공명 톤) */
@@ -223,6 +228,9 @@ const en: Dictionary = {
     female: 'Female',
     male: 'Male',
     dob: 'Date of birth',
+    tob: 'Time of birth · optional',
+    unknownTime: 'Not sure of your birth time?',
+    dateBasedNote: 'No problem — we\u2019ll read from your date alone. A date-based reading is a complete, traditional mode.',
     year: 'Year',
     month: 'Month',
     day: 'Day',
@@ -250,6 +258,7 @@ const en: Dictionary = {
     year: 'Year',
     month: 'Month',
     day: 'Day',
+    hour: 'Hour',
     stem: 'Heavenly stem',
     branch: 'Earthly branch',
     resonance: 'In the five-element tradition, places rich in {element} energy are said to resonate with a chart like yours.',
@@ -466,6 +475,9 @@ const ko: Dictionary = {
     female: '여성',
     male: '남성',
     dob: '생년월일',
+    tob: '태어난 시간 · 선택',
+    unknownTime: '태어난 시간을 잘 모르나요?',
+    dateBasedNote: '괜찮아요 — 날짜만으로 읽어드려요. 날짜 기반 리딩도 완전한 전통 방식이에요.',
     year: '년',
     month: '월',
     day: '일',
@@ -493,6 +505,7 @@ const ko: Dictionary = {
     year: '연주',
     month: '월주',
     day: '일주',
+    hour: '시주',
     stem: '천간',
     branch: '지지',
     resonance: '전통 오행에서는 {element} 기운이 강한 곳이 당신과 공명한다고 여겨져요.',

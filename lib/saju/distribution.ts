@@ -2,10 +2,11 @@
 import type { SajuProfile, ElementDistribution, Element } from '../../types/saju';
 import { STEM_ELEMENT, BRANCH_ELEMENT, ELEMENT_PRIORITY } from '../../config/saju-tables';
 
-/** 6글자(천간3+지지3) → 오행 카운트. 합계 6 */
+/** 기둥별 간지 → 오행 카운트. 시주 포함 시 8글자(합 8), 아니면 6글자(합 6) */
 export function elementDistribution(profile: SajuProfile): ElementDistribution {
   const dist: ElementDistribution = { wood: 0, fire: 0, earth: 0, water: 0, metal: 0 };
-  for (const p of [profile.year, profile.month, profile.day]) {
+  const pillars = [profile.year, profile.month, profile.day, ...(profile.hour ? [profile.hour] : [])];
+  for (const p of pillars) {
     dist[STEM_ELEMENT[p.stem]] += 1;
     dist[BRANCH_ELEMENT[p.branch]] += 1;
   }

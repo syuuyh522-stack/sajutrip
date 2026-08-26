@@ -12,20 +12,26 @@ export async function GET(request: Request) {
   const year = Number(searchParams.get('year'));
   const month = Number(searchParams.get('month'));
   const day = Number(searchParams.get('day'));
-  const gender = searchParams.get('gender'); // female | male (P2 시주·정밀 산출 대비 보관)
+  const gender = searchParams.get('gender'); // female | male (전통 계산 입력)
+  // 태어난 시각(0~23, 선택) — 있으면 시주 포함 8글자, 없으면 date-based 6글자 (§7.2)
+  const hourRaw = searchParams.get('hour');
+  const hour = hourRaw === null || hourRaw === '' ? undefined : Number(hourRaw);
+  if (hour !== undefined && (!Number.isInteger(hour) || hour < 0 || hour > 23)) {
+    return NextResponse.json({ error: 'invalid_hour' }, { status: 400 });
+  }
 
   if (!isValidDate(year, month, day)) {
     return NextResponse.json({ error: 'invalid_date' }, { status: 400 });
   }
 
   try {
-    const result = await computeSaju(year, month, day);
+    const result = await computeSaju(year, month, day, { hour });
     const kstar = {
       soulmate: findSoulmate(result.deficient, KSTARS), // 내 결핍을 채워주는 별
       twin: findTwin(result.excess, KSTARS), // 나와 같은 강한 기운
     };
     // 클라이언트로는 정제된 결과만 전달 (원본 키/내부 필드 노출 금지, §6.1)
-    return NextResponse.json({ gender, birth: { year, month, day }, ...result, kstar });
+    return NextResponse.json({ gender, birth: { year, month, day, hour: hour ?? null }, ...result, kstar });
   } catch {
     return NextResponse.json({ error: 'compute_failed' }, { status: 502 });
   }
