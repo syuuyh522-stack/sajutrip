@@ -32,14 +32,18 @@ export function BottomNav() {
     if (v) query[k] = v;
   }
 
+  // 사주 산출 전(생년월일 없음)이면 홈 탭 = 랜딩(입력)으로 — 빈 결과 화면에 떨어지지 않게 (Airbnb 로그인 전/후 탭 구분과 동일 원리)
+  const hasBirth = Boolean(query.year);
+
   return (
     <nav style={navStyle} aria-label="Main">
       {ITEMS.map(({ id, path, Icon }) => {
         const on = active === id;
+        const dest = id === 'saju' && !hasBirth ? '/' : path;
         return (
           <Link
             key={id}
-            href={{ pathname: path, query }}
+            href={{ pathname: dest, query }}
             aria-current={on ? 'page' : undefined}
             style={{ textDecoration: 'none', flex: 1 }}
           >
