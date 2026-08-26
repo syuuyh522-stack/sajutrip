@@ -59,6 +59,12 @@ export interface Dictionary {
     /** {element} 자리에 원소명 삽입 (§5.8 공명 톤) */
     resonance: string;
   };
+  /** 원소별 상세 가이드 (PDP OTA식 모듈): actions=여기서 하는 것 3개, strengthens=이 기운이 키워주는 것 3개.
+   *  §5.8 문화적 해석 톤 — "~로 읽혀요/여겨져요", 효과 단정 금지 */
+  elementGuide: Record<'wood' | 'fire' | 'earth' | 'metal' | 'water', {
+    actions: { title: string; desc: string }[];
+    strengthens: string[];
+  }>;
   /** 과잉(가장 강한) 원소 기준 캐릭터 한마디 — 성격 규정형(FAQ Q3, 공유 욕구↑). label=수식어, desc=한 문장 */
   character: Record<'wood' | 'fire' | 'earth' | 'metal' | 'water', { label: string; desc: string }>;
   kstar: {
@@ -89,9 +95,13 @@ export interface Dictionary {
     echoMatchDesc: string;
     balanceMatch: string;
     balanceMatchDesc: string;
-    /** 차트 진단 줄 (리프레이밍 A: 명식은 불변) — "{prefix}: 金 0/6 · lowest — {never}" */
+    /** 차트 진단 줄 — "{prefix}: 金 0/6 · lowest — {boost}". 불변 서술 대신 보강 동기 카피 */
     chartPrefix: string;
-    chartNever: string;
+    chartBoostFill: string;
+    chartBoostEcho: string;
+    /** {element} 치환 — OTA식 상세 모듈 제목 */
+    howTitle: string;
+    strengthTitle: string;
     /** {element} 치환 — 수집 게이지 라벨 (주어 = 이번 여행, 차트 아님) */
     tripLevel: string;
     afterVisit: string;
@@ -239,6 +249,48 @@ const en: Dictionary = {
     branch: 'Earthly branch',
     resonance: 'In the five-element tradition, places rich in {element} energy are said to resonate with a chart like yours.',
   },
+  elementGuide: {
+    wood: {
+      actions: [
+        { title: 'Walk among the trees', desc: 'A slow 30-minute forest walk is the classic way to keep Wood close.' },
+        { title: 'Breathe the green air', desc: 'Deep, unhurried breaths — Wood is read as the energy of growth and renewal.' },
+        { title: 'Touch what grows', desc: 'Bark, moss, leaves. Direct contact is said to keep the element near.' },
+      ],
+      strengthens: ['Growth & new beginnings', 'Flexibility of mind', 'Steady patience'],
+    },
+    fire: {
+      actions: [
+        { title: 'Take in the heat', desc: 'Jjimjilbang, kiln, warm springs — warmth is the most direct way to sit with Fire.' },
+        { title: 'Stay in the sun', desc: 'A bright hour outdoors; Fire is read as vitality and presence.' },
+        { title: 'Join the energy', desc: 'Markets, performances, lively streets — Fire gathers where people do.' },
+      ],
+      strengthens: ['Vitality & drive', 'Expression', 'Social warmth'],
+    },
+    earth: {
+      actions: [
+        { title: 'Get your hands in clay', desc: 'Pottery and mud experiences are the classic Earth practices.' },
+        { title: 'Stand on bare ground', desc: 'Slow steps on soil or tidal flats — Earth is read as stability.' },
+        { title: 'Eat slowly, locally', desc: 'A grounded meal is part of the practice, not a break from it.' },
+      ],
+      strengthens: ['Stability & trust', 'Groundedness', 'Steadiness under stress'],
+    },
+    metal: {
+      actions: [
+        { title: 'Listen for the bell', desc: 'Temple bells and wind chimes — clear sound is the classic Metal signal.' },
+        { title: 'Work with your hands', desc: 'Crafts that reward precision are said to keep the element close.' },
+        { title: 'Clear one thing out', desc: 'Metal is read as order — even a tidy pause counts.' },
+      ],
+      strengthens: ['Focus & decisiveness', 'Clarity', 'Quiet discipline'],
+    },
+    water: {
+      actions: [
+        { title: 'Walk by the water', desc: 'Rivers, coasts, lakes — staying near flowing water is the classic Water practice.' },
+        { title: 'Soak, don\u2019t rush', desc: 'Hot springs and foot baths; Water is read as recovery.' },
+        { title: 'Listen to it move', desc: 'A quiet minute with the sound of water is said to keep the element near.' },
+      ],
+      strengthens: ['Wisdom & intuition', 'Recovery & calm', 'Going with the flow'],
+    },
+  },
   character: {
     wood: { label: 'The Grower', desc: 'Wood runs strongest in you — a warm, growing spirit who reaches upward and helps others rise.' },
     fire: { label: 'The Spark', desc: 'Fire runs strongest in you — bright, passionate, the one who lights up any room.' },
@@ -272,7 +324,10 @@ const en: Dictionary = {
     balanceMatch: 'Balance stop',
     balanceMatchDesc: 'Adds a touch of {element} to round out your balance.',
     chartPrefix: 'Your chart',
-    chartNever: 'this never changes',
+    chartBoostFill: 'reinforce it here',
+    chartBoostEcho: 'amplify it here',
+    howTitle: 'How to soak in {element}',
+    strengthTitle: 'What {element} strengthens in you',
     tripLevel: '{element} on this trip',
     afterVisit: 'when you check in',
     basis: 'In the five-element tradition, places like this are considered rich in {element} energy.',
@@ -435,6 +490,48 @@ const ko: Dictionary = {
     branch: '지지',
     resonance: '전통 오행에서는 {element} 기운이 강한 곳이 당신과 공명한다고 여겨져요.',
   },
+  elementGuide: {
+    wood: {
+      actions: [
+        { title: '나무 사이를 걷기', desc: '숲길을 30분쯤 천천히 — 걷기는 木을 곁에 두는 가장 고전적인 방법이에요.' },
+        { title: '초록 공기 깊게 마시기', desc: '서두르지 않는 깊은 호흡. 木은 성장과 재생의 기운으로 읽혀요.' },
+        { title: '자라는 것을 만져보기', desc: '나무껍질·이끼·잎. 직접 닿는 것이 기운을 곁에 둔다고 여겨져요.' },
+      ],
+      strengthens: ['성장과 새 시작', '유연한 마음', '꾸준한 인내'],
+    },
+    fire: {
+      actions: [
+        { title: '열기 쬐기', desc: '찜질방·가마·온열 체험 — 따뜻함은 火를 가장 직접 느끼는 방법이에요.' },
+        { title: '햇볕 아래 머물기', desc: '밝은 야외에서 한 시간. 火는 활력과 존재감의 기운으로 읽혀요.' },
+        { title: '활기에 섞이기', desc: '시장·공연·북적이는 거리 — 火는 사람이 모이는 곳에 모여요.' },
+      ],
+      strengthens: ['활력과 추진력', '표현력', '사람을 데우는 온기'],
+    },
+    earth: {
+      actions: [
+        { title: '흙 만지기', desc: '도예·머드 체험은 土의 가장 고전적인 수련이에요.' },
+        { title: '맨땅 딛기', desc: '흙길·갯벌 위 느린 걸음. 土는 안정의 기운으로 읽혀요.' },
+        { title: '천천히, 그 지역의 식사', desc: '든든한 한 끼도 수련의 일부예요.' },
+      ],
+      strengthens: ['안정과 신뢰', '중심 잡기', '흔들리지 않는 꾸준함'],
+    },
+    metal: {
+      actions: [
+        { title: '종소리에 귀 기울이기', desc: '사찰 범종·풍경 — 맑은 소리는 金의 고전적 신호예요.' },
+        { title: '손끝을 쓰는 작업', desc: '정교함이 필요한 공방 체험이 기운을 곁에 둔다고 여겨져요.' },
+        { title: '하나 정리하기', desc: '金은 질서의 기운 — 단정한 멈춤도 수련이에요.' },
+      ],
+      strengthens: ['집중과 결단', '명료함', '조용한 절제'],
+    },
+    water: {
+      actions: [
+        { title: '물가를 걷기', desc: '강·바다·호수 — 흐르는 물 곁이 水의 고전적 수련이에요.' },
+        { title: '서두르지 않고 몸 담그기', desc: '온천·족욕. 水는 회복의 기운으로 읽혀요.' },
+        { title: '물소리 듣기', desc: '물 흐르는 소리에 잠시 머무는 것만으로 기운을 곁에 둔다고 여겨져요.' },
+      ],
+      strengthens: ['지혜와 직관', '회복과 평온', '유연하게 흐르기'],
+    },
+  },
   character: {
     wood: { label: '자라나는 사람', desc: '당신은 목(木) 기운이 가장 강해요 — 위로 뻗고 주변을 함께 키우는 따뜻한 성장형.' },
     fire: { label: '빛나는 사람', desc: '당신은 화(火) 기운이 가장 강해요 — 밝고 열정적이며 어디서든 분위기를 밝히는 사람.' },
@@ -468,7 +565,10 @@ const ko: Dictionary = {
     balanceMatch: '균형 스팟',
     balanceMatchDesc: '{element} 기운을 더해 오행 균형을 잡아줘요.',
     chartPrefix: '내 명식',
-    chartNever: '명식은 변하지 않아요',
+    chartBoostFill: '이곳에서 보강해요',
+    chartBoostEcho: '이곳에서 증폭해요',
+    howTitle: '{element} 기운, 이렇게 채워요',
+    strengthTitle: '{element} 기운이 키워주는 것',
     tripLevel: '이번 여행의 {element}',
     afterVisit: '체크인하면',
     basis: '전통 오행에서 이런 곳은 {element} 기운이 깃든 곳으로 여겨져요.',

@@ -56,11 +56,11 @@ function MatchCard({ element, saju, t }: {
         </span>
       </div>
 
-      {/* ① 차트 진단 — 불변임을 명시 (사주가 바뀐다는 오독 차단) */}
+      {/* ① 차트 진단 + 보강 동기 — "부족하다"에서 끝내지 않고 "여기서 보강한다"로 (PO 피드백) */}
       <p style={{ fontSize: 'var(--text-caption)', lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: '0 0 10px', paddingBottom: 10, borderBottom: '1px solid rgba(185,180,199,.3)' }}>
         {t.pdp.chartPrefix}: <b style={{ color: 'var(--color-text)', fontVariantNumeric: 'tabular-nums' }}>{t.elements[element]} {v}/6</b>
         {chartTag ? <> · <b style={{ color: EL_INK[element] }}>{chartTag}</b></> : null}
-        {' — '}{t.pdp.chartNever}
+        {(isFill || isEcho) && <> — <b style={{ color: 'var(--color-text)' }}>{isFill ? t.pdp.chartBoostFill : t.pdp.chartBoostEcho}</b></>}
       </p>
 
       {/* ② 수집 게이지 — 채워진 칸 = 이번 여행 체크인, 점선 칸 = 이 스탑의 +1 (§7.1: 숫자엔 설명 병기) */}
@@ -88,6 +88,51 @@ function MatchCard({ element, saju, t }: {
         {basis}
       </p>
     </section>
+  );
+}
+
+/**
+ * 원소 가이드 (OTA식 상세 모듈, PO 피드백):
+ * ① 여기서 하는 것 3가지(행위→기운 연결) ② 이 기운이 내 사주에서 키워주는 것(칩).
+ * 원소별 콘텐츠는 i18n elementGuide — §5.8 문화적 해석 톤, 효과 단정 없음.
+ */
+function ElementGuide({ element, t }: { element: Element; t: Dictionary }) {
+  const guide = t.elementGuide[element];
+  const elName = t.elements[element];
+  return (
+    <>
+      {/* 여기서 하는 것 — 번호 대신 원소색 도트(이 화면의 단일 hue, 작게) */}
+      <section className="glass" style={{ padding: 16, margin: '0 0 14px' }}>
+        <h2 style={{ fontSize: 'var(--text-body-sm)', fontWeight: 600, margin: '0 0 12px' }}>
+          {t.pdp.howTitle.replace('{element}', elName)}
+        </h2>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {guide.actions.map((a) => (
+            <div key={a.title} style={{ display: 'flex', gap: 10 }}>
+              <span aria-hidden="true" style={{ width: 8, height: 8, borderRadius: '50%', background: EL_COLOR[element], flex: '0 0 auto', marginTop: 6 }} />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600, lineHeight: '20px' }}>{a.title}</div>
+                <div style={{ fontSize: 13, lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', marginTop: 2 }}>{a.desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 이 기운이 키워주는 것 — 뉴트럴 칩 (§1: status/보조 정보는 뉴트럴) */}
+      <section className="glass" style={{ padding: 16, margin: '0 0 20px' }}>
+        <h2 style={{ fontSize: 'var(--text-body-sm)', fontWeight: 600, margin: '0 0 10px' }}>
+          {t.pdp.strengthTitle.replace('{element}', elName)}
+        </h2>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {guide.strengthens.map((v) => (
+            <span key={v} style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-status-text)', background: 'var(--color-status-bg)', borderRadius: 'var(--radius-pill)', padding: '6px 12px' }}>
+              {v}
+            </span>
+          ))}
+        </div>
+      </section>
+    </>
   );
 }
 
@@ -215,6 +260,9 @@ export default function PlacePage() {
                 {t.pdp.resonance.replace('{element}', t.elements[element])}
               </p>
             )}
+
+            {/* OTA식 상세 모듈 — 여기서 하는 것 / 이 기운이 키워주는 것 (PO 피드백: 활동·근거 구체화) */}
+            {element && <ElementGuide element={element} t={t} />}
 
             <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>{t.pdp.quiet}</h2>
             <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 8 }}>{t.pdp.demo}</div>
