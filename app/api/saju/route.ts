@@ -26,11 +26,9 @@ export async function GET(request: Request) {
 
   try {
     const result = await computeSaju(year, month, day, { hour });
-    // seed = 생일 기반 결정적 값 — 같은 유저는 항상 같은 별, 원소가 같은 다른 유저와는 다양화
-    const seed = year * 372 + month * 31 + day;
     const kstar = {
-      soulmate: findSoulmate(result.deficient, KSTARS, seed), // 내 결핍을 채워주는 별
-      twin: findTwin(result.excess, KSTARS, seed + 1), // 나와 같은 강한 기운
+      soulmate: findSoulmate(result, KSTARS), // 궁합 랭킹 1위 (더보기의 1위와 동일)
+      twin: findTwin(result, KSTARS), // 같은 기운 랭킹 1위
     };
     // 클라이언트로는 정제된 결과만 전달 (원본 키/내부 필드 노출 금지, §6.1)
     return NextResponse.json({ gender, birth: { year, month, day, hour: hour ?? null }, ...result, kstar });

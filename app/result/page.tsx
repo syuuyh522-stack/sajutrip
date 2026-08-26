@@ -166,12 +166,17 @@ function ResultInner() {
           </section>
           {/* PO 피드백 #4: 결핍/과잉 칩 제거 — 차트 인라인 태그로 통합 */}
 
-          {/* K-star (F-2) */}
+          {/* K-star (F-2) — 홈은 각 랭킹 1위만, 더보기 → 전체 랭킹(/kstars) */}
           {(data.kstar.soulmate || data.kstar.twin) && (
             <section className="glass" style={{ padding: 18 }}>
-              <h2 style={sectionH2}>
-                {t.kstar.title} <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--muted-2)' }}>· {t.kstar.forFun}</span>
-              </h2>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+                <h2 style={sectionH2}>
+                  {t.kstar.title} <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--muted-2)' }}>· {t.kstar.forFun}</span>
+                </h2>
+                <Link href={{ pathname: '/kstars', query: birth }} style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-accent)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                  {t.kstar.seeAll} →
+                </Link>
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {data.kstar.soulmate && (
                   <StarRow match={data.kstar.soulmate} title={t.kstar.soulmate} desc={t.kstar.soulmateDesc} elementLabel={t.elements[data.kstar.soulmate.element]} />

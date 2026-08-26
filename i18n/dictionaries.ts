@@ -82,6 +82,15 @@ export interface Dictionary {
     soulmateDesc: string;
     twin: string;
     twinDesc: string;
+    seeAll: string;
+  };
+  kstarsPage: {
+    title: string;
+    soulTab: string;
+    twinTab: string;
+    best: string;
+    match: string;
+    back: string;
   };
   explore: {
     cta: string;
@@ -332,6 +341,15 @@ const en: Dictionary = {
     soulmateDesc: 'Strong where you run low',
     twin: 'Same energy as you',
     twinDesc: 'Shares your strongest element',
+    seeAll: 'See all',
+  },
+  kstarsPage: {
+    title: 'Your K-star matches',
+    soulTab: 'Best chemistry',
+    twinTab: 'Same energy',
+    best: 'Top match',
+    match: 'match',
+    back: 'Back',
   },
   explore: {
     cta: 'Find places that resonate',
@@ -589,6 +607,15 @@ const ko: Dictionary = {
     soulmateDesc: '내게 부족한 기운이 강한 별',
     twin: '나와 닮은 K스타',
     twinDesc: '나와 같은 강한 기운',
+    seeAll: '더보기',
+  },
+  kstarsPage: {
+    title: '나의 K스타 매칭',
+    soulTab: '궁합 잘 맞는',
+    twinTab: '같은 기운',
+    best: '최고 매치',
+    match: '궁합',
+    back: '뒤로',
   },
   explore: {
     cta: '공명하는 장소 찾기',
