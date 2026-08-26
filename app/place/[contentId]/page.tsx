@@ -172,6 +172,8 @@ export default function PlacePage() {
 
   const [place, setPlace] = useState<Place | null>(null);
   // 장소별 실데이터 (detailCommon2/detailIntro2) — 같은 원소여도 장소마다 다른 콘텐츠
+  // 여행자 영상 (YouTube) — 장소·지역 키워드 검색, 키 미설정 시 빈 배열 → 검색 링크 폴백
+  const [videos, setVideos] = useState<{ videoId: string; title: string; thumbnail: string; channel: string }[]>([]);
   const [about, setAbout] = useState<{ overview?: string; expGuide?: string; useTime?: string; restDate?: string; highlights?: string[] } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [notFound, setNotFound] = useState(false);
@@ -197,6 +199,16 @@ export default function PlacePage() {
   }, [routeParams.contentId, locale, queryEl]);
 
   const element: Element | undefined = isElement(queryEl) ? queryEl : place?.primaryElement;
+
+  // 영상 검색어: 괄호 병기 앞부분 + 지역 (예: "Busan Healing Forest Busan")
+  const videoQuery = place ? `${place.name.split('(')[0].trim()} ${place.region}`.trim() : '';
+  useEffect(() => {
+    if (!videoQuery) { setVideos([]); return; }
+    fetch(`/api/videos?q=${encodeURIComponent(videoQuery)}`)
+      .then((r) => r.json())
+      .then((j) => setVideos(j.videos ?? []))
+      .catch(() => setVideos([]));
+  }, [videoQuery]);
 
   return (
     // PO 피드백 #6: PDP = 바텀시트 프레젠테이션 — 상단 딤 영역 탭/닫기 버튼으로 쉽게 복귀 (route는 유지: 딥링크·Phase 2 호환)
@@ -334,6 +346,46 @@ export default function PlacePage() {
               {DAYS.map((d) => <span key={d}>{d}</span>)}
             </div>
             <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 6 }}>{t.pdp.quietNote}</p>
+
+            {/* 여행자 영상 — 서비스 내 후기가 없으니 외부(YouTube)에서. 썸네일 카드 → 새 탭 (마지막 섹션) */}
+            <section style={{ marginTop: 24 }}>
+              <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 2px' }}>{t.pdp.videosTitle}</h2>
+              <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 10 }}>{t.pdp.videosNote}</div>
+              {videos.length > 0 ? (
+                <div style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
+                  {videos.map((v) => (
+                    <a
+                      key={v.videoId}
+                      href={`https://www.youtube.com/watch?v=${v.videoId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => track('video_click', { contentId: place.contentId, videoId: v.videoId })}
+                      className="glass"
+                      style={{ flex: '0 0 auto', width: 200, overflow: 'hidden', textDecoration: 'none', color: 'inherit' }}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={v.thumbnail} alt="" width={200} height={112} style={{ display: 'block', width: 200, height: 112, objectFit: 'cover' }} />
+                      <div style={{ padding: '8px 10px 10px' }}>
+                        <div style={{ fontSize: 13, fontWeight: 600, lineHeight: '18px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{v.title}</div>
+                        <div style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>▶ {v.channel}</div>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <a
+                  href={`https://www.youtube.com/results?search_query=${encodeURIComponent(videoQuery)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => track('video_click', { contentId: place.contentId, videoId: null })}
+                  className="glass"
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '13px 14px', textDecoration: 'none', color: 'inherit' }}
+                >
+                  <span aria-hidden="true" style={{ width: 34, height: 34, borderRadius: 8, background: 'var(--color-status-bg)', display: 'grid', placeItems: 'center', fontSize: 14 }}>▶</span>
+                  <span style={{ fontSize: 14, fontWeight: 600 }}>{t.pdp.videosSearch.replace('{name}', place.name.split('(')[0].trim())}</span>
+                </a>
+              )}
+            </section>
 
             {/* 일정에 담기 (F-5) — #11: 일자 미설정이면 날짜부터 받고, #8: 담은 뒤 페이지 유지+토스트 */}
             {(() => {

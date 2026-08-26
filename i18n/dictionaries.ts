@@ -116,6 +116,11 @@ export interface Dictionary {
     /** {element} 치환 — 문화적 근거(§5.8, 효과 단정 금지). basisFill=결핍 매치 전용(곁에 두기, 리프레이밍 B) */
     basis: string;
     basisFill: string;
+    /** 여행자 영상 (YouTube 외부 링크) */
+    videosTitle: string;
+    videosNote: string;
+    /** {name} 치환 — 키 미설정/결과 없음 폴백 링크 */
+    videosSearch: string;
     /** 장소별 실데이터 섹션 (detailCommon2/detailIntro2) */
     aboutTitle: string;
     goodToKnow: string;
@@ -354,6 +359,9 @@ const en: Dictionary = {
     afterVisit: 'when you check in',
     basis: 'In the five-element tradition, places like this are considered rich in {element} energy.',
     basisFill: "In saju tradition, you don't rewrite your chart — you keep the missing element close. Places like this are where {element} runs strongest.",
+    videosTitle: 'Traveler videos',
+    videosNote: 'Opens YouTube in a new tab',
+    videosSearch: 'Search \u201c{name}\u201d on YouTube',
     aboutTitle: 'About this place',
     goodToKnow: 'Good to know',
     hoursLabel: 'Hours',
@@ -608,6 +616,9 @@ const ko: Dictionary = {
     afterVisit: '체크인하면',
     basis: '전통 오행에서 이런 곳은 {element} 기운이 깃든 곳으로 여겨져요.',
     basisFill: '전통 명리에서도 사주를 바꾸는 게 아니라, 부족한 기운을 곁에 두는 것으로 풀어요. 이곳은 {element} 기운이 가장 진하게 흐르는 곳.',
+    videosTitle: '여행자 영상 후기',
+    videosNote: '유튜브 새 탭으로 열려요',
+    videosSearch: '유튜브에서 \u201c{name}\u201d 검색',
     aboutTitle: '이곳 소개',
     goodToKnow: '알아두면 좋아요',
     hoursLabel: '이용시간',
