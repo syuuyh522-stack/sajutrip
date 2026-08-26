@@ -129,6 +129,41 @@ export interface PlaceAbout {
   expGuide?: string;
   useTime?: string;
   restDate?: string;
+  /** 소개문에서 규칙 기반 추출한 특징 태그 (최대 4) — 줄글 앞 요약 칩용 */
+  highlights?: string[];
+}
+
+/** 특징 태그 추출 — 소개문·체험안내에서 관광 도메인 키워드 매칭 (LLM 없이 결정적, POC) */
+const HIGHLIGHT_RULES: Record<PlaceLocale, [RegExp, string][]> = {
+  ko: [
+    [/삼림욕|치유의\s*숲|숲길|피톤치드/, '숲 치유'],
+    [/온천/, '온천'], [/스파/, '스파'], [/찜질|사우나/, '찜질·사우나'], [/족욕/, '족욕'],
+    [/명상/, '명상'], [/요가/, '요가'], [/한방|한의/, '한방 치유'],
+    [/사찰|템플스테이|암자/, '사찰'], [/공방|도예|도자기/, '공방·만들기'],
+    [/둘레길|트레킹|산책로|걷기/, '걷기 좋은 길'], [/전망|조망|일출|일몰/, '전망 명소'],
+    [/해변|바다|해수욕장|해안/, '바다'], [/계곡/, '계곡'], [/호수/, '호수'],
+    [/축제|행사/, '축제·행사'], [/체험\s*프로그램|프로그램/, '체험 프로그램'],
+    [/무장애|휠체어|배리어\s*프리/, '무장애 여행'], [/가족|아이|어린이/, '가족 친화'],
+  ],
+  en: [
+    [/healing forest|forest|phytoncide/i, 'Forest healing'],
+    [/hot spring/i, 'Hot springs'], [/\bspa\b/i, 'Spa'], [/sauna|jjimjil/i, 'Sauna'], [/foot bath/i, 'Foot bath'],
+    [/meditat/i, 'Meditation'], [/yoga/i, 'Yoga'], [/oriental medicine|herbal/i, 'Herbal healing'],
+    [/temple\s*stay|temple/i, 'Temple'], [/craft|pottery|ceramic/i, 'Crafts'],
+    [/trail|trek|walking path|dulle/i, 'Walking trails'], [/observator|scenic|sunrise|sunset|view/i, 'Scenic views'],
+    [/beach|coast|seaside|\bsea\b/i, 'By the sea'], [/valley/i, 'Valley'], [/\blake\b/i, 'Lake'],
+    [/festival|event/i, 'Festival'], [/program|experience/i, 'Programs'],
+    [/wheelchair|barrier-free/i, 'Barrier-free'], [/family|children|kids/i, 'Family-friendly'],
+  ],
+};
+
+function extractHighlights(text: string, locale: PlaceLocale, max = 4): string[] {
+  const out: string[] = [];
+  for (const [re, label] of HIGHLIGHT_RULES[locale]) {
+    if (out.length >= max) break;
+    if (re.test(text) && !out.includes(label)) out.push(label);
+  }
+  return out;
 }
 
 /** HTML 태그·엔티티 정리 (overview 원문에 <br>·&ldquo; 등이 섞여 옴) */
@@ -183,6 +218,11 @@ export async function getPlaceAbout(contentId: string, locale: PlaceLocale): Pro
     }
   } catch {
     // 상세 정보는 부가 — 실패해도 PDP 본체는 렌더
+  }
+  const source = [out.overview, out.expGuide].filter(Boolean).join('\n');
+  if (source) {
+    const hl = extractHighlights(source, locale);
+    if (hl.length > 0) out.highlights = hl;
   }
   return out;
 }

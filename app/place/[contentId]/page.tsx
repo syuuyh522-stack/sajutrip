@@ -172,7 +172,7 @@ export default function PlacePage() {
 
   const [place, setPlace] = useState<Place | null>(null);
   // 장소별 실데이터 (detailCommon2/detailIntro2) — 같은 원소여도 장소마다 다른 콘텐츠
-  const [about, setAbout] = useState<{ overview?: string; expGuide?: string; useTime?: string; restDate?: string } | null>(null);
+  const [about, setAbout] = useState<{ overview?: string; expGuide?: string; useTime?: string; restDate?: string; highlights?: string[] } | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
@@ -269,6 +269,16 @@ export default function PlacePage() {
             {about?.overview && (
               <section className="glass" style={{ padding: 16, margin: '0 0 14px' }}>
                 <h2 style={{ fontSize: 'var(--text-body-sm)', fontWeight: 600, margin: '0 0 8px' }}>{t.pdp.aboutTitle}</h2>
+                {/* 특징 요약 칩 — 소개문에서 규칙 추출, 줄글보다 먼저 (뉴트럴, §1) */}
+                {about.highlights && about.highlights.length > 0 && (
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+                    {about.highlights.map((h) => (
+                      <span key={h} style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-status-text)', background: 'var(--color-status-bg)', borderRadius: 'var(--radius-pill)', padding: '5px 11px' }}>
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <p style={{
                   fontSize: 14, lineHeight: 'var(--text-body-sm-lh)', color: 'var(--color-text)', margin: 0, whiteSpace: 'pre-line',
                   ...(aboutOpen ? {} : { display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }),
