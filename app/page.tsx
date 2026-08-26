@@ -123,14 +123,16 @@ export default function LandingPage() {
             onChange={(e) => setBirthTime(e.target.value)}
             style={{ ...dobInput, textAlign: 'left', opacity: timeUnknown ? 0.4 : 1 }}
           />
-          <button
-            type="button"
-            onClick={() => setTimeUnknown((v) => !v)}
-            aria-pressed={timeUnknown}
-            style={{ border: 0, background: 'transparent', cursor: 'pointer', padding: '10px 0', margin: 0, fontSize: 13, color: 'var(--color-accent)', textDecoration: 'underline', display: 'block' }}
-          >
+          {/* 모름 = 체크박스 (일급 경로, §7.2) — 체크 시 시간 필드 비활성 + date-based 안내 */}
+          <label style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 44, cursor: 'pointer', fontSize: 13, color: timeUnknown ? 'var(--color-accent)' : 'var(--color-text-muted)', fontWeight: timeUnknown ? 600 : 400 }}>
+            <input
+              type="checkbox"
+              checked={timeUnknown}
+              onChange={(e) => { setTimeUnknown(e.target.checked); if (e.target.checked) setBirthTime(''); }}
+              style={{ width: 18, height: 18, accentColor: 'var(--color-accent)' }}
+            />
             {t.landing.unknownTime}
-          </button>
+          </label>
           {timeUnknown && (
             <p role="note" style={{ fontSize: 13, lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: 0 }}>
               {t.landing.dateBasedNote}
