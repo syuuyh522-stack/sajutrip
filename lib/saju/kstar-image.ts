@@ -6,47 +6,38 @@ const WIKI_API = 'https://en.wikipedia.org/w/api.php';
 
 interface WikiPage { thumbnail?: { source?: string } }
 
-async function searchImage(query: string): Promise<string | null> {
-  const qs = new URLSearchParams({
-    action: 'query',
-    generator: 'search',
-    gsrsearch: query,
-    gsrlimit: '1',
-    prop: 'pageimages',
-    piprop: 'thumbnail',
-    pithumbsize: '160',
-    format: 'json',
-    origin: '*',
-  });
-  try {
-    const res = await fetch(`${WIKI_API}?${qs.toString()}`, { next: { revalidate: 60 * 60 * 24 * 7 } });
-    if (!res.ok) return null;
-    const json: unknown = await res.json();
-    const pages = (json as { query?: { pages?: Record<string, WikiPage> } })?.query?.pages;
-    if (!pages) return null;
-    const first = Object.values(pages)[0];
-    return first?.thumbnail?.source ?? null;
-  } catch {
-    return null;
+/** 위키 API 호출 — 버스트 스로틀 대비 1회 재시도(300ms) */
+async function wikiFetch(qs: URLSearchParams): Promise<Record<string, WikiPage> | null> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    if (attempt > 0) await new Promise((r) => setTimeout(r, 300));
+    try {
+      const res = await fetch(`${WIKI_API}?${qs.toString()}`, { next: { revalidate: 60 * 60 * 24 * 7 } });
+      if (!res.ok) continue;
+      const json: unknown = await res.json();
+      const pages = (json as { query?: { pages?: Record<string, WikiPage> } })?.query?.pages;
+      if (pages) return pages;
+    } catch { /* 재시도 */ }
   }
+  return null;
+}
+
+async function searchImage(query: string): Promise<string | null> {
+  const pages = await wikiFetch(new URLSearchParams({
+    action: 'query', generator: 'search', gsrsearch: query, gsrlimit: '1',
+    prop: 'pageimages', piprop: 'thumbnail', pithumbsize: '160', format: 'json', origin: '*',
+  }));
+  const first = pages ? Object.values(pages)[0] : undefined;
+  return first?.thumbnail?.source ?? null;
 }
 
 /** 정확한 문서 제목으로 직조회 (검색 우회) */
 async function titleImage(title: string): Promise<string | null> {
-  const qs = new URLSearchParams({
+  const pages = await wikiFetch(new URLSearchParams({
     action: 'query', titles: title, redirects: '1',
     prop: 'pageimages', piprop: 'thumbnail', pithumbsize: '160', format: 'json', origin: '*',
-  });
-  try {
-    const res = await fetch(`${WIKI_API}?${qs.toString()}`, { next: { revalidate: 60 * 60 * 24 * 7 } });
-    if (!res.ok) return null;
-    const json: unknown = await res.json();
-    const pages = (json as { query?: { pages?: Record<string, WikiPage> } })?.query?.pages;
-    const first = pages ? Object.values(pages)[0] : undefined;
-    return first?.thumbnail?.source ?? null;
-  } catch {
-    return null;
-  }
+  }));
+  const first = pages ? Object.values(pages)[0] : undefined;
+  return first?.thumbnail?.source ?? null;
 }
 
 export async function getStarImage(name: string, wiki?: string): Promise<string | null> {
