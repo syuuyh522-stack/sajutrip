@@ -116,6 +116,14 @@ export interface Dictionary {
     /** {element} 치환 — 문화적 근거(§5.8, 효과 단정 금지). basisFill=결핍 매치 전용(곁에 두기, 리프레이밍 B) */
     basis: string;
     basisFill: string;
+    /** 장소별 실데이터 섹션 (detailCommon2/detailIntro2) */
+    aboutTitle: string;
+    goodToKnow: string;
+    hoursLabel: string;
+    restLabel: string;
+    programLabel: string;
+    more: string;
+    less: string;
     quiet: string;
     quietNote: string;
     demo: string;
@@ -346,6 +354,13 @@ const en: Dictionary = {
     afterVisit: 'when you check in',
     basis: 'In the five-element tradition, places like this are considered rich in {element} energy.',
     basisFill: "In saju tradition, you don't rewrite your chart — you keep the missing element close. Places like this are where {element} runs strongest.",
+    aboutTitle: 'About this place',
+    goodToKnow: 'Good to know',
+    hoursLabel: 'Hours',
+    restLabel: 'Closed',
+    programLabel: 'Programs here',
+    more: 'More',
+    less: 'Less',
     quiet: 'When it is quiet',
     quietNote: 'Quietest on weekday mornings',
     demo: 'demo · live congestion data coming',
@@ -593,6 +608,13 @@ const ko: Dictionary = {
     afterVisit: '체크인하면',
     basis: '전통 오행에서 이런 곳은 {element} 기운이 깃든 곳으로 여겨져요.',
     basisFill: '전통 명리에서도 사주를 바꾸는 게 아니라, 부족한 기운을 곁에 두는 것으로 풀어요. 이곳은 {element} 기운이 가장 진하게 흐르는 곳.',
+    aboutTitle: '이곳 소개',
+    goodToKnow: '알아두면 좋아요',
+    hoursLabel: '이용시간',
+    restLabel: '휴무',
+    programLabel: '체험 프로그램',
+    more: '더보기',
+    less: '접기',
     quiet: '여유로운 시간',
     quietNote: '평일 오전이 가장 한산해요',
     demo: 'demo · 실시간 혼잡도 연동 예정',

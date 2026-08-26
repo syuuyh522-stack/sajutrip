@@ -171,6 +171,9 @@ export default function PlacePage() {
   }, [search]);
 
   const [place, setPlace] = useState<Place | null>(null);
+  // 장소별 실데이터 (detailCommon2/detailIntro2) — 같은 원소여도 장소마다 다른 콘텐츠
+  const [about, setAbout] = useState<{ overview?: string; expGuide?: string; useTime?: string; restDate?: string } | null>(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
   // 내 사주(분포·결핍·과잉) — 매치·보완 게이지의 근거 데이터 (birth 파라미터 있을 때만)
@@ -189,7 +192,7 @@ export default function PlacePage() {
     const elParam = queryEl ? `&element=${queryEl}` : '';
     fetch(`/api/places/${routeParams.contentId}?lang=${locale}${elParam}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => { setPlace(j.place); track('pdp_view', { contentId: routeParams.contentId, element: queryEl ?? null }); })
+      .then((j) => { setPlace(j.place); setAbout(j.about ?? null); track('pdp_view', { contentId: routeParams.contentId, element: queryEl ?? null }); })
       .catch(() => setNotFound(true));
   }, [routeParams.contentId, locale, queryEl]);
 
@@ -260,6 +263,50 @@ export default function PlacePage() {
               <p style={{ fontSize: 14, lineHeight: 1.55, color: 'var(--color-text)', fontStyle: 'italic', margin: '0 0 20px' }}>
                 {t.pdp.resonance.replace('{element}', t.elements[element])}
               </p>
+            )}
+
+            {/* 장소별 소개 (detailCommon2 overview) — 같은 원소여도 장소 고유 콘텐츠 */}
+            {about?.overview && (
+              <section className="glass" style={{ padding: 16, margin: '0 0 14px' }}>
+                <h2 style={{ fontSize: 'var(--text-body-sm)', fontWeight: 600, margin: '0 0 8px' }}>{t.pdp.aboutTitle}</h2>
+                <p style={{
+                  fontSize: 14, lineHeight: 'var(--text-body-sm-lh)', color: 'var(--color-text)', margin: 0, whiteSpace: 'pre-line',
+                  ...(aboutOpen ? {} : { display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical' as const, overflow: 'hidden' }),
+                }}>
+                  {about.overview}
+                </p>
+                {about.overview.length > 160 && (
+                  <button type="button" onClick={() => setAboutOpen((v) => !v)} aria-expanded={aboutOpen}
+                    style={{ border: 0, background: 'transparent', cursor: 'pointer', padding: '10px 0 0', fontSize: 13, fontWeight: 600, color: 'var(--color-accent)' }}>
+                    {aboutOpen ? t.pdp.less : t.pdp.more}
+                  </button>
+                )}
+                {about.expGuide && (
+                  <div style={{ marginTop: 12, paddingTop: 12, borderTop: '1px solid rgba(185,180,199,.3)' }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{t.pdp.programLabel}</div>
+                    <p style={{ fontSize: 13, lineHeight: 'var(--text-caption-lh)', color: 'var(--color-text-muted)', margin: 0, whiteSpace: 'pre-line' }}>{about.expGuide}</p>
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* 이용시간·휴무 (detailIntro2) — mono 데이터 행 */}
+            {(about?.useTime || about?.restDate) && (
+              <section className="glass" style={{ padding: '6px 16px', margin: '0 0 14px' }}>
+                <h2 style={{ fontSize: 'var(--text-body-sm)', fontWeight: 600, margin: '10px 0' }}>{t.pdp.goodToKnow}</h2>
+                {about.useTime && (
+                  <div style={{ display: 'flex', gap: 12, padding: '8px 0', borderTop: '1px solid rgba(185,180,199,.25)' }}>
+                    <span style={{ fontSize: 13, color: 'var(--color-text-muted)', flex: '0 0 76px' }}>{t.pdp.hoursLabel}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, whiteSpace: 'pre-line' }}>{about.useTime}</span>
+                  </div>
+                )}
+                {about.restDate && (
+                  <div style={{ display: 'flex', gap: 12, padding: '8px 0', borderTop: '1px solid rgba(185,180,199,.25)' }}>
+                    <span style={{ fontSize: 13, color: 'var(--color-text-muted)', flex: '0 0 76px' }}>{t.pdp.restLabel}</span>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, whiteSpace: 'pre-line' }}>{about.restDate}</span>
+                  </div>
+                )}
+              </section>
             )}
 
             {/* OTA식 상세 모듈 — 여기서 하는 것 / 이 기운이 키워주는 것 (PO 피드백: 활동·근거 구체화) */}

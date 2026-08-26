@@ -123,6 +123,70 @@ export async function getPlaceDetail(contentId: string, locale: PlaceLocale): Pr
   };
 }
 
+/** 장소별 추가 정보 (PDP About) — detailCommon2 overview + detailIntro2 체험안내·이용시간·휴무 */
+export interface PlaceAbout {
+  overview?: string;
+  expGuide?: string;
+  useTime?: string;
+  restDate?: string;
+}
+
+/** HTML 태그·엔티티 정리 (overview 원문에 <br>·&ldquo; 등이 섞여 옴) */
+function cleanText(raw: string): string {
+  return raw
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&ldquo;|&rdquo;|&quot;/g, '"')
+    .replace(/&lsquo;|&rsquo;|&#39;/g, "'")
+    .replace(/&middot;/g, '·')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+async function fetchTourJson(base: string, op: string, params: Record<string, string>): Promise<Record<string, string> | null> {
+  const key = process.env.TOURAPI_SERVICE_KEY;
+  if (!key) return null;
+  const qs = new URLSearchParams({ serviceKey: key, MobileOS: 'ETC', MobileApp: 'sajutrip', _type: 'json', ...params });
+  const realtime = process.env.REALTIME_API_MODE === 'true';
+  const res = await fetch(`${base}/${op}?${qs.toString()}`, realtime ? { cache: 'no-store' } : { next: { revalidate: REVALIDATE } });
+  if (!res.ok) return null;
+  const json: unknown = await res.json();
+  const node = (json as { response?: { body?: { items?: { item?: unknown } } } })?.response?.body?.items?.item;
+  const raw = Array.isArray(node) ? node[0] : node;
+  return raw && typeof raw === 'object' ? (raw as Record<string, string>) : null;
+}
+
+/** PDP용 장소별 소개·체험안내·이용시간 (같은 로케일 서비스의 contentId 기준) */
+export async function getPlaceAbout(contentId: string, locale: PlaceLocale): Promise<PlaceAbout> {
+  const base = locale === 'en' ? (process.env.TOURAPI_ENG_BASE ?? DEFAULT_ENG) : (process.env.TOURAPI_KOR_BASE ?? DEFAULT_KOR);
+  const out: PlaceAbout = {};
+  try {
+    const common = await fetchTourJson(base, 'detailCommon2', { contentId });
+    if (common?.overview) out.overview = cleanText(common.overview);
+    const typeId = common?.contenttypeid;
+    if (typeId) {
+      const intro = await fetchTourJson(base, 'detailIntro2', { contentId, contentTypeId: typeId });
+      if (intro) {
+        // 타입별 필드명이 다름 — 존재하는 첫 값을 채택 (관광지 expguide/usetime/restdate, 축제 program/playtime 등)
+        const first = (keys: string[]) => keys.map((k) => intro[k]).find((v) => v && String(v).trim());
+        const exp = first(['expguide', 'program', 'theme']);
+        const use = first(['usetime', 'playtime', 'usetimeculture', 'opentimefood', 'usetimeleports']);
+        const rest = first(['restdate', 'restdateculture', 'restdatefood', 'restdateleports']);
+        if (exp) out.expGuide = cleanText(String(exp));
+        if (use) out.useTime = cleanText(String(use));
+        if (rest) out.restDate = cleanText(String(rest));
+      }
+    }
+  } catch {
+    // 상세 정보는 부가 — 실패해도 PDP 본체는 렌더
+  }
+  return out;
+}
+
 /** 원소별 보강 후보 (fire/metal/earth). 키워드마다 검색 → contentId 중복 제거. */
 export async function getEnrichmentPlaces(element: Element, locale: PlaceLocale): Promise<Place[]> {
   const keywords = ENRICH[element]?.[locale];
