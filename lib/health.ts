@@ -39,6 +39,14 @@ function url(base: string, path: string, params: Record<string, string>): string
 
 const TOUR_COMMON = { MobileOS: 'ETC', MobileApp: 'sajutrip', _type: 'json', numOfRows: '1', pageNo: '1' };
 
+/** 데이터랩 핑용 구간 — 6주 전 하루 (원천 배포 지연 감안) */
+function recentWindow(): { startYmd: string; endYmd: string } {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - 42);
+  const ymd = `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`;
+  return { startYmd: ymd, endYmd: ymd };
+}
+
 /** 앱이 실제로 쓰는 외부 API를 모두 핑 */
 export async function checkApis(): Promise<ApiCheck[]> {
   const kasiKey = process.env.KASI_SERVICE_KEY ?? '';
@@ -49,6 +57,7 @@ export async function checkApis(): Promise<ApiCheck[]> {
   const kor = process.env.TOURAPI_KOR_BASE ?? 'https://apis.data.go.kr/B551011/KorService2';
   const eng = process.env.TOURAPI_ENG_BASE ?? 'https://apis.data.go.kr/B551011/EngService2';
   const durunubi = process.env.TOURAPI_DURUNUBI_BASE ?? 'https://apis.data.go.kr/B551011/Durunubi';
+  const datalab = process.env.TOURAPI_DATALAB_BASE ?? 'https://apis.data.go.kr/B551011/DataLabService';
 
   const tourOk = (b: string) => b.includes('"resultCode":"0000"');
 
@@ -60,5 +69,11 @@ export async function checkApis(): Promise<ApiCheck[]> {
     timed('TourAPI 국문 관광정보', url(kor, 'searchKeyword2', { serviceKey: tourKey, ...TOUR_COMMON, keyword: '온천' }), tourOk),
     timed('TourAPI 영문 관광정보', url(eng, 'searchKeyword2', { serviceKey: tourKey, ...TOUR_COMMON, keyword: 'temple' }), tourOk),
     timed('TourAPI 두루누비 (걷기)', url(durunubi, 'courseList', { serviceKey: tourKey, ...TOUR_COMMON }), tourOk),
+    // 혼잡도 근거 — 데이터랩 지역별 방문자수. 원천이 약 5주 지연이라 최근 완결 구간으로 핑한다.
+    timed(
+      'TourAPI 데이터랩 지역 방문자수 (혼잡도)',
+      url(datalab, 'metcoRegnVisitrDDList', { serviceKey: tourKey, ...TOUR_COMMON, ...recentWindow() }),
+      tourOk,
+    ),
   ]);
 }

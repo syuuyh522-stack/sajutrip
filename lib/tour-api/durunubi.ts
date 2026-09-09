@@ -55,7 +55,9 @@ export async function getDurunubiCourses(_locale: PlaceLocale, max = 60): Promis
         name: c.crsDstnc ? `${name} · ${c.crsDstnc}km` : name,
         region: (c.sigun ?? '').split(' ')[0] ?? '',
         category: 'durunubi',
-        primaryElement: 'wood', // 걷기 = 木
+        attributeElement: 'wood', // 속성: 숲길·둘레길 = 木
+        actionElement: 'wood', //   행위: 걷기 = 木 (§4 행위 매핑)
+        primaryElement: 'wood',
       });
       if (out.length >= max) return out;
     }

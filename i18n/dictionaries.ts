@@ -55,9 +55,15 @@ export interface Dictionary {
     /** 결과 하단 추천 직노출 (PO 피드백 #5) */
     recsTitle: string;
     seeAll: string;
+    /** 추천 후보가 0건일 때 — 막다른 길 방지 (탐색 CTA는 항상 노출) */
+    recsEmpty: string;
   };
   saju: {
     chartTitle: string;
+    /** KASI 음양력 변환 결과 — 음력 생일 표기 ({date} 치환) */
+    lunar: string;
+    /** 윤달 표기 */
+    lunarLeap: string;
     year: string;
     month: string;
     day: string;
@@ -140,8 +146,12 @@ export interface Dictionary {
     more: string;
     less: string;
     quiet: string;
-    quietNote: string;
-    demo: string;
+    /** 요일별 혼잡 그래프 출처·집계기간 ({period} 치환) */
+    crowdSource: string;
+    /** 가장 한산한 요일 안내 ({day} 치환) */
+    quietDay: string;
+    /** 요일 축 라벨 (월~일 7개) */
+    days: [string, string, string, string, string, string, string];
     book: string;
     bookNote: string;
     addPlan: string;
@@ -247,7 +257,7 @@ const en: Dictionary = {
       'Your birth chart maps five energies — wood, fire, earth, metal, water. We route your trip toward the ones you lack.',
     gender: 'Gender',
     genderWhy: 'Why only two options?',
-    genderNote: 'Saju is a centuries-old system that calculates your chart through yin\u2013yang polarity, historically recorded as female or male at birth. This choice is used only for the traditional calculation \u2014 it is not a statement about who you are.',
+    genderNote: 'Saju is a centuries-old system, and traditionally it records the polarity noted at birth as female or male. Your chart and your five elements come from your birth date alone \u2014 this choice is kept with your profile and is not a statement about who you are.',
     female: 'Female',
     male: 'Male',
     dob: 'Date of birth',
@@ -275,9 +285,12 @@ const en: Dictionary = {
     editBirth: 'Edit birth info',
     recsTitle: 'Places that resonate',
     seeAll: 'See all',
+    recsEmpty: 'No matches to show right now. Browse everything instead.',
   },
   saju: {
     chartTitle: 'Your saju chart',
+    lunar: 'Lunar calendar: {date}',
+    lunarLeap: 'leap month',
     year: 'Year',
     month: 'Month',
     day: 'Day',
@@ -390,8 +403,9 @@ const en: Dictionary = {
     more: 'More',
     less: 'Less',
     quiet: 'When it is quiet',
-    quietNote: 'Quietest on weekday mornings',
-    demo: 'demo · live congestion data coming',
+    crowdSource: 'Korea Tourism Data Lab · regional visitors, {period}',
+    quietDay: 'Quietest around {day}',
+    days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     book: 'Book',
     bookNote: 'Opens a Yeogi Attae search in a new tab',
     addPlan: 'Add to itinerary',
@@ -514,7 +528,7 @@ const ko: Dictionary = {
       '사주는 다섯 기운(목·화·토·금·수)의 분포예요. 당신에게 부족한 기운으로 여행을 안내합니다.',
     gender: '성별',
     genderWhy: '왜 두 가지만 있나요?',
-    genderNote: '사주는 음양 체계로 명식을 계산하는 수백 년 된 전통으로, 계산에 출생 시의 성별 구분을 사용해요. 이 선택은 전통 계산에만 쓰이며, 당신이 어떤 사람인지에 대한 판단이 아니에요.',
+    genderNote: '사주는 수백 년 된 전통이라 출생 시의 음양 구분을 여자·남자로 기록해요. 명식과 오행은 생년월일만으로 나오고, 이 선택은 프로필에 함께 저장될 뿐 당신이 어떤 사람인지에 대한 판단이 아니에요.',
     female: '여성',
     male: '남성',
     dob: '생년월일',
@@ -542,9 +556,12 @@ const ko: Dictionary = {
     editBirth: '입력 수정',
     recsTitle: '공명하는 장소',
     seeAll: '전체 보기',
+    recsEmpty: '지금 보여드릴 장소를 못 찾았어요. 전체 목록에서 골라보세요.',
   },
   saju: {
     chartTitle: '나의 사주 명식',
+    lunar: '음력 {date}',
+    lunarLeap: '윤달',
     year: '연주',
     month: '월주',
     day: '일주',
@@ -657,8 +674,9 @@ const ko: Dictionary = {
     more: '더보기',
     less: '접기',
     quiet: '여유로운 시간',
-    quietNote: '평일 오전이 가장 한산해요',
-    demo: 'demo · 실시간 혼잡도 연동 예정',
+    crowdSource: '한국관광 데이터랩 · 지역 방문자수 {period}',
+    quietDay: '{day} 무렵이 가장 한산해요',
+    days: ['월', '화', '수', '목', '금', '토', '일'],
     book: '예약하기',
     bookNote: '여기어때 검색 결과로 연결돼요 (새 탭)',
     addPlan: '일정에 담기',

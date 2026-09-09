@@ -5,11 +5,20 @@ import type { Place } from '../../types/place';
 import { getAllWellness, type PlaceLocale } from '../tour-api/wellness';
 import { getEnrichmentPlaces, getPlaceDetail } from '../tour-api/general';
 import { getDurunubiCourses } from '../tour-api/durunubi';
-import { rankPlaces } from '../recommend/rank';
+import { getRegionCongestion } from '../tour-api/congestion';
+import { rankPlaces, type CongestionMap } from '../recommend/rank';
 import { seedByElement, seedById } from './seed';
+
+/** 영문 원천이 얇을 때(웰니스 en 93건 vs ko 170건) 국문 소스로 채울 최소 후보 수 */
+const EN_TOPUP_THRESHOLD = 12;
 
 function tourEnabled(): boolean {
   return Boolean(process.env.TOURAPI_SERVICE_KEY);
+}
+
+/** 타깃 오행과 어느 레이어로든 맞으면 후보 (§5.4 — primary / 속성 / 행위) */
+function matchesElement(p: Place, element: Element): boolean {
+  return p.primaryElement === element || p.attributeElement === element || p.actionElement === element;
 }
 
 /** 웰니스 외 보강 소스: 일반관광 키워드(5원소) + 두루누비(wood 걷기).
@@ -21,20 +30,45 @@ async function getExtraPlaces(element: Element, locale: PlaceLocale): Promise<Pl
   return arrays.flat();
 }
 
+/** 혼잡도 조회 — 실패해도 추천은 성립해야 하므로 삼켜서 undefined */
+async function safeCongestion(): Promise<CongestionMap | undefined> {
+  try {
+    return (await getRegionCongestion())?.byRegion;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function getPlacesByElement(element: Element, locale: PlaceLocale = 'ko', max = 30): Promise<Place[]> {
+  const congestion = tourEnabled() ? await safeCongestion() : undefined;
+
   if (tourEnabled()) {
     try {
       // 웰니스(물·나무 위주) + 일반관광 키워드 보강(fire/metal/earth)을 합침
       const [wellness, extra] = await Promise.all([getAllWellness(locale), getExtraPlaces(element, locale)]);
-      const matched = wellness.filter((p) => p.primaryElement === element);
+      const matched = wellness.filter((p) => matchesElement(p, element));
       const seen = new Set(matched.map((p) => p.contentId));
       const combined = [...matched, ...extra.filter((p) => !seen.has(p.contentId))];
-      if (combined.length > 0) return rankPlaces(combined, element).slice(0, max); // 지방 우대 랭킹(§5.6)
+
+      // 영문 원천이 얇은 원소(대표적으로 火 — EngService2에 sauna/jjimjilbang 검색 결과 0건)는
+      // 국문 소스로 보충한다. 장소명은 화면에서 로마자 병기로 표기된다(lib/ui/romanize).
+      if (locale === 'en' && combined.length < EN_TOPUP_THRESHOLD) {
+        const koSeen = new Set(combined.map((p) => p.contentId));
+        const [koWellness, koExtra] = await Promise.all([getAllWellness('ko'), getExtraPlaces(element, 'ko')]);
+        for (const p of [...koWellness.filter((x) => matchesElement(x, element)), ...koExtra]) {
+          if (!koSeen.has(p.contentId)) {
+            koSeen.add(p.contentId);
+            combined.push(p);
+          }
+        }
+      }
+
+      if (combined.length > 0) return rankPlaces(combined, element, congestion).slice(0, max); // 비혼잡·지방 우대(§5.6)
     } catch {
       // TourAPI 실패 시 시드 fallback
     }
   }
-  return rankPlaces(seedByElement(element), element).slice(0, max);
+  return rankPlaces(seedByElement(element), element, congestion).slice(0, max);
 }
 
 export async function getPlaceById(contentId: string, locale: PlaceLocale = 'ko', element?: Element): Promise<Place | null> {

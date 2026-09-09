@@ -14,6 +14,7 @@ export function computeSajuLocal(year: number, month: number, day: number): Saju
   return {
     profile,
     distribution,
+    source: 'local',
     deficient: deficientElement(distribution),
     excess: excessElement(distribution),
   };

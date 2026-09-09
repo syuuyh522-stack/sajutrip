@@ -3,7 +3,7 @@
 // 배치성이라 긴 revalidate, 심사 실시간 모드면 no-store(§6.5).
 import type { Place } from '../../types/place';
 import { REGION_BY_CODE } from '../../config/regions';
-import { tagElement } from './tag';
+import { tagLayers } from './tag';
 
 export type PlaceLocale = 'en' | 'ko';
 
@@ -54,6 +54,8 @@ function toPlace(raw: WellnessRaw, locale: PlaceLocale): Place | null {
   if (!contentId || !name) return null;
   const code = raw.lDongRegnCd ? String(raw.lDongRegnCd) : '';
   const region = REGION_BY_CODE[code]?.[locale] ?? (raw.baseAddr ?? '').split(' ')[0] ?? '';
+  // 속성·행위·종합 3필드를 한 번에 산출 (PRD F-2 3·4단계, §5.4)
+  const layers = tagLayers(name, raw.wellnessThemaCd);
   return {
     contentId,
     name,
@@ -65,8 +67,10 @@ function toPlace(raw: WellnessRaw, locale: PlaceLocale): Place | null {
     mapX: raw.mapX ? Number(raw.mapX) : undefined,
     mapY: raw.mapY ? Number(raw.mapY) : undefined,
     tel: raw.tel || undefined,
-    // 강한 이름 신호(오분류 보정) → 테마코드 → 이름 키워드 (§5.4)
-    primaryElement: tagElement(name, raw.wellnessThemaCd),
+    // 강한 이름 신호(오분류 보정) → 테마코드 → 이름 키워드 → 속성/행위 (§5.4)
+    attributeElement: layers.attribute,
+    actionElement: layers.action,
+    primaryElement: layers.primary,
   };
 }
 

@@ -19,9 +19,17 @@ const ELEMENT_COLOR = EL_COLOR; // 공식 팔레트 (fill 전용, §1.1)
 function isElement(v: string | null): v is Element {
   return v === 'wood' || v === 'fire' || v === 'earth' || v === 'metal' || v === 'water';
 }
-// 혼잡/여유 demo 막대 (실시간 집중률 API 연동 전)
-const CROWD = [40, 30, 55, 70, 95, 88, 60];
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+// 요일별 혼잡 막대 — 데이터랩 지역 방문자수 실데이터(월~일 상대값 0~100). 없으면 섹션을 숨긴다.
+// 요일 라벨은 로케일 사전(t.pdp.days)에서 온다.
+interface Congestion { weekday: number[]; period: { start: string; end: string } }
+/** 20260801 → 2026.08.01 */
+function fmtYmd(v: string): string {
+  return v.length === 8 ? `${v.slice(0, 4)}.${v.slice(4, 6)}.${v.slice(6, 8)}` : v;
+}
+/** 가장 한산한 요일 (0=월) */
+function quietestDay(weekday: number[]): number {
+  return weekday.reduce((best, v, i) => (v < weekday[best] ? i : best), 0);
+}
 
 /**
  * 근거 모듈 (리프레이밍 A+B — 사주는 불변, 게이지의 주어는 "이번 여행"):
@@ -175,6 +183,8 @@ export default function PlacePage() {
   // 여행자 영상 (YouTube) — 장소·지역 키워드 검색, 키 미설정 시 빈 배열 → 검색 링크 폴백
   const [videos, setVideos] = useState<{ videoId: string; title: string; thumbnail: string; channel: string }[]>([]);
   const [about, setAbout] = useState<{ overview?: string; expGuide?: string; useTime?: string; restDate?: string; highlights?: string[] } | null>(null);
+  // 지역 혼잡도 (데이터랩 실시간) — 없으면 혼잡 섹션 자체를 렌더하지 않는다
+  const [crowd, setCrowd] = useState<Congestion | null>(null);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [notFound, setNotFound] = useState(false);
 
@@ -194,7 +204,7 @@ export default function PlacePage() {
     const elParam = queryEl ? `&element=${queryEl}` : '';
     fetch(`/api/places/${routeParams.contentId}?lang=${locale}${elParam}`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
-      .then((j) => { setPlace(j.place); setAbout(j.about ?? null); track('pdp_view', { contentId: routeParams.contentId, element: queryEl ?? null }); })
+      .then((j) => { setPlace(j.place); setAbout(j.about ?? null); setCrowd(j.congestion ?? null); track('pdp_view', { contentId: routeParams.contentId, element: queryEl ?? null }); })
       .catch(() => {
         // 원천(KTO)에서 사라진 장소 — 찜·일정의 localStorage 스냅샷으로 최소 렌더 (404 방지)
         const snap =
@@ -345,18 +355,27 @@ export default function PlacePage() {
             {/* OTA식 상세 모듈 — 여기서 하는 것 / 이 기운이 키워주는 것 (PO 피드백: 활동·근거 구체화) */}
             {element && <ElementGuide element={element} t={t} />}
 
-            <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>{t.pdp.quiet}</h2>
-            <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 8 }}>{t.pdp.demo}</div>
-            {/* 혼잡 표시 — v2 §1: status는 뉴트럴(잉크 농도), 색으로 의미 전달 금지. 높이+농도가 정보 */}
-            <div role="img" aria-label={`${t.pdp.quiet} — ${t.pdp.quietNote}`} style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 56 }}>
-              {CROWD.map((h, i) => (
-                <div key={DAYS[i]} style={{ flex: 1, height: `${h}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'rgba(28,27,31,.5)' : h <= 40 ? 'rgba(28,27,31,.12)' : 'rgba(28,27,31,.26)' }} />
-              ))}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)', marginTop: 4 }}>
-              {DAYS.map((d) => <span key={d}>{d}</span>)}
-            </div>
-            <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 6 }}>{t.pdp.quietNote}</p>
+            {/* F-4 몰리는/여유로운 시간 — 데이터랩 실데이터가 있을 때만 (없으면 추정치를 보여주지 않는다) */}
+            {crowd && (
+              <>
+                <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>{t.pdp.quiet}</h2>
+                <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 8 }}>
+                  {t.pdp.crowdSource.replace('{period}', `${fmtYmd(crowd.period.start)}–${fmtYmd(crowd.period.end)}`)}
+                </div>
+                {/* 혼잡 표시 — v2 §1: status는 뉴트럴(잉크 농도), 색으로 의미 전달 금지. 높이+농도가 정보 */}
+                <div role="img" aria-label={`${t.pdp.quiet} — ${t.pdp.quietDay.replace('{day}', t.pdp.days[quietestDay(crowd.weekday)])}`} style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 56 }}>
+                  {crowd.weekday.map((h, i) => (
+                    <div key={t.pdp.days[i]} style={{ flex: 1, height: `${Math.max(h, 4)}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'rgba(28,27,31,.5)' : h <= 40 ? 'rgba(28,27,31,.12)' : 'rgba(28,27,31,.26)' }} />
+                  ))}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)', marginTop: 4 }}>
+                  {t.pdp.days.map((d) => <span key={d}>{d}</span>)}
+                </div>
+                <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 6 }}>
+                  {t.pdp.quietDay.replace('{day}', t.pdp.days[quietestDay(crowd.weekday)])}
+                </p>
+              </>
+            )}
 
             {/* 여행자 영상 — 서비스 내 후기가 없으니 외부(YouTube)에서. 썸네일 카드 → 새 탭 (마지막 섹션) */}
             <section style={{ marginTop: 24 }}>

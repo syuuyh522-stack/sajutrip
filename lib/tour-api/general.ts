@@ -2,8 +2,8 @@
 // 웰니스가 물·나무 위주라 fire/metal/earth를 여기서 채운다. 검색어가 곧 원소 → 태깅 명확.
 import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
-import { AREA_BY_CODE } from '../../config/regions';
-import { tagByName } from './tag';
+import { AREA_BY_CODE, AREA_TO_REGION_CODE } from '../../config/regions';
+import { tagLayers } from './tag';
 import type { PlaceLocale } from './wellness';
 
 const DEFAULT_KOR = 'https://apis.data.go.kr/B551011/KorService2';
@@ -59,14 +59,20 @@ function toPlace(raw: GeneralRaw, element: Element, locale: PlaceLocale): Place 
   const name = (raw.title ?? '').trim();
   if (!contentId || !name) return null;
   const region = AREA_BY_CODE[String(raw.areacode ?? '')]?.[locale] ?? (locale === 'ko' ? (raw.addr1 ?? '').split(' ')[0] : '');
+  // 검색어가 곧 원소라 primary는 element로 고정, 속성·행위는 이름에서 추가로 뽑는다 (§5.4)
+  const layers = tagLayers(name);
   return {
     contentId,
     name,
     region: region ?? '',
+    // 혼잡도(데이터랩)는 법정동 시도코드 기준 — TourAPI areaCode를 다리 맵으로 변환
+    regionCode: AREA_TO_REGION_CODE[String(raw.areacode ?? '')],
     image: raw.firstimage || undefined,
     mapX: raw.mapx ? Number(raw.mapx) : undefined,
     mapY: raw.mapy ? Number(raw.mapy) : undefined,
     tel: raw.tel || undefined,
+    attributeElement: layers.attribute,
+    actionElement: layers.action,
     primaryElement: element,
   };
 }
@@ -82,15 +88,19 @@ export async function searchPlaces(locale: PlaceLocale, query: string, max = 20)
     const name = (raw.title ?? '').trim();
     if (!contentId || !name || seen.has(contentId)) continue;
     seen.add(contentId);
+    const layers = tagLayers(name);
     out.push({
       contentId,
       name,
       region: AREA_BY_CODE[String(raw.areacode ?? '')]?.[locale] ?? (locale === 'ko' ? (raw.addr1 ?? '').split(' ')[0] ?? '' : ''),
+      regionCode: AREA_TO_REGION_CODE[String(raw.areacode ?? '')],
       image: raw.firstimage || undefined,
       mapX: raw.mapx ? Number(raw.mapx) : undefined,
       mapY: raw.mapy ? Number(raw.mapy) : undefined,
       tel: raw.tel || undefined,
-      primaryElement: tagByName(name),
+      attributeElement: layers.attribute,
+      actionElement: layers.action,
+      primaryElement: layers.primary,
     });
   }
   return out;
@@ -113,13 +123,17 @@ export async function getPlaceDetail(contentId: string, locale: PlaceLocale): Pr
   if (!raw) return null;
   const name = (raw.title ?? '').trim();
   if (!name) return null;
+  const layers = tagLayers(name);
   return {
     contentId,
     name,
     region: AREA_BY_CODE[String(raw.areacode ?? '')]?.[locale] ?? (locale === 'ko' ? (raw.addr1 ?? '').split(' ')[0] ?? '' : ''),
+    regionCode: AREA_TO_REGION_CODE[String(raw.areacode ?? '')],
     image: raw.firstimage || undefined,
     tel: raw.tel || undefined,
-    primaryElement: tagByName(name),
+    attributeElement: layers.attribute,
+    actionElement: layers.action,
+    primaryElement: layers.primary,
   };
 }
 

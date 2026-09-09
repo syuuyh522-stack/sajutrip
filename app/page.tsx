@@ -17,9 +17,10 @@ export default function LandingPage() {
   const router = useRouter();
   const [gender, setGender] = useState<Gender>('female');
   const [genderInfo, setGenderInfo] = useState(false);
-  const [year, setYear] = useState('1996');
-  const [month, setMonth] = useState('07');
-  const [day, setDay] = useState('22');
+  // 프리필 없음 — 값이 채워져 있으면 유저가 남의 생년월일로 결과를 볼 수 있다
+  const [year, setYear] = useState('');
+  const [month, setMonth] = useState('');
+  const [day, setDay] = useState('');
   const [dateError, setDateError] = useState(false);
   // 태어난 시간 (선택, §7.2) — timeUnknown이면 date-based 리딩(완전한 모드로 프레이밍)
   const [birthTime, setBirthTime] = useState('');
@@ -31,7 +32,7 @@ export default function LandingPage() {
   const isValidDate = () => {
     const y = Number(year), m = Number(month), d = Number(day);
     if (!Number.isInteger(y) || !Number.isInteger(m) || !Number.isInteger(d)) return false;
-    if (y < 1900 || m < 1 || m > 12 || d < 1) return false;
+    if (y < 1900 || y > 2100 || m < 1 || m > 12 || d < 1) return false;
     const dt = new Date(y, m - 1, d);
     if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return false;
     return dt.getTime() <= Date.now();
@@ -96,9 +97,9 @@ export default function LandingPage() {
         <div role="group" aria-label={t.landing.dob}>
           <label style={label}>{t.landing.dob}</label>
           <div style={{ display: 'flex', gap: 8 }}>
-            <input value={year} onChange={(e) => { setYear(e.target.value); setDateError(false); }} inputMode="numeric" aria-label={t.landing.year} style={{ ...dobInput, ...(dateError ? errBorder : {}) }} />
-            <input value={month} onChange={(e) => { setMonth(e.target.value); setDateError(false); }} inputMode="numeric" aria-label={t.landing.month} style={{ ...dobInput, ...(dateError ? errBorder : {}) }} />
-            <input value={day} onChange={(e) => { setDay(e.target.value); setDateError(false); }} inputMode="numeric" aria-label={t.landing.day} style={{ ...dobInput, ...(dateError ? errBorder : {}) }} />
+            <input value={year} onChange={(e) => { setYear(e.target.value); setDateError(false); }} inputMode="numeric" maxLength={4} placeholder={t.landing.year} aria-label={t.landing.year} style={{ ...dobInput, ...(dateError ? errBorder : {}) }} />
+            <input value={month} onChange={(e) => { setMonth(e.target.value); setDateError(false); }} inputMode="numeric" maxLength={2} placeholder={t.landing.month} aria-label={t.landing.month} style={{ ...dobInput, ...(dateError ? errBorder : {}) }} />
+            <input value={day} onChange={(e) => { setDay(e.target.value); setDateError(false); }} inputMode="numeric" maxLength={2} placeholder={t.landing.day} aria-label={t.landing.day} style={{ ...dobInput, ...(dateError ? errBorder : {}) }} />
           </div>
           {/* §7.2 인라인 에러 — 필드 직하단 13px, error 토큰(원소색 아님) */}
           {dateError && (

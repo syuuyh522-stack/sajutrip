@@ -25,6 +25,10 @@ interface SajuResponse {
   distribution: ElementDistribution;
   deficient: Element;
   excess: Element;
+  /** 일주 출처 — 'kasi'면 실시간 호출 성공 */
+  source: 'kasi' | 'local';
+  /** KASI 음양력 변환 결과 (PRD F-1 1단계) */
+  lunar?: { year: number; month: number; day: number; leap: boolean };
   kstar: { soulmate: KStarMatch | null; twin: KStarMatch | null };
 }
 
@@ -47,9 +51,10 @@ function ResultInner() {
   const [data, setData] = useState<SajuResponse | null>(null);
   const [error, setError] = useState(false);
   // 추천 직노출 (PO 피드백 #5 — explore 진입 전 결과 하단에서 바로)
-  const [recs, setRecs] = useState<Place[]>([]);
+  const [recs, setRecs] = useState<Place[] | null>(null); // null = 조회 전/중, [] = 0건
   useEffect(() => {
     if (!data) return;
+    setRecs(null);
     fetch(`/api/places?element=${data.deficient}&lang=${locale}&max=3`)
       .then((r) => r.json())
       .then((j) => setRecs(j.places ?? []))
@@ -128,6 +133,12 @@ function ResultInner() {
               <PillarCard label={t.saju.day} pillar={data.profile.day} />
               {data.profile.hour && <PillarCard label={t.saju.hour} pillar={data.profile.hour} />}
             </div>
+            {/* KASI 음양력 변환 결과 — PRD F-1 1단계가 화면에 드러나는 자리 */}
+            {data.lunar && (
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-text-muted)', margin: '12px 0 0' }}>
+                {t.saju.lunar.replace('{date}', `${data.lunar.year}.${String(data.lunar.month).padStart(2, '0')}.${String(data.lunar.day).padStart(2, '0')}${data.lunar.leap ? ` (${t.saju.lunarLeap})` : ''}`)}
+              </p>
+            )}
           </section>
           {/* PO 피드백 #4: 결핍/과잉 반복 문구 제거 — 차트 인라인 태그와 캐릭터 카드로만 전달 */}
 
@@ -138,11 +149,12 @@ function ResultInner() {
                 const v = data.distribution[el];
                 const total = ELEMENT_ORDER.reduce((s, e) => s + data.distribution[e], 0);
                 const emphasized = el === data.deficient || el === data.excess;
+                // 분모는 명식 글자 수(시간 미상 6, 시주 포함 8) — 고정값이면 스크린리더 값이 어긋난다
                 return (
                   <div
                     key={el}
                     style={{ display: 'grid', gridTemplateColumns: '148px 1fr 20px', alignItems: 'center', gap: 12 }}
-                    role="meter" aria-valuenow={v} aria-valuemin={0} aria-valuemax={6} aria-label={`${t.elements[el]} ${v}`}
+                    role="meter" aria-valuenow={v} aria-valuemin={0} aria-valuemax={total} aria-label={`${t.elements[el]} ${v}`}
                   >
                     {/* 색 스와치 + 라벨 + 인라인 태그(lowest/strongest — 반복 문구 대신 여기 한 곳, #4) */}
                     <span style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 13, fontWeight: emphasized ? 700 : 400, whiteSpace: 'nowrap' }}>
@@ -190,9 +202,12 @@ function ResultInner() {
           )}
 
           {/* 추천 직노출 (PO 피드백 #5) — explore 이동 없이 결과 하단에서 바로 탐색 시작 */}
-          {recs.length > 0 && (
+          {recs !== null && (
             <section>
               <h2 style={sectionH2}>{t.result.recsTitle}</h2>
+              {recs.length === 0 && (
+                <p style={{ fontSize: 14, color: 'var(--color-text-muted)', margin: '0 0 14px' }}>{t.result.recsEmpty}</p>
+              )}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 {recs.map((p) => (
                   <Link key={p.contentId} href={{ pathname: `/place/${p.contentId}`, query: { ...birth, element: data.deficient } }} style={{ textDecoration: 'none', color: 'inherit' }}>

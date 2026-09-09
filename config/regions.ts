@@ -39,3 +39,28 @@ export const AREA_BY_CODE: Record<string, { ko: string; en: string }> = {
   '38': { ko: '전남', en: 'Jeonnam' },
   '39': { ko: '제주', en: 'Jeju' },
 };
+
+/**
+ * TourAPI areaCode(KorService2/EngService2) → 법정동 시도코드(lDongRegnCd).
+ * 데이터랩 방문자수(metcoRegnVisitrDDList)가 법정동 코드를 쓰므로, 일반관광 보강 장소도
+ * 이 다리를 거쳐야 혼잡도와 조인된다. (lib/tour-api/congestion.ts)
+ */
+export const AREA_TO_REGION_CODE: Record<string, string> = {
+  '1': '11', // 서울
+  '2': '28', // 인천
+  '3': '30', // 대전
+  '4': '27', // 대구
+  '5': '29', // 광주
+  '6': '26', // 부산
+  '7': '31', // 울산
+  '8': '36', // 세종
+  '31': '41', // 경기
+  '32': '51', // 강원
+  '33': '43', // 충북
+  '34': '44', // 충남
+  '35': '47', // 경북
+  '36': '48', // 경남
+  '37': '52', // 전북
+  '38': '46', // 전남
+  '39': '50', // 제주
+};
