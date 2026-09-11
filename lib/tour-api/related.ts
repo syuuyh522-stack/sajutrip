@@ -2,6 +2,8 @@
 // baseYm·areaCd·signguCd 필수. 반환: tAtsNm(기준)·rlteTatsNm(연관)·rlteRank·rlteCtgry.
 // 시군구 코드(signguCd)가 있어야 조회 가능 — 웰니스 lDongSignguCd는 포맷이 달라 areaCd만으로 근사.
 
+import { fetchInit } from './cache';
+
 const DEFAULT_BASE = 'https://apis.data.go.kr/B551011/TarRlteTarService1';
 const REVALIDATE = 60 * 60 * 24; // 월 단위 데이터라 길게
 
@@ -48,7 +50,6 @@ export async function getRelatedSpots(
   const key = process.env.TOURAPI_SERVICE_KEY;
   if (!key || !areaCd || !signguCd) return [];
   const base = process.env.TOURAPI_RELATED_BASE ?? DEFAULT_BASE;
-  const realtime = process.env.REALTIME_API_MODE === 'true';
 
   for (const ym of recentMonths(baseYm)) {
     const qs = new URLSearchParams({
@@ -63,7 +64,7 @@ export async function getRelatedSpots(
       signguCd,
     });
     try {
-      const res = await fetch(`${base}/areaBasedList1?${qs.toString()}`, realtime ? { cache: 'no-store' } : { next: { revalidate: REVALIDATE } });
+      const res = await fetch(`${base}/areaBasedList1?${qs.toString()}`, fetchInit(REVALIDATE));
       if (!res.ok) continue;
       const json: unknown = await res.json();
       const node = (json as { response?: { body?: { items?: { item?: RelatedRaw | RelatedRaw[] } } } })?.response?.body?.items?.item;

@@ -1,9 +1,10 @@
 // TourAPI 웰니스관광정보 — 서버 전용(§6.1). 로케일별 실데이터(en=ENG / ko=K).
 // 오퍼레이션: WellnessTursmService/areaBasedList (버전 없는 v1형, 필수 langDivCd). 실호출 검증.
-// 배치성이라 긴 revalidate, 심사 실시간 모드면 no-store(§6.5).
+// 캐시 정책은 lib/tour-api/cache.ts — 기본 실시간(no-store), REALTIME_API_MODE=false일 때만 revalidate(§6.5).
 import type { Place } from '../../types/place';
 import { REGION_BY_CODE } from '../../config/regions';
 import { tagLayers } from './tag';
+import { fetchInit } from './cache';
 
 export type PlaceLocale = 'en' | 'ko';
 
@@ -38,8 +39,7 @@ async function fetchPage(locale: PlaceLocale, pageNo: number, rows: number): Pro
     _type: 'json',
     langDivCd: locale === 'en' ? 'ENG' : 'K',
   });
-  const realtime = process.env.REALTIME_API_MODE === 'true';
-  const res = await fetch(`${base}/areaBasedList?${qs.toString()}`, realtime ? { cache: 'no-store' } : { next: { revalidate: REVALIDATE } });
+  const res = await fetch(`${base}/areaBasedList?${qs.toString()}`, fetchInit(REVALIDATE));
   if (!res.ok) throw new Error(`TourAPI ${res.status}`);
   const json: unknown = await res.json();
   const body = (json as { response?: { body?: { items?: { item?: WellnessRaw | WellnessRaw[] }; totalCount?: number } } })?.response?.body;

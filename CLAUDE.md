@@ -140,7 +140,9 @@
 ### 6.5 캐싱 (Vercel 서버리스 대응 — PRD와 다른 점)
 - PRD의 "서버 시작 시 Airtable 전체 레코드 1회 조회 → 전역 메모리 캐싱"은 **상시 구동 서버 전제**다. Vercel 서버리스는 요청 간 메모리가 유지되지 않으므로 **전역 변수 메모리 캐시에 의존하지 말 것.**
 - 대신 Next.js 데이터 캐시를 쓴다: `unstable_cache` / `fetch(..., { next: { revalidate } })` / Route Segment `revalidate`. 배치 데이터(웰니스 등)는 긴 revalidate, 실시간 데이터(집중률 등)는 캐시 없음(`no-store`).
-- **심사 기간 실시간 모드**: `REALTIME_API_MODE=true`이면 배치성 데이터도 캐시를 우회해 실시간 호출하도록 데이터 접근 레이어에서 분기한다.
+- **실시간 모드는 기본값이다**: 공모전 조건("심사 기간 동안 모든 외부 API 실시간 호출")을 못 지키는 쪽이 기본값이면 안 되므로, 배치성 데이터도 **기본적으로 캐시를 우회**한다. 캐시를 쓰려면 `REALTIME_API_MODE=false`로 **명시적으로 꺼야** 한다.
+  - 분기는 `lib/tour-api/cache.ts` 한 곳에만 둔다(`isRealtimeMode()` / `fetchInit(revalidateSeconds)`). 각 클라이언트에서 `process.env.REALTIME_API_MODE`를 직접 읽지 않는다.
+  - 현재 모드는 `/api/health`의 `realtimeMode` 필드로 밖에서 확인한다. env 값을 추측하지 말 것 — `vercel env pull`은 CLI 버전에 따라 값을 빈 문자열로 내려준다(실측).
 
 ### 6.6 데이터 파이프라인 규칙
 - 배치 업데이트(Apps Script): TourAPI 1일 1회 호출 → `contentId` 기준 대조.

@@ -4,6 +4,7 @@ import type { Element } from '../../types/saju';
 import type { Place } from '../../types/place';
 import { AREA_BY_CODE, AREA_TO_REGION_CODE } from '../../config/regions';
 import { tagLayers } from './tag';
+import { fetchInit } from './cache';
 import type { PlaceLocale } from './wellness';
 
 const DEFAULT_KOR = 'https://apis.data.go.kr/B551011/KorService2';
@@ -46,8 +47,7 @@ async function searchKeyword(locale: PlaceLocale, keyword: string, rows = 20): P
     keyword,
     arrange: 'A',
   });
-  const realtime = process.env.REALTIME_API_MODE === 'true';
-  const res = await fetch(`${base}/searchKeyword2?${qs.toString()}`, realtime ? { cache: 'no-store' } : { next: { revalidate: REVALIDATE } });
+  const res = await fetch(`${base}/searchKeyword2?${qs.toString()}`, fetchInit(REVALIDATE));
   if (!res.ok) return [];
   const json: unknown = await res.json();
   const node = (json as { response?: { body?: { items?: { item?: GeneralRaw | GeneralRaw[] } } } })?.response?.body?.items?.item;
@@ -114,8 +114,7 @@ export async function getPlaceDetail(contentId: string, locale: PlaceLocale): Pr
   const qs = new URLSearchParams({
     serviceKey: key, MobileOS: 'ETC', MobileApp: 'sajutrip', _type: 'json', contentId,
   });
-  const realtime = process.env.REALTIME_API_MODE === 'true';
-  const res = await fetch(`${base}/detailCommon2?${qs.toString()}`, realtime ? { cache: 'no-store' } : { next: { revalidate: REVALIDATE } });
+  const res = await fetch(`${base}/detailCommon2?${qs.toString()}`, fetchInit(REVALIDATE));
   if (!res.ok) return null;
   const json: unknown = await res.json();
   const node = (json as { response?: { body?: { items?: { item?: GeneralRaw | GeneralRaw[] } } } })?.response?.body?.items?.item;
@@ -200,8 +199,7 @@ async function fetchTourJson(base: string, op: string, params: Record<string, st
   const key = process.env.TOURAPI_SERVICE_KEY;
   if (!key) return null;
   const qs = new URLSearchParams({ serviceKey: key, MobileOS: 'ETC', MobileApp: 'sajutrip', _type: 'json', ...params });
-  const realtime = process.env.REALTIME_API_MODE === 'true';
-  const res = await fetch(`${base}/${op}?${qs.toString()}`, realtime ? { cache: 'no-store' } : { next: { revalidate: REVALIDATE } });
+  const res = await fetch(`${base}/${op}?${qs.toString()}`, fetchInit(REVALIDATE));
   if (!res.ok) return null;
   const json: unknown = await res.json();
   const node = (json as { response?: { body?: { items?: { item?: unknown } } } })?.response?.body?.items?.item;

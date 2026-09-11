@@ -2,6 +2,7 @@
 // 오퍼레이션: Durunubi/courseList. 한글 데이터(언어 파라미터 없음).
 import type { Place } from '../../types/place';
 import type { PlaceLocale } from './wellness';
+import { fetchInit } from './cache';
 
 const DEFAULT_BASE = 'https://apis.data.go.kr/B551011/Durunubi';
 const REVALIDATE = 60 * 60 * 12;
@@ -27,8 +28,7 @@ async function fetchPage(pageNo: number, rows: number): Promise<{ items: CourseR
     MobileApp: 'sajutrip',
     _type: 'json',
   });
-  const realtime = process.env.REALTIME_API_MODE === 'true';
-  const res = await fetch(`${base}/courseList?${qs.toString()}`, realtime ? { cache: 'no-store' } : { next: { revalidate: REVALIDATE } });
+  const res = await fetch(`${base}/courseList?${qs.toString()}`, fetchInit(REVALIDATE));
   if (!res.ok) throw new Error(`Durunubi ${res.status}`);
   const json: unknown = await res.json();
   const body = (json as { response?: { body?: { items?: { item?: CourseRaw | CourseRaw[] }; totalCount?: number } } })?.response?.body;
