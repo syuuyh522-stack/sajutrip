@@ -21,4 +21,6 @@ npm run dev                  # localhost:3000
 - 개발 가이드·스펙 정본: [CLAUDE.md](./CLAUDE.md) (충돌 시 최신 Notion PRD 우선)
 - 디자인 시스템: [docs/design-system.md](./docs/design-system.md) + `app/styles/design-tokens.css`
 - PO 체크포인트: [PO-체크포인트.md](./PO-체크포인트.md)
-- 종료된 기획 과정 문서: `[삭제]/` (참고용 보관, 정리 대상)
+- 공모전 공고·지정과제 원문: `context/`
+
+종료된 기획 과정 문서와 디자인 산출물 사본(`[삭제]/`, `files/`, 루트 기획 HTML)은 정리했다. 필요하면 git 히스토리에서 꺼낸다.
