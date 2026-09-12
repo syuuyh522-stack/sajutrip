@@ -30,7 +30,7 @@ git 저장소를 초기화해 GitHub(`github.com/syuuyh522-stack/sajutrip`)에 �
 - **언어**: TypeScript 통일(프론트·백엔드), strict, `any` 금지.
 - **DB**: Airtable (장소 데이터 + 유저/회원 데이터 모두).
 - **회원가입**: scope-in 확정. 유저 데이터(성별·생년월일·사주결과·일정·엘레먼트)를 Airtable에 저장.
-- **캐싱**: PRD의 "전역 메모리 캐싱"은 Vercel 서버리스와 안 맞음 → Next.js 데이터 캐시(`unstable_cache`/`revalidate`)로 대체. 심사 기간엔 `REALTIME_API_MODE=true`로 실시간 호출 분기.
+- **캐싱**: PRD의 "전역 메모리 캐싱"은 Vercel 서버리스와 안 맞음 → Next.js 데이터 캐시(`unstable_cache`/`revalidate`)로 대체. 실시간 호출이 기본값이고, 캐시를 쓰려면 `REALTIME_API_MODE=false`로 명시적으로 꺼야 함.
 - **추천 로직 타깃 오행**: **결핍 + 과잉 둘 다** (5.3). F-5 일정 pre-fill은 결핍 원소.
 - **카피 프레임**: **공명·어울림 중심** (5.8). "효과 검증"이 아닌 문화적 해석 톤.
 - **North Star 지표**: **지방 포함 완성 일정 수** (미션형, 8.1). 목표 수치는 론칭 후 TBD.

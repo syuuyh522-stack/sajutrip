@@ -1,6 +1,8 @@
 // Airtable REST 클라이언트 — 서버 사이드 전용 (§6.1).
 // fetch 기반이라 Next 데이터 캐시(revalidate)와 통합 용이(§6.5). 배치성 데이터는 긴 revalidate,
-// 심사 실시간 모드(REALTIME_API_MODE=true)면 캐시 우회.
+// 캐시 정책은 lib/tour-api/cache.ts 한 곳에서만 분기한다(CLAUDE.md §6.5).
+// 기본 실시간(no-store)이고, REALTIME_API_MODE=false일 때만 revalidate.
+import { fetchInit } from '../tour-api/cache';
 
 const AIRTABLE_API = 'https://api.airtable.com/v0';
 
@@ -25,7 +27,6 @@ export async function airtableSelect<T = Record<string, unknown>>(
   const baseId = process.env.AIRTABLE_BASE_ID;
   if (!token || !baseId) throw new Error('Airtable env 미설정 (AIRTABLE_TOKEN / AIRTABLE_BASE_ID)');
 
-  const realtime = process.env.REALTIME_API_MODE === 'true';
   const records: AirtableRecord<T>[] = [];
   let offset: string | undefined;
 
@@ -33,7 +34,7 @@ export async function airtableSelect<T = Record<string, unknown>>(
     const qs = new URLSearchParams({ ...params, ...(offset ? { offset } : {}) });
     const res = await fetch(`${AIRTABLE_API}/${baseId}/${encodeURIComponent(table)}?${qs.toString()}`, {
       headers: { Authorization: `Bearer ${token}` },
-      ...(realtime ? { cache: 'no-store' } : { next: { revalidate: BATCH_REVALIDATE } }),
+      ...fetchInit(BATCH_REVALIDATE),
     });
     if (!res.ok) throw new Error(`Airtable ${res.status}: ${await res.text()}`);
     const data = (await res.json()) as SelectResponse<T>;
