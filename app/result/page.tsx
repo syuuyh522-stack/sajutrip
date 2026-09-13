@@ -21,6 +21,8 @@ interface KStarMatch {
   image?: string;
 }
 interface SajuResponse {
+  /** 서버가 해석한 입력 생년월일. 산출이 어느 날짜로 처리됐는지 화면에 되비추는 용도 */
+  birth: { year: number; month: number; day: number; hour: number | null };
   profile: SajuProfile;
   distribution: ElementDistribution;
   deficient: Element;
@@ -49,6 +51,11 @@ function ResultInner() {
     [params],
   );
   const [data, setData] = useState<SajuResponse | null>(null);
+  // 명식 카드에 되비출 '입력한 양력 날짜'. 화면 입력값이 아니라 서버 응답의 birth를 쓴다 —
+  // 산출이 실제로 어느 날짜로 해석됐는지를 보여줘야 검증이 된다.
+  const solarText = data
+    ? `${data.birth.year}.${String(data.birth.month).padStart(2, '0')}.${String(data.birth.day).padStart(2, '0')}`
+    : '';
   const [error, setError] = useState(false);
   // 추천 직노출 (PO 피드백 #5 — explore 진입 전 결과 하단에서 바로)
   const [recs, setRecs] = useState<Place[] | null>(null); // null = 조회 전/중, [] = 0건
@@ -126,19 +133,22 @@ function ResultInner() {
 
           {/* 사주 명식 — 진짜 산출값 (연·월·일주 간지) */}
           <section className="glass" style={{ padding: 18 }}>
-            <h2 style={sectionH2}>{t.saju.chartTitle}</h2>
+            {/* 타이틀 우측에 '입력한 양력 · 음력' 한 줄 (PO 3-1·3-5-1).
+                입력한 날짜를 되비추지 않으면 화면의 유일한 날짜가 음력이라
+                '다른 날짜의 결과'로 읽힌다(양력 1991-01-11 → 음력 1990-11-26). */}
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap', margin: '0 0 12px' }}>
+              <h2 style={{ ...sectionH2, margin: 0 }}>{t.saju.chartTitle}</h2>
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--color-text-muted)', margin: 0, whiteSpace: 'nowrap' }}>
+                {solarText}
+                {data.lunar && ` · ${t.saju.lunar.replace('{date}', `${data.lunar.year}.${String(data.lunar.month).padStart(2, '0')}.${String(data.lunar.day).padStart(2, '0')}${data.lunar.leap ? ` (${t.saju.lunarLeap})` : ''}`)}`}
+              </p>
+            </div>
             <div style={{ display: 'flex', gap: 10 }}>
               <PillarCard label={t.saju.year} pillar={data.profile.year} />
               <PillarCard label={t.saju.month} pillar={data.profile.month} />
               <PillarCard label={t.saju.day} pillar={data.profile.day} />
               {data.profile.hour && <PillarCard label={t.saju.hour} pillar={data.profile.hour} />}
             </div>
-            {/* KASI 음양력 변환 결과 — PRD F-1 1단계가 화면에 드러나는 자리 */}
-            {data.lunar && (
-              <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--color-text-muted)', margin: '12px 0 0' }}>
-                {t.saju.lunar.replace('{date}', `${data.lunar.year}.${String(data.lunar.month).padStart(2, '0')}.${String(data.lunar.day).padStart(2, '0')}${data.lunar.leap ? ` (${t.saju.lunarLeap})` : ''}`)}
-              </p>
-            )}
           </section>
           {/* PO 피드백 #4: 결핍/과잉 반복 문구 제거 — 차트 인라인 태그와 캐릭터 카드로만 전달 */}
 

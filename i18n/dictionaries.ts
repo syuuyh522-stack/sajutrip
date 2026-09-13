@@ -289,7 +289,7 @@ const en: Dictionary = {
   },
   saju: {
     chartTitle: 'Your saju chart',
-    lunar: 'Lunar calendar: {date}',
+    lunar: 'Lunar {date}',
     lunarLeap: 'leap month',
     year: 'Year',
     month: 'Month',
