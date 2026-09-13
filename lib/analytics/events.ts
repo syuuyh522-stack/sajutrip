@@ -11,9 +11,7 @@ export type EventName =
   | 'plan_add' //            일정 담기
   | 'plan_complete' //       일정 완성(공유로 이동) — 지방 포함이면 NorthStar
   | 'share_action' //        공유/저장
-  | 'bookmark_add' //        찜
   | 'checkin' //             여행 중 체크인
-  | 'book_click' //          예약 딥링크 클릭 (어필리에이트 CTR, §8.4)
   | 'nav_tab_click' //       GNB 탭 클릭 (tab·stage) — 바텀 네비 유지/축소 판단 근거
   | 'video_click'; //        여행자 영상(유튜브) 외부 클릭
 

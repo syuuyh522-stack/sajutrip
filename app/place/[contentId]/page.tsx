@@ -22,14 +22,6 @@ function isElement(v: string | null): v is Element {
 // 요일별 혼잡 막대 — 데이터랩 지역 방문자수 실데이터(월~일 상대값 0~100). 없으면 섹션을 숨긴다.
 // 요일 라벨은 로케일 사전(t.pdp.days)에서 온다.
 interface Congestion { weekday: number[]; period: { start: string; end: string } }
-/** 20260801 → 2026.08.01 */
-function fmtYmd(v: string): string {
-  return v.length === 8 ? `${v.slice(0, 4)}.${v.slice(4, 6)}.${v.slice(6, 8)}` : v;
-}
-/** 가장 한산한 요일 (0=월) */
-function quietestDay(weekday: number[]): number {
-  return weekday.reduce((best, v, i) => (v < weekday[best] ? i : best), 0);
-}
 
 /**
  * 근거 모듈 (리프레이밍 A+B — 사주는 불변, 게이지의 주어는 "이번 여행"):
@@ -148,7 +140,6 @@ function ElementGuide({ element, t }: { element: Element; t: Dictionary }) {
 export default function PlacePage() {
   const { t, locale } = useI18n();
   const { state: itin, setDates, addItem, hasItem } = useItinerary();
-  const { toggleBookmark, hasBookmark, bookmarks } = useProfile();
 
   // PO 피드백 #8: 담기 시 페이지 유지 + 토스트 / #11: 첫 담기 시 여행 일자부터 받기
   const [toast, setToast] = useState(false);
@@ -163,7 +154,7 @@ export default function PlacePage() {
   const routeParams = useParams<{ contentId: string }>();
   const search = useSearchParams();
   const router = useRouter();
-  // 닫기 = 진입 출처로 (검색·찜·추천 등 다양) — 히스토리 없으면 explore 폴백 (휴리스틱 #6)
+  // 닫기 = 진입 출처로 (검색·추천·일정 등 다양) — 히스토리 없으면 explore 폴백 (휴리스틱 #6)
   const goBack = () => {
     if (window.history.length > 1) router.back();
     else router.push(`/explore?${new URLSearchParams(backQuery).toString()}`);
@@ -206,10 +197,8 @@ export default function PlacePage() {
       .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((j) => { setPlace(j.place); setAbout(j.about ?? null); setCrowd(j.congestion ?? null); track('pdp_view', { contentId: routeParams.contentId, element: queryEl ?? null }); })
       .catch(() => {
-        // 원천(KTO)에서 사라진 장소 — 찜·일정의 localStorage 스냅샷으로 최소 렌더 (404 방지)
-        const snap =
-          bookmarks.find((b) => b.contentId === routeParams.contentId) ??
-          itin.items.find((it) => it.contentId === routeParams.contentId);
+        // 원천(KTO)에서 사라진 장소 — 일정의 localStorage 스냅샷으로 최소 렌더 (404 방지)
+        const snap = itin.items.find((it) => it.contentId === routeParams.contentId);
         if (snap) {
           setPlace({ contentId: routeParams.contentId, name: snap.name, region: snap.region, primaryElement: snap.element ?? undefined });
         } else {
@@ -266,15 +255,6 @@ export default function PlacePage() {
               style={{ position: 'absolute', top: 14, left: 16, width: 40, height: 40, borderRadius: '50%', border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', fontSize: 20, lineHeight: 1, background: 'rgba(255,255,255,.85)', color: 'var(--color-text)' }}
             >
               ×
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleBookmark({ contentId: place.contentId, name: place.name, region: place.region, element: element ?? place.primaryElement ?? null })}
-              aria-label={t.pdp.bookmark}
-              aria-pressed={hasBookmark(place.contentId)}
-              style={{ position: 'absolute', top: 14, right: 16, width: 40, height: 40, borderRadius: '50%', border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center', fontSize: 18, background: 'rgba(255,255,255,.85)', color: hasBookmark(place.contentId) ? 'var(--accent)' : 'var(--muted)' }}
-            >
-              {hasBookmark(place.contentId) ? '★' : '☆'}
             </button>
           </div>
           <div style={{ padding: '18px 22px 40px' }}>
@@ -333,48 +313,46 @@ export default function PlacePage() {
               </section>
             )}
 
-            {/* 이용시간·휴무 (detailIntro2) — mono 데이터 행 */}
-            {(about?.useTime || about?.restDate) && (
-              <section className="glass" style={{ padding: '6px 16px', margin: '0 0 14px' }}>
-                <h2 style={{ fontSize: 'var(--text-body-sm)', fontWeight: 600, margin: '10px 0' }}>{t.pdp.goodToKnow}</h2>
-                {about.useTime && (
-                  <div style={{ display: 'flex', gap: 12, padding: '8px 0', borderTop: '1px solid rgba(185,180,199,.25)' }}>
+            {/* OTA식 상세 모듈 — 여기서 하는 것 / 이 기운이 키워주는 것 (PO 피드백: 활동·근거 구체화) */}
+            {element && <ElementGuide element={element} t={t} />}
+
+            {/* '언제 갈까' 한 섹션 — 요일별 혼잡 + 이용시간·휴무 (PO 4-2: '알아두면 좋아요'를 여기로 병합).
+                출처·집계기간 표기와 '가장 한산한 요일' 문장은 제거했다(PO 4-2·4-5-1).
+                혼잡 그래프는 데이터랩 실데이터가 있을 때만 — 없으면 추정치를 보여주지 않는다. */}
+            {(crowd || about?.useTime || about?.restDate) && (
+              <section style={{ marginTop: 24 }}>
+                <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 10px' }}>{t.pdp.quiet}</h2>
+                {crowd && (
+                  <>
+                    {/* 혼잡 표시 — v2 §1: status는 뉴트럴(잉크 농도), 색으로 의미 전달 금지. 높이+농도가 정보.
+                        요일별 편차가 안 보인다는 지적(PO 4-5-2)에 따라 56 → 96. */}
+                    <div
+                      role="img"
+                      aria-label={`${t.pdp.quiet}: ${crowd.weekday.map((h, i) => `${t.pdp.days[i]} ${h}`).join(', ')}`}
+                      style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 96 }}
+                    >
+                      {crowd.weekday.map((h, i) => (
+                        <div key={t.pdp.days[i]} style={{ flex: 1, height: `${Math.max(h, 4)}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'rgba(28,27,31,.5)' : h <= 40 ? 'rgba(28,27,31,.12)' : 'rgba(28,27,31,.26)' }} />
+                      ))}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)', marginTop: 4 }}>
+                      {t.pdp.days.map((d) => <span key={d}>{d}</span>)}
+                    </div>
+                  </>
+                )}
+                {about?.useTime && (
+                  <div style={{ display: 'flex', gap: 12, padding: '8px 0', borderTop: '1px solid rgba(185,180,199,.25)', marginTop: crowd ? 14 : 0 }}>
                     <span style={{ fontSize: 13, color: 'var(--color-text-muted)', flex: '0 0 76px' }}>{t.pdp.hoursLabel}</span>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, whiteSpace: 'pre-line' }}>{about.useTime}</span>
                   </div>
                 )}
-                {about.restDate && (
+                {about?.restDate && (
                   <div style={{ display: 'flex', gap: 12, padding: '8px 0', borderTop: '1px solid rgba(185,180,199,.25)' }}>
                     <span style={{ fontSize: 13, color: 'var(--color-text-muted)', flex: '0 0 76px' }}>{t.pdp.restLabel}</span>
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, whiteSpace: 'pre-line' }}>{about.restDate}</span>
                   </div>
                 )}
               </section>
-            )}
-
-            {/* OTA식 상세 모듈 — 여기서 하는 것 / 이 기운이 키워주는 것 (PO 피드백: 활동·근거 구체화) */}
-            {element && <ElementGuide element={element} t={t} />}
-
-            {/* F-4 몰리는/여유로운 시간 — 데이터랩 실데이터가 있을 때만 (없으면 추정치를 보여주지 않는다) */}
-            {crowd && (
-              <>
-                <h2 style={{ fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>{t.pdp.quiet}</h2>
-                <div style={{ fontSize: 13, color: 'var(--muted-2)', marginBottom: 8 }}>
-                  {t.pdp.crowdSource.replace('{period}', `${fmtYmd(crowd.period.start)}–${fmtYmd(crowd.period.end)}`)}
-                </div>
-                {/* 혼잡 표시 — v2 §1: status는 뉴트럴(잉크 농도), 색으로 의미 전달 금지. 높이+농도가 정보 */}
-                <div role="img" aria-label={`${t.pdp.quiet} — ${t.pdp.quietDay.replace('{day}', t.pdp.days[quietestDay(crowd.weekday)])}`} style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 56 }}>
-                  {crowd.weekday.map((h, i) => (
-                    <div key={t.pdp.days[i]} style={{ flex: 1, height: `${Math.max(h, 4)}%`, borderRadius: '4px 4px 0 0', background: h >= 85 ? 'rgba(28,27,31,.5)' : h <= 40 ? 'rgba(28,27,31,.12)' : 'rgba(28,27,31,.26)' }} />
-                  ))}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--mono)', fontSize: 13, color: 'var(--muted-2)', marginTop: 4 }}>
-                  {t.pdp.days.map((d) => <span key={d}>{d}</span>)}
-                </div>
-                <p style={{ fontSize: 13, color: 'var(--muted-2)', marginTop: 6 }}>
-                  {t.pdp.quietDay.replace('{day}', t.pdp.days[quietestDay(crowd.weekday)])}
-                </p>
-              </>
             )}
 
             {/* 여행자 영상 — 서비스 내 후기가 없으니 외부(YouTube)에서. 썸네일 카드 → 새 탭 (마지막 섹션) */}
@@ -481,19 +459,6 @@ export default function PlacePage() {
               );
             })()}
 
-            {/* 예약하기 — secondary(§1: primary는 잉크뿐). 여기어때 검색 딥링크(F-6 P1) —
-                어필리에이트 정산 파라미터는 PO 확정 후 부착, 지금은 검색 연결 + CTR 계측(§8.4) */}
-            <button
-              type="button"
-              onClick={() => {
-                track('book_click', { contentId: place.contentId, region: place.region });
-                window.open(`https://www.yeogi.com/domestic-accommodations?keyword=${encodeURIComponent(place.name)}`, '_blank', 'noopener');
-              }}
-              style={{ width: '100%', minHeight: 48, marginTop: 12, padding: '15px 18px', borderRadius: 'var(--radius-pill)', border: '1.5px solid rgba(185,180,199,.5)', background: 'var(--color-surface)', cursor: 'pointer', fontSize: 16, fontWeight: 600, color: 'var(--color-text)' }}
-            >
-              {t.pdp.book}
-            </button>
-            <p style={{ fontSize: 13, color: 'var(--color-text-muted)', textAlign: 'center', marginTop: 8 }}>{t.pdp.bookNote}</p>
           </div>
         </div>
       )}

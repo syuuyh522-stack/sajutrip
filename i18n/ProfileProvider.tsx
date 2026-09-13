@@ -1,6 +1,6 @@
 'use client';
 
-// 유저 프로필 + 찜 스토어 — POC는 localStorage (회원 인증은 Phase 2 Supabase). (PRD 회원가입 P1)
+// 유저 프로필 스토어 — POC는 localStorage (회원 인증은 Phase 2 Supabase). (PRD 회원가입 P1)
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import type { Element } from '../types/saju';
 
@@ -12,12 +12,6 @@ export interface Birth {
   month: string;
   day: string;
 }
-export interface Bookmark {
-  contentId: string;
-  name: string;
-  region: string;
-  element: Element | null;
-}
 /** 체크인으로 모은 엘리먼트 — 컨셉 "엘리먼트를 수집하는 여행"의 상태 */
 export interface CollectedItem {
   contentId: string;
@@ -27,18 +21,15 @@ interface ProfileState {
   birth: Birth | null;
   signedUp: boolean;
   nickname: string;
-  bookmarks: Bookmark[];
   collected: CollectedItem[];
 }
 
-const EMPTY: ProfileState = { birth: null, signedUp: false, nickname: '', bookmarks: [], collected: [] };
+const EMPTY: ProfileState = { birth: null, signedUp: false, nickname: '', collected: [] };
 const STORAGE_KEY = 'sajutrip.profile';
 
 interface ProfileContextValue extends ProfileState {
   setBirth: (birth: Birth) => void;
   signUp: (nickname: string) => void;
-  toggleBookmark: (b: Bookmark) => void;
-  hasBookmark: (contentId: string) => boolean;
   /** 체크인 토글 — 해당 장소의 엘리먼트를 수집/회수 */
   toggleCollect: (contentId: string, element: Element | null) => void;
   isCollected: (contentId: string) => boolean;
@@ -73,11 +64,6 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
     ...state,
     setBirth: (birth) => persist({ ...state, birth }),
     signUp: (nickname) => persist({ ...state, signedUp: true, nickname }),
-    toggleBookmark: (b) => {
-      const exists = state.bookmarks.some((x) => x.contentId === b.contentId);
-      persist({ ...state, bookmarks: exists ? state.bookmarks.filter((x) => x.contentId !== b.contentId) : [...state.bookmarks, b] });
-    },
-    hasBookmark: (contentId) => state.bookmarks.some((x) => x.contentId === contentId),
     toggleCollect: (contentId, element) => {
       const exists = state.collected.some((c) => c.contentId === contentId);
       if (exists) {

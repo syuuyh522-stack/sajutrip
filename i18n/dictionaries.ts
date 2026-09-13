@@ -132,35 +132,27 @@ export interface Dictionary {
     /** {element} 치환 — 문화적 근거(§5.8, 효과 단정 금지). basisFill=결핍 매치 전용(곁에 두기, 리프레이밍 B) */
     basis: string;
     basisFill: string;
+    /** 장소별 실데이터 섹션 (detailCommon2) */
+    aboutTitle: string;
     /** 여행자 영상 (YouTube 외부 링크) */
     videosTitle: string;
     videosNote: string;
     /** {name} 치환 — 키 미설정/결과 없음 폴백 링크 */
     videosSearch: string;
-    /** 장소별 실데이터 섹션 (detailCommon2/detailIntro2) */
-    aboutTitle: string;
-    goodToKnow: string;
     hoursLabel: string;
     restLabel: string;
     programLabel: string;
     more: string;
     less: string;
     quiet: string;
-    /** 요일별 혼잡 그래프 출처·집계기간 ({period} 치환) */
-    crowdSource: string;
-    /** 가장 한산한 요일 안내 ({day} 치환) */
-    quietDay: string;
     /** 요일 축 라벨 (월~일 7개) */
     days: [string, string, string, string, string, string, string];
-    book: string;
-    bookNote: string;
     addPlan: string;
     added: string;
     addedToast: string;
     datePrompt: string;
     dateConfirm: string;
     viewPlan: string;
-    bookmark: string;
     back: string;
     notFound: string;
   };
@@ -210,8 +202,6 @@ export interface Dictionary {
     birth: string;
     savedTrip: string;
     savedTripDesc: string;
-    bookmarks: string;
-    noBookmarks: string;
     signUp: string;
     editProfile: string;
     settings: string;
@@ -396,25 +386,19 @@ const en: Dictionary = {
     videosNote: 'Opens YouTube in a new tab',
     videosSearch: 'Search \u201c{name}\u201d on YouTube',
     aboutTitle: 'About this place',
-    goodToKnow: 'Good to know',
     hoursLabel: 'Hours',
     restLabel: 'Closed',
     programLabel: 'Programs here',
     more: 'More',
     less: 'Less',
     quiet: 'When it is quiet',
-    crowdSource: 'Korea Tourism Data Lab · regional visitors, {period}',
-    quietDay: 'Quietest around {day}',
     days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    book: 'Book',
-    bookNote: 'Opens a Yeogi Attae search in a new tab',
     addPlan: 'Add to itinerary',
     added: 'Added to itinerary',
     addedToast: 'Added to your itinerary',
     datePrompt: 'When is your trip?',
     dateConfirm: 'Save & add',
     viewPlan: 'View itinerary',
-    bookmark: 'Save this place',
     back: 'Back',
     notFound: 'Place not found.',
   },
@@ -461,8 +445,6 @@ const en: Dictionary = {
     birth: 'Birth',
     savedTrip: 'Saved itinerary',
     savedTripDesc: 'places',
-    bookmarks: 'Saved',
-    noBookmarks: 'Tap the bookmark on a place to keep it here.',
     signUp: 'Sign up to save everything',
     editProfile: 'Edit profile',
     settings: 'Settings',
@@ -473,7 +455,7 @@ const en: Dictionary = {
   },
   signup: {
     title: 'Create your account',
-    subtitle: 'So your reading, saved places and trips are here next time.',
+    subtitle: 'So your reading and trips are here next time.',
     prefill: 'Gender / birth · pre-filled',
     nickname: 'Nickname · optional',
     nicknameHint: 'e.g. Fire Traveler',
@@ -667,25 +649,19 @@ const ko: Dictionary = {
     videosNote: '유튜브 새 탭으로 열려요',
     videosSearch: '유튜브에서 \u201c{name}\u201d 검색',
     aboutTitle: '이곳 소개',
-    goodToKnow: '알아두면 좋아요',
     hoursLabel: '이용시간',
     restLabel: '휴무',
     programLabel: '체험 프로그램',
     more: '더보기',
     less: '접기',
     quiet: '여유로운 시간',
-    crowdSource: '한국관광 데이터랩 · 지역 방문자수 {period}',
-    quietDay: '{day} 무렵이 가장 한산해요',
     days: ['월', '화', '수', '목', '금', '토', '일'],
-    book: '예약하기',
-    bookNote: '여기어때 검색 결과로 연결돼요 (새 탭)',
     addPlan: '일정에 담기',
     added: '일정에 담겼어요',
     addedToast: '일정에 담았어요',
     datePrompt: '여행 일자를 알려주세요',
     dateConfirm: '저장하고 담기',
     viewPlan: '일정 보기',
-    bookmark: '이 장소 찜하기',
     back: '뒤로',
     notFound: '장소를 찾을 수 없어요.',
   },
@@ -732,8 +708,6 @@ const ko: Dictionary = {
     birth: '생년월일',
     savedTrip: '저장한 일정',
     savedTripDesc: '곳',
-    bookmarks: '찜',
-    noBookmarks: '장소의 북마크를 누르면 여기에 담겨요.',
     signUp: '회원가입하고 전부 저장하기',
     editProfile: '프로필 수정',
     settings: '설정',
@@ -744,7 +718,7 @@ const ko: Dictionary = {
   },
   signup: {
     title: '회원가입',
-    subtitle: '사주 결과·찜·일정을 다음에도 볼 수 있게 저장해요.',
+    subtitle: '사주 결과와 일정을 다음에도 볼 수 있게 저장해요.',
     prefill: '성별 / 생년월일 · 자동 입력됨',
     nickname: '닉네임 · 선택',
     nicknameHint: '예: Fire Traveler',

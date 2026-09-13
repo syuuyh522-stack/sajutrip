@@ -1,6 +1,6 @@
 'use client';
 
-// 마이페이지 (P1) — 오행 수집·회원정보·저장 일정·찜. (PRD 마이페이지)
+// 마이페이지 (P1) — 오행 수집·회원정보·저장 일정. (PRD 마이페이지)
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -12,8 +12,6 @@ import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import { ElementOrb } from '../../components/ElementOrb';
-import { displayName } from '../../lib/ui/romanize';
-import { useResolvedPlaceNames } from '../../lib/ui/useResolvedPlaceNames';
 import type { Element, ElementDistribution } from '../../types/saju';
 
 const ORDER: Element[] = ['wood', 'fire', 'earth', 'metal', 'water'];
@@ -21,9 +19,7 @@ const COLOR = EL_COLOR; // 공식 팔레트
 
 function MyInner() {
   const { t, locale } = useI18n();
-  const { birth, signedUp, nickname, bookmarks, collectedCount } = useProfile();
-  // 찜도 저장 시점 로케일 스냅샷 — 현재 로케일 이름으로 재조회
-  const resolvedBm = useResolvedPlaceNames(bookmarks, locale);
+  const { birth, signedUp, nickname, collectedCount } = useProfile();
   const { state } = useItinerary();
   const params = useSearchParams();
 
@@ -97,27 +93,6 @@ function MyInner() {
             </div>
           </Link>
         )}
-
-        <section>
-          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>{t.my.bookmarks}</div>
-          {bookmarks.length === 0 && <p style={{ fontSize: 13, color: 'var(--muted-2)', margin: 0 }}>{t.my.noBookmarks}</p>}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            {bookmarks.map((bm) => {
-              const raw = resolvedBm[bm.contentId] ?? { name: bm.name, region: bm.region };
-              const dn = displayName(raw.name, locale);
-              return (
-                <Link key={bm.contentId} href={{ pathname: `/place/${bm.contentId}`, query: { ...query, ...(bm.element ? { element: bm.element } : {}) } }} style={{ textDecoration: 'none', color: 'inherit' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, border: '1px solid var(--line)', borderRadius: 12, padding: '10px 12px' }}>
-                    <div style={{ minWidth: 0 }}>
-                      <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{dn.primary}</div>
-                      <div style={{ fontSize: 13, color: 'var(--muted)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{[dn.hangul, raw.region].filter(Boolean).join(' · ')}</div>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
 
         <Link href={{ pathname: '/signup', query }} style={{ display: 'block', textAlign: 'center', minHeight: 48, padding: '15px 18px', borderRadius: 'var(--radius-pill)', textDecoration: 'none', fontSize: 16, fontWeight: 600, ...(signedUp ? { border: '1.5px solid rgba(185,180,199,.5)', color: 'var(--color-text)', background: 'var(--color-surface)' } : { background: 'var(--color-text)', color: '#fff', boxShadow: 'var(--shadow-fab)' }) }}>
           {signedUp ? t.my.editProfile : t.my.signUp}
