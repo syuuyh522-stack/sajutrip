@@ -62,7 +62,7 @@ function ResultInner() {
   useEffect(() => {
     if (!data) return;
     setRecs(null);
-    fetch(`/api/places?element=${data.deficient}&lang=${locale}&max=3`)
+    fetch(`/api/places?element=${data.deficient}&lang=${locale}&max=6`)
       .then((r) => r.json())
       .then((j) => setRecs(j.places ?? []))
       .catch(() => setRecs([]));
@@ -111,24 +111,23 @@ function ResultInner() {
 
       {data && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 20 }}>
-          {/* Element Orb (§5 시그니처) — 실분포가 그라디언트 비율이 되는 리빌 모먼트 */}
-          <div style={{ display: 'flex', justifyContent: 'center', padding: '4px 0' }}>
-            <ElementOrb
-              distribution={data.distribution}
-              size={132}
-              label={ELEMENT_ORDER.map((el) => `${t.elements[el]} ${data.distribution[el]}`).join(', ')}
-            />
-          </div>
-
-          {/* 캐릭터 한마디 — 과잉(가장 강한) 원소 기준 (FAQ Q3 성격 규정형) */}
-          <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '26px 22px', color: EL_ON[data.excess], overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
+          {/* 히어로 — Orb(§5 시그니처)와 캐릭터 한마디를 한 카드로 페어링.
+              분리돼 있을 땐 원형만 세로 190px를 먹어 BTF가 안 보였다(PO 3-3). */}
+          <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '22px', color: EL_ON[data.excess], overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
             <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />
-            <div style={{ position: 'relative' }}>
-              {/* fill 위 텍스트 = EL_ON (v2 §1.1 — 파스텔 fill 전부 잉크 텍스트) */}
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '6px 0 10px', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
-              <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0, color: EL_ON_MUTED[data.excess] }}>{t.character[data.excess].desc}</p>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 16 }}>
+              <ElementOrb
+                distribution={data.distribution}
+                size={92}
+                label={ELEMENT_ORDER.map((el) => `${t.elements[el]} ${data.distribution[el]}`).join(', ')}
+              />
+              <div style={{ minWidth: 0 }}>
+                {/* fill 위 텍스트 = EL_ON (v2 §1.1 — 파스텔 fill 전부 잉크 텍스트) */}
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '4px 0 0', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
+              </div>
             </div>
+            <p style={{ position: 'relative', fontSize: 14, lineHeight: 1.65, margin: '14px 0 0', color: EL_ON_MUTED[data.excess] }}>{t.character[data.excess].desc}</p>
           </section>
 
           {/* 사주 명식 — 진짜 산출값 (연·월·일주 간지) */}
@@ -149,12 +148,11 @@ function ResultInner() {
               <PillarCard label={t.saju.day} pillar={data.profile.day} />
               {data.profile.hour && <PillarCard label={t.saju.hour} pillar={data.profile.hour} />}
             </div>
-          </section>
-          {/* PO 피드백 #4: 결핍/과잉 반복 문구 제거 — 차트 인라인 태그와 캐릭터 카드로만 전달 */}
 
-          {/* 오행 분포 + 타깃(결핍·과잉) — 분모는 글자 수 총합(시간 미상 6, 시주 포함 8) */}
-          <section className="glass" style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 18 }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* 오행 분포 — 같은 카드 안에서 구분선으로만 나눈다(PO 3-2-2).
+                분모는 명식 글자 수 총합(시간 미상 6, 시주 포함 8).
+                결핍/과잉은 반복 문구 대신 아래 인라인 태그 한 곳에서만 전달(PO #4). */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, borderTop: '1px solid rgba(185,180,199,.3)', marginTop: 16, paddingTop: 16 }}>
               {ELEMENT_ORDER.map((el) => {
                 const v = data.distribution[el];
                 const total = ELEMENT_ORDER.reduce((s, e) => s + data.distribution[e], 0);
@@ -187,34 +185,15 @@ function ResultInner() {
               })}
             </div>
           </section>
-          {/* PO 피드백 #4: 결핍/과잉 칩 제거 — 차트 인라인 태그로 통합 */}
-
-          {/* K-star (F-2) — 홈은 각 랭킹 1위만, 더보기 → 전체 랭킹(/kstars) */}
-          {(data.kstar.soulmate || data.kstar.twin) && (
-            <section className="glass" style={{ padding: 18 }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
-                <h2 style={sectionH2}>
-                  {t.kstar.title} <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--muted-2)' }}>· {t.kstar.forFun}</span>
-                </h2>
-                <Link href={{ pathname: '/kstars', query: birth }} style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-accent)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
-                  {t.kstar.seeAll} →
-                </Link>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {data.kstar.soulmate && (
-                  <StarRow match={data.kstar.soulmate} title={t.kstar.soulmate} desc={t.kstar.soulmateDesc} elementLabel={t.elements[data.kstar.soulmate.element]} />
-                )}
-                {data.kstar.twin && (
-                  <StarRow match={data.kstar.twin} title={t.kstar.twin} desc={t.kstar.twinDesc} elementLabel={t.elements[data.kstar.twin.element]} />
-                )}
-              </div>
-            </section>
-          )}
 
           {/* 추천 직노출 (PO 피드백 #5) — explore 이동 없이 결과 하단에서 바로 탐색 시작 */}
           {recs !== null && (
             <section>
-              <h2 style={sectionH2}>{t.result.recsTitle}</h2>
+              {/* key feature — '공명'에서 멈추지 않고 '부족한 기운을 채운다'까지 말한다(PO 3-6-1, FAQ 3·4) */}
+              <h2 style={{ ...sectionH2, margin: '0 0 4px' }}>{t.result.recsTitle}</h2>
+              <p style={{ fontSize: 14, lineHeight: 1.6, color: 'var(--color-text-muted)', margin: '0 0 14px' }}>
+                {t.result.recsLead.replace('{element}', t.elements[data.deficient])}
+              </p>
               {recs.length === 0 && (
                 <p style={{ fontSize: 14, color: 'var(--color-text-muted)', margin: '0 0 14px' }}>{t.result.recsEmpty}</p>
               )}
@@ -237,6 +216,28 @@ function ResultInner() {
               >
                 {t.result.seeAll} →
               </Link>
+            </section>
+          )}
+
+          {/* K-star (F-2) — 홈은 각 랭킹 1위만, 더보기 → 전체 랭킹(/kstars) */}
+          {(data.kstar.soulmate || data.kstar.twin) && (
+            <section className="glass" style={{ padding: 18 }}>
+              <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8 }}>
+                <h2 style={sectionH2}>
+                  {t.kstar.title} <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--muted-2)' }}>· {t.kstar.forFun}</span>
+                </h2>
+                <Link href={{ pathname: '/kstars', query: birth }} style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-accent)', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                  {t.kstar.seeAll} →
+                </Link>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                {data.kstar.soulmate && (
+                  <StarRow match={data.kstar.soulmate} title={t.kstar.soulmate} desc={t.kstar.soulmateDesc} elementLabel={t.elements[data.kstar.soulmate.element]} />
+                )}
+                {data.kstar.twin && (
+                  <StarRow match={data.kstar.twin} title={t.kstar.twin} desc={t.kstar.twinDesc} elementLabel={t.elements[data.kstar.twin.element]} />
+                )}
+              </div>
             </section>
           )}
         </div>

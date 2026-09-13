@@ -54,6 +54,8 @@ export interface Dictionary {
     editBirth: string;
     /** 결과 하단 추천 직노출 (PO 피드백 #5) */
     recsTitle: string;
+    /** key feature 리드 — {element} 치환 (부족한 기운을 채운다, FAQ 3·4) */
+    recsLead: string;
     seeAll: string;
     /** 추천 후보가 0건일 때 — 막다른 길 방지 (탐색 CTA는 항상 노출) */
     recsEmpty: string;
@@ -274,6 +276,7 @@ const en: Dictionary = {
     strongestTag: 'strongest',
     editBirth: 'Edit birth info',
     recsTitle: 'Places that resonate',
+    recsLead: 'Your {element} runs lowest. These are the places traditionally seen as holding it — go and top it up.',
     seeAll: 'See all',
     recsEmpty: 'No matches to show right now. Browse everything instead.',
   },
@@ -537,6 +540,7 @@ const ko: Dictionary = {
     strongestTag: '가장 강함',
     editBirth: '입력 수정',
     recsTitle: '공명하는 장소',
+    recsLead: '당신에게 가장 부족한 기운은 {element}이에요. 전통 오행에서 그 기운이 깃들었다고 여겨지는 곳들이니, 여행으로 채워보세요.',
     seeAll: '전체 보기',
     recsEmpty: '지금 보여드릴 장소를 못 찾았어요. 전체 목록에서 골라보세요.',
   },
@@ -605,7 +609,7 @@ const ko: Dictionary = {
     title: '나의 K-star',
     forFun: '재미로',
     soulmate: '소울메이트 K스타',
-    soulmateDesc: '내게 부족한 기운이 강한 별',
+    soulmateDesc: '내게 부족한 기운이 강한 스타',
     twin: '나와 닮은 K스타',
     twinDesc: '나와 같은 강한 기운',
     seeAll: '더보기',
