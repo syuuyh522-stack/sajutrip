@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
+import { AppHeader } from '../../components/AppHeader';
 import { Aurora } from '../../components/Aurora';
 import { ElementOrb } from '../../components/ElementOrb';
 import { elGradient, EL_COLOR, EL_INK, EL_ON, EL_ON_MUTED } from '../../lib/ui/elements';
@@ -82,14 +83,7 @@ function ResultInner() {
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <Aurora />
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
-        <Link href="/" style={{ fontSize: 14, color: 'var(--muted)', textDecoration: 'none' }}>← {t.result.editBirth}</Link>
-      </header>
-
-      {/* 한글엔 자간 벌림이 어색 — ko는 letterSpacing 0 */}
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', color: 'var(--color-text-muted)', margin: 0 }}>
-        {t.result.eyebrow}
-      </p>
+      <AppHeader />
 
       {/* H2: 에러 복구 — 재시도 버튼 */}
       {error && (
@@ -183,6 +177,14 @@ function ResultInner() {
                   </div>
                 );
               })}
+            </div>
+
+            {/* 생년월일 수정 — Back 경로로 제공하지 않는다(PO 3-2-1: 일반적이지 않음).
+                고친 값이 반영되는 자리인 '내 사주' 카드 안에 작게 둔다. */}
+            <div style={{ textAlign: 'right', marginTop: 14 }}>
+              <Link href="/" style={{ fontSize: 13, color: 'var(--color-accent)', textDecoration: 'none' }}>
+                {t.result.editBirth} →
+              </Link>
             </div>
           </section>
 

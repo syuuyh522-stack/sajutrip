@@ -5,13 +5,13 @@
 import { useI18n } from '../i18n/LanguageProvider';
 import { LOCALES, LOCALE_LABELS } from '../i18n/dictionaries';
 
-export function LanguageSwitch() {
+export function LanguageSwitch({ compact = false }: { compact?: boolean } = {}) {
   const { locale, setLocale } = useI18n();
   return (
     <div
       role="group"
       aria-label="Language"
-      style={{ display: 'inline-flex', gap: 4, background: 'rgba(185,180,199,.18)', padding: 4, borderRadius: 'var(--radius-pill)' }}
+      style={{ display: 'inline-flex', gap: 4, background: 'rgba(185,180,199,.18)', padding: compact ? 3 : 4, borderRadius: 'var(--radius-pill)' }}
     >
       {LOCALES.map((code) => {
         const active = code === locale;
@@ -24,10 +24,10 @@ export function LanguageSwitch() {
             style={{
               border: 0,
               cursor: 'pointer',
-              minHeight: 36,
-              padding: '8px 16px',
+              minHeight: compact ? 30 : 36,
+              padding: compact ? '5px 11px' : '8px 16px',
               borderRadius: 'var(--radius-pill)',
-              fontSize: 13,
+              fontSize: compact ? 12 : 13,
               fontWeight: active ? 600 : 500,
               background: active ? 'rgba(108,63,224,.10)' : 'transparent',
               color: active ? 'var(--color-accent)' : 'var(--color-text-muted)',

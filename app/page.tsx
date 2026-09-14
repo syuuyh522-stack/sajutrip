@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '../i18n/LanguageProvider';
 import { useProfile } from '../i18n/ProfileProvider';
-import { LanguageSwitch } from '../components/LanguageSwitch';
+import { AppHeader } from '../components/AppHeader';
 import { Aurora } from '../components/Aurora';
 import { track } from '../lib/analytics/track';
 
@@ -51,13 +51,8 @@ export default function LandingPage() {
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 40px', minHeight: '100dvh' }}>
       <Aurora />
-      <header style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-        <LanguageSwitch />
-      </header>
+      <AppHeader />
 
-      <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: 2, textTransform: 'uppercase', color: 'var(--color-text-muted)', margin: '18px 0 0' }}>
-        {t.landing.eyebrow}
-      </p>
       {/* Display serif — 히어로 헤드라인 (§2) */}
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--text-display-sm)', lineHeight: 'var(--text-display-sm-lh)', fontWeight: 600, letterSpacing: '-0.3px', margin: '10px 0 8px', textWrap: 'balance' }}>
         {t.landing.title}

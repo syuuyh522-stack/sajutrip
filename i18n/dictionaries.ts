@@ -16,7 +16,6 @@ export const LOCALE_LABELS: Record<Locale, string> = {
 /** 사전 형태 — en을 기준 타입으로 삼아 다른 로케일이 같은 키를 갖도록 강제 */
 export interface Dictionary {
   landing: {
-    eyebrow: string;
     title: string;
     subtitle: string;
     gender: string;
@@ -40,7 +39,6 @@ export interface Dictionary {
   };
   elements: Record<'wood' | 'fire' | 'earth' | 'metal' | 'water', string>;
   result: {
-    eyebrow: string;
     deficient: string;
     excess: string;
     back: string;
@@ -171,7 +169,6 @@ export interface Dictionary {
     nearby: string;
     related: string;
     finish: string;
-    back: string;
   };
   share: {
     title: string;
@@ -206,8 +203,6 @@ export interface Dictionary {
     savedTripDesc: string;
     signUp: string;
     editProfile: string;
-    settings: string;
-    language: string;
     /** {name} 치환 — 로그인 상태 인사 */
     signedInAs: string;
     /** 단수 단위 (1곳/1 place) */
@@ -243,7 +238,6 @@ export interface Dictionary {
 
 const en: Dictionary = {
   landing: {
-    eyebrow: 'Eastern astrology · Saju',
     title: 'Travel Korea by the elements you’re missing.',
     subtitle:
       'Your birth chart maps five energies — wood, fire, earth, metal, water. We route your trip toward the ones you lack.',
@@ -265,7 +259,6 @@ const en: Dictionary = {
   },
   elements: { wood: 'Wood', fire: 'Fire', earth: 'Earth', metal: 'Metal', water: 'Water' },
   result: {
-    eyebrow: 'Your five-element balance',
     deficient: 'Lowest · fill it',
     excess: 'Strongest · echo it',
     back: 'Back',
@@ -418,7 +411,6 @@ const en: Dictionary = {
     nearby: 'Nearby stay & food will be added automatically (with live data).',
     related: 'Popular nearby',
     finish: 'Finish & make share card',
-    back: 'Back',
   },
   share: {
     title: 'Trip summary',
@@ -450,8 +442,6 @@ const en: Dictionary = {
     savedTripDesc: 'places',
     signUp: 'Sign up to save everything',
     editProfile: 'Edit profile',
-    settings: 'Settings',
-    language: 'Language',
     signedInAs: 'Signed in as {name}',
     placeOne: 'place',
     back: 'Back',
@@ -507,7 +497,6 @@ const en: Dictionary = {
 
 const ko: Dictionary = {
   landing: {
-    eyebrow: '동양 사주 · 오행',
     title: '당신에게 부족한 기운을 채우는 한국 여행',
     subtitle:
       '사주는 다섯 기운(목·화·토·금·수)의 분포예요. 당신에게 부족한 기운으로 여행을 안내합니다.',
@@ -529,7 +518,6 @@ const ko: Dictionary = {
   },
   elements: { wood: '목 木', fire: '화 火', earth: '토 土', metal: '금 金', water: '수 水' },
   result: {
-    eyebrow: '나의 오행 분포',
     deficient: '가장 부족 · 채우기',
     excess: '가장 넘침 · 공명',
     back: '뒤로',
@@ -682,7 +670,6 @@ const ko: Dictionary = {
     nearby: '주변 숙박·음식 동선은 자동 확장 예정(실데이터 연동 시).',
     related: '주변 인기 관광지',
     finish: '완성하고 공유 카드 만들기',
-    back: '뒤로',
   },
   share: {
     title: '여행 요약',
@@ -714,8 +701,6 @@ const ko: Dictionary = {
     savedTripDesc: '곳',
     signUp: '회원가입하고 전부 저장하기',
     editProfile: '프로필 수정',
-    settings: '설정',
-    language: '언어',
     signedInAs: '{name} 님',
     placeOne: '곳',
     back: '뒤로',

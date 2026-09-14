@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
 import { useProfile } from '../../i18n/ProfileProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
-import { LanguageSwitch } from '../../components/LanguageSwitch';
+import { AppHeader } from '../../components/AppHeader';
 import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
@@ -43,6 +43,7 @@ function MyInner() {
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <Aurora />
+      <AppHeader />
       <header style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20 }}>
         <div style={{ flex: 1 }}>
           {/* 제목은 항상 페이지명 — 닉네임은 보조 인사말로 (닉네임이 제목을 대체하면 맥락 상실) */}
@@ -98,14 +99,6 @@ function MyInner() {
           {signedUp ? t.my.editProfile : t.my.signUp}
         </Link>
 
-        {/* 세팅 — 언어 변경 */}
-        <section>
-          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 10 }}>{t.my.settings}</div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', border: '1px solid var(--line)', borderRadius: 14, padding: '12px 14px' }}>
-            <span style={{ fontSize: 14, color: 'var(--muted)' }}>{t.my.language}</span>
-            <LanguageSwitch />
-          </div>
-        </section>
       </div>
       <BottomNav />
     </main>

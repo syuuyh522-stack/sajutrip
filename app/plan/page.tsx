@@ -8,6 +8,7 @@ import { useI18n } from '../../i18n/LanguageProvider';
 import { useItinerary } from '../../i18n/ItineraryProvider';
 import { useProfile } from '../../i18n/ProfileProvider';
 import { BottomNav } from '../../components/BottomNav';
+import { AppHeader } from '../../components/AppHeader';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import { relatedAreaFor } from '../../config/related-region';
@@ -71,9 +72,7 @@ function PlanInner() {
   return (
     <main style={{ maxWidth: 460, margin: '0 auto', padding: '24px 22px 92px', minHeight: '100dvh' }}>
       <Aurora />
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-        <Link href={{ pathname: '/explore', query: birth }} style={{ fontSize: 14, color: 'var(--color-text-muted)', textDecoration: 'none' }}>← {t.plan.back}</Link>
-      </header>
+      <AppHeader />
 
       <h1 style={{ fontSize: 'var(--text-title-lg)', lineHeight: 'var(--text-title-lg-lh)', fontWeight: 600, margin: '0 0 16px' }}>{t.plan.title}</h1>
 
