@@ -8,7 +8,6 @@ import { useI18n } from '../../i18n/LanguageProvider';
 import { BottomNav } from '../../components/BottomNav';
 import { AppHeader } from '../../components/AppHeader';
 import { Aurora } from '../../components/Aurora';
-import { ElementOrb } from '../../components/ElementOrb';
 import { elGradient, EL_COLOR, EL_INK, EL_ON, EL_ON_MUTED } from '../../lib/ui/elements';
 import { displayName } from '../../lib/ui/romanize';
 import { track } from '../../lib/analytics/track';
@@ -105,23 +104,18 @@ function ResultInner() {
 
       {data && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 32, marginTop: 20 }}>
-          {/* 히어로 — Orb(§5 시그니처)와 캐릭터 한마디를 한 카드로 페어링.
-              분리돼 있을 땐 원형만 세로 190px를 먹어 BTF가 안 보였다(PO 3-3). */}
+          {/* 히어로 — 과잉(가장 강한) 원소의 캐릭터 한마디 (FAQ Q3 성격 규정형).
+              Orb는 여기 두지 않는다: 카드는 '원소 하나'(과잉)를 말하는데 Orb는
+              '다섯 원소 분포'를 말해서, 단색 카드 위에 무지개 구가 떠 보였다.
+              같은 정보를 바로 아래 분포 막대가 수치까지 붙여 정확히 보여준다(PO 3-3). */}
           <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '22px', color: EL_ON[data.excess], overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
             <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 16 }}>
-              <ElementOrb
-                distribution={data.distribution}
-                size={92}
-                label={ELEMENT_ORDER.map((el) => `${t.elements[el]} ${data.distribution[el]}`).join(', ')}
-              />
-              <div style={{ minWidth: 0 }}>
-                {/* fill 위 텍스트 = EL_ON (v2 §1.1 — 파스텔 fill 전부 잉크 텍스트) */}
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '4px 0 0', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
-              </div>
+            <div style={{ position: 'relative' }}>
+              {/* fill 위 텍스트 = EL_ON (v2 §1.1 — 파스텔 fill 전부 잉크 텍스트) */}
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '6px 0 10px', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
+              <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0, color: EL_ON_MUTED[data.excess] }}>{t.character[data.excess].desc}</p>
             </div>
-            <p style={{ position: 'relative', fontSize: 14, lineHeight: 1.65, margin: '14px 0 0', color: EL_ON_MUTED[data.excess] }}>{t.character[data.excess].desc}</p>
           </section>
 
           {/* 사주 명식 — 진짜 산출값 (연·월·일주 간지) */}
