@@ -23,14 +23,18 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children, modal }: { children: React.ReactNode; modal: React.ReactNode }) {
   // 초기 lang은 기본 로케일. 클라이언트에서 로케일 변경 시 LanguageProvider가 갱신.
+  // modal = @modal 병렬 슬롯 — PDP 인터셉트 라우트가 매칭되면 children(배경 페이지) 위에 바텀시트로 덮인다(PO 피드백 #6).
   return (
     <html lang={DEFAULT_LOCALE}>
       <body>
         <LanguageProvider>
           <ProfileProvider>
-            <ItineraryProvider>{children}</ItineraryProvider>
+            <ItineraryProvider>
+              {children}
+              {modal}
+            </ItineraryProvider>
           </ProfileProvider>
         </LanguageProvider>
       </body>
