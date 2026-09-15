@@ -5,6 +5,7 @@ import { Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '../../i18n/LanguageProvider';
+import type { Dictionary, Locale } from '../../i18n/dictionaries';
 import { BottomNav } from '../../components/BottomNav';
 import { AppHeader } from '../../components/AppHeader';
 import { Aurora } from '../../components/Aurora';
@@ -108,15 +109,7 @@ function ResultInner() {
               Orb는 여기 두지 않는다: 카드는 '원소 하나'(과잉)를 말하는데 Orb는
               '다섯 원소 분포'를 말해서, 단색 카드 위에 무지개 구가 떠 보였다.
               같은 정보를 바로 아래 분포 막대가 수치까지 붙여 정확히 보여준다(PO 3-3). */}
-          <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '22px', color: EL_ON[data.excess], overflow: 'hidden', background: elGradient(data.excess), boxShadow: 'var(--shadow-card)' }}>
-            <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />
-            <div style={{ position: 'relative' }}>
-              {/* fill 위 텍스트 = EL_ON (v2 §1.1 — 파스텔 fill 전부 잉크 텍스트) */}
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>{t.elements[data.excess]}</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '6px 0 10px', letterSpacing: '-0.3px' }}>{t.character[data.excess].label}</div>
-              <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0, color: EL_ON_MUTED[data.excess] }}>{t.character[data.excess].desc}</p>
-            </div>
-          </section>
+          <IdentityCard day={data.profile.day} t={t} locale={locale} />
 
           {/* 사주 명식 — 진짜 산출값 (연·월·일주 간지) */}
           <section className="glass" style={{ padding: 18 }}>
@@ -240,6 +233,34 @@ function ResultInner() {
       )}
       <BottomNav />
     </main>
+  );
+}
+
+/**
+ * 히어로 — 일간(日干) 기준 캐릭터 카드.
+ *
+ * 명리에서 '나'를 가리키는 글자는 여덟 글자 중 일간 하나다. 사용자가 "나는 계수(癸水)"라고
+ * 말할 때의 그 글자. 이전에는 과잉(분포 최다) 원소를 썼는데, 일간이 癸水여도 분포상 최다가
+ * 土일 수 있어 "土 기운이 가장 강해요 — 든든한 사람"처럼 자기 인식과 어긋나는 말을 했다.
+ *
+ * 분포 기반(결핍·과잉)은 성격이 다른 값이라 그대로 둔다 — 추천 로직(§5.3)과 아래 분포 차트.
+ * 즉 정체성은 일간, 추천은 분포로 역할을 나눈다.
+ */
+function IdentityCard({ day, t, locale }: { day: Pillar; t: Dictionary; locale: Locale }) {
+  const el = STEM_ELEMENT[day.stem];
+  return (
+    <section style={{ position: 'relative', borderRadius: 'var(--r-lg)', padding: '22px', color: EL_ON[el], overflow: 'hidden', background: elGradient(el), boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ position: 'absolute', top: -50, right: -40, width: 180, height: 180, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,255,255,.35), transparent 70%)' }} aria-hidden="true" />
+      <div style={{ position: 'relative' }}>
+        {/* fill 위 텍스트 = EL_ON (v2 §1.1 — 파스텔 fill 전부 잉크 텍스트).
+            일간 글자를 앞에 둔다 — 사용자가 자기를 가리켜 부르는 바로 그 글자다. */}
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, letterSpacing: locale === 'ko' ? 0 : 2, textTransform: 'uppercase', fontWeight: 600 }}>
+          {day.stem} · {t.elements[el]}
+        </div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, margin: '6px 0 10px', letterSpacing: '-0.3px' }}>{t.character[el].label}</div>
+        <p style={{ fontSize: 14, lineHeight: 1.65, margin: 0, color: EL_ON_MUTED[el] }}>{t.character[el].desc}</p>
+      </div>
+    </section>
   );
 }
 
