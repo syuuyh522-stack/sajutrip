@@ -125,12 +125,18 @@ function PlanInner() {
                           aria-label={`${t.checkin.title}: ${it.name}`}
                           style={{ width: 18, height: 18, accentColor: 'var(--color-accent)', flex: '0 0 auto' }}
                         />
-                        <div style={{ flex: 1, minWidth: 0 }}>
+                        {/* 장소명 영역만 상세로 연결한다. 행 전체를 링크로 만들면 체크인·일차
+                            변경·삭제 컨트롤과 충돌한다. @modal 인터셉트 라우트가 받아서
+                            이 화면을 유지한 채 바텀시트로 열린다(444569b). */}
+                        <Link
+                          href={{ pathname: `/place/${it.contentId}`, query: { ...birth, ...(it.element ? { element: it.element } : {}) } }}
+                          style={{ flex: 1, minWidth: 0, textDecoration: 'none', color: 'inherit' }}
+                        >
                           <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: collected ? 'line-through' : 'none', opacity: collected ? 0.7 : 1 }}>{dn.primary}</div>
                           <div style={{ fontSize: 13, color: collected && it.element ? EL_INK[it.element] : 'var(--muted)', fontWeight: collected ? 600 : 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                             {collected && it.element ? `+1 ${t.elements[it.element]}` : [dn.hangul, raw.region].filter(Boolean).join(' · ')}
                           </div>
-                        </div>
+                        </Link>
                         <select value={it.day} onChange={(e) => setItemDay(it.contentId, Number(e.target.value))} aria-label={t.plan.day} style={daySelect}>
                           {days.map((n) => <option key={n} value={n}>{t.plan.day} {n}</option>)}
                         </select>

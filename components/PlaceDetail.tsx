@@ -7,7 +7,7 @@
 // 내용·데이터 로직은 완전히 동일하고, 바깥 레이아웃(오버레이 여부)과 시트 높이 제약만 다르다.
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useI18n } from '../i18n/LanguageProvider';
 import { useItinerary } from '../i18n/ItineraryProvider';
 import { useProfile } from '../i18n/ProfileProvider';
@@ -173,13 +173,22 @@ export function PlaceDetail({ mode }: { mode: 'page' | 'modal' }) {
     return q;
   }, [search]);
 
+  // 시트가 실제로 떠 있어야 하는가.
+  // Next 병렬 라우트에서 @modal 슬롯은 URL이 다른 라우트로 바뀌어도 default.tsx로
+  // 떨어지지 않고 남는 경우가 있다. 그러면 '일정 보기'로 /plan에 가도 시트가 덮인 채라
+  // 버튼이 안 먹는 것처럼 보이고, body 스크롤 잠금까지 남는다(실측).
+  // URL을 진실의 원천으로 삼아, /place/… 가 아니면 닫는다.
+  const pathname = usePathname();
+  const sheetOpen = mode !== 'modal' || pathname.startsWith('/place/');
+
   // 모달 프레젠테이션에서는 배경 페이지 스크롤을 잠근다 — 시트 내부만 스크롤되게(§ 요청사항).
+  // sheetOpen이 풀리면 클린업이 돌아 잠금도 함께 해제된다.
   useEffect(() => {
-    if (mode !== 'modal') return;
+    if (mode !== 'modal' || !sheetOpen) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = prev; };
-  }, [mode]);
+  }, [mode, sheetOpen]);
 
   const [place, setPlace] = useState<Place | null>(null);
   // 장소별 실데이터 (detailCommon2/detailIntro2) — 같은 원소여도 장소마다 다른 콘텐츠
@@ -477,6 +486,9 @@ export function PlaceDetail({ mode }: { mode: 'page' | 'modal' }) {
       )}
     </>
   );
+
+  // URL이 이미 다른 화면인데 슬롯만 남은 상태 — 아무것도 그리지 않는다.
+  if (mode === 'modal' && !sheetOpen) return null;
 
   if (mode === 'modal') {
     // 배경 페이지(이전 화면)는 인터셉트 라우트 덕분에 그대로 마운트되어 있다 — 여기서는 그 위를 덮는 딤 오버레이만 그린다.
