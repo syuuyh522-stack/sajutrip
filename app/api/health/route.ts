@@ -4,6 +4,7 @@
 import { NextResponse } from 'next/server';
 import { checkApis } from '../../../lib/health';
 import { isRealtimeMode } from '../../../lib/tour-api/cache';
+import { storeStatus } from '../../../lib/supabase/client';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,6 +16,9 @@ export async function GET() {
       checkedAt: new Date().toISOString(),
       // true = 배치성 데이터도 캐시 우회 실시간 호출 (심사 요건 충족 상태)
       realtimeMode: isRealtimeMode(),
+      // 계측 적재 저장소(Supabase) 설정 여부 — 환경변수가 실제로 들어갔는지 밖에서 확인.
+      // 키 값은 내보내지 않고 호스트만 노출한다(§6.1).
+      store: storeStatus(),
       allOk,
       count: results.length,
       results,
