@@ -163,7 +163,10 @@ export interface Dictionary {
     dates: string;
     start: string;
     end: string;
+    /** {n} 치환 — 어순이 언어마다 다르다(ko '1일차' / en 'Day 1') */
     day: string;
+    /** 일차 선택 컨트롤의 접근성 라벨 (숫자 없음) */
+    dayPicker: string;
     empty: string;
     remove: string;
     nearby: string;
@@ -234,7 +237,7 @@ export interface Dictionary {
     later: string;
     back: string;
   };
-  checkin: { title: string; done: string; hint: string };
+  checkin: { title: string; done: string; hint: string; action: string; visited: string };
   notFound: { title: string; desc: string; home: string };
   legal: {
     privacyTitle: string;
@@ -416,7 +419,8 @@ const en: Dictionary = {
     dates: 'Trip dates',
     start: 'Start',
     end: 'End',
-    day: 'Day',
+    day: 'Day {n}',
+    dayPicker: 'Choose day',
     empty: 'No places yet. Add some from a place page.',
     remove: 'Remove',
     nearby: 'Nearby stay & food will be added automatically (with live data).',
@@ -483,6 +487,8 @@ const en: Dictionary = {
     title: 'While traveling · check in',
     done: "Today's activity done — auto-prompt at 8 PM",
     hint: 'Check off elements as you collect them.',
+    action: 'Check in',
+    visited: 'Visited',
   },
   notFound: {
     title: 'This path isn\u2019t on the map',
@@ -683,7 +689,8 @@ const ko: Dictionary = {
     dates: '여행 일자',
     start: '시작일',
     end: '종료일',
-    day: '일차',
+    day: '{n}일차',
+    dayPicker: '일차 선택',
     empty: '담은 장소가 없어요. 장소 상세에서 담아보세요.',
     remove: '빼기',
     nearby: '주변 숙박·음식 동선은 자동 확장 예정(실데이터 연동 시).',
@@ -750,6 +757,8 @@ const ko: Dictionary = {
     title: '여행 중 · 체크인',
     done: '오늘 활동 완료 — 오후 8시 자동 알림',
     hint: '기운을 채울 때마다 체크하세요.',
+    action: '체크인',
+    visited: '다녀옴',
   },
   notFound: {
     title: '이 길은 지도에 없어요',

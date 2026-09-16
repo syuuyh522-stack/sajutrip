@@ -106,7 +106,7 @@ function PlanInner() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
                   {/* Day 마커 — v2 §7.4: 레일 마커는 mono, 잉크 fill(원소색·accent 금지) */}
                   <span style={{ width: 24, height: 24, borderRadius: 7, background: 'var(--color-text)', color: '#fff', display: 'grid', placeItems: 'center', fontFamily: 'var(--mono)', fontSize: 13, fontWeight: 600 }}>{d}</span>
-                  <span style={{ fontSize: 16, fontWeight: 600 }}>{t.plan.day} {d}</span>
+                  <span style={{ fontSize: 16, fontWeight: 600 }}>{t.plan.day.replace('{n}', String(d))}</span>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {dayItems.map((it) => {
@@ -116,31 +116,45 @@ function PlanInner() {
                     const dn = displayName(raw.name, locale);
                     // PO 피드백 #9: 체크인을 Day 스탑에 통합 — 체크 = 엘리먼트 수집
                     return (
-                      <div key={it.contentId} className="glass" style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px' }}>
-                        {/* 체크(수집) = 선택 상태 → accent (§1). 스탑 카드에 원소 fill 금지(§1 절제 규칙) */}
-                        <input
-                          type="checkbox"
-                          checked={collected}
-                          onChange={() => { toggleCollect(it.contentId, it.element); if (!collected) track('checkin', { contentId: it.contentId, element: it.element }); }}
-                          aria-label={`${t.checkin.title}: ${it.name}`}
-                          style={{ width: 18, height: 18, accentColor: 'var(--color-accent)', flex: '0 0 auto' }}
-                        />
-                        {/* 장소명 영역만 상세로 연결한다. 행 전체를 링크로 만들면 체크인·일차
-                            변경·삭제 컨트롤과 충돌한다. @modal 인터셉트 라우트가 받아서
-                            이 화면을 유지한 채 바텀시트로 열린다(444569b). */}
-                        <Link
-                          href={{ pathname: `/place/${it.contentId}`, query: { ...birth, ...(it.element ? { element: it.element } : {}) } }}
-                          style={{ flex: 1, minWidth: 0, textDecoration: 'none', color: 'inherit' }}
-                        >
-                          <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: collected ? 'line-through' : 'none', opacity: collected ? 0.7 : 1 }}>{dn.primary}</div>
-                          <div style={{ fontSize: 13, color: collected && it.element ? EL_INK[it.element] : 'var(--muted)', fontWeight: collected ? 600 : 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {collected && it.element ? `+1 ${t.elements[it.element]}` : [dn.hangul, raw.region].filter(Boolean).join(' · ')}
-                          </div>
-                        </Link>
-                        <select value={it.day} onChange={(e) => setItemDay(it.contentId, Number(e.target.value))} aria-label={t.plan.day} style={daySelect}>
-                          {days.map((n) => <option key={n} value={n}>{t.plan.day} {n}</option>)}
-                        </select>
-                        <button type="button" onClick={() => removeItem(it.contentId)} aria-label={t.plan.remove} style={{ border: 0, background: 'transparent', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: 18, lineHeight: 1, width: 44, height: 44, display: 'grid', placeItems: 'center' }}>×</button>
+                      <div key={it.contentId} className="glass" style={{ padding: '10px 12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          {/* 장소명 영역만 상세로 연결한다. 행 전체를 링크로 만들면 체크인·일차
+                              변경·삭제 컨트롤과 충돌한다. @modal 인터셉트 라우트가 받아서
+                              이 화면을 유지한 채 바텀시트로 열린다(444569b). */}
+                          <Link
+                            href={{ pathname: `/place/${it.contentId}`, query: { ...birth, ...(it.element ? { element: it.element } : {}) } }}
+                            style={{ flex: 1, minWidth: 0, textDecoration: 'none', color: 'inherit' }}
+                          >
+                            <div style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textDecoration: collected ? 'line-through' : 'none', opacity: collected ? 0.7 : 1 }}>{dn.primary}</div>
+                            <div style={{ fontSize: 13, color: collected && it.element ? EL_INK[it.element] : 'var(--muted)', fontWeight: collected ? 600 : 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                              {collected && it.element ? `+1 ${t.elements[it.element]}` : [dn.hangul, raw.region].filter(Boolean).join(' · ')}
+                            </div>
+                          </Link>
+                          <button type="button" onClick={() => removeItem(it.contentId)} aria-label={t.plan.remove} style={{ border: 0, background: 'transparent', color: 'var(--color-text-muted)', cursor: 'pointer', fontSize: 18, lineHeight: 1, width: 44, height: 44, display: 'grid', placeItems: 'center', flex: '0 0 auto' }}>×</button>
+                        </div>
+                        {/* 체크인 = 엘리먼트 수집(§컨셉). 맨 체크박스로는 무엇을 하는 동작인지
+                            알 수 없어서 라벨 있는 토글 버튼으로 바꿨다. 누른 뒤엔 '다녀옴'으로
+                            상태를 그대로 말한다(aria-pressed로도 전달). */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
+                          <button
+                            type="button"
+                            onClick={() => { toggleCollect(it.contentId, it.element); if (!collected) track('checkin', { contentId: it.contentId, element: it.element }); }}
+                            aria-pressed={collected}
+                            style={{
+                              minHeight: 36, padding: '8px 14px', borderRadius: 'var(--radius-pill)', cursor: 'pointer',
+                              fontSize: 13, fontWeight: 600, flex: '0 0 auto',
+                              border: collected ? 0 : '1.5px solid rgba(185,180,199,.55)',
+                              background: collected ? 'var(--accent-soft)' : 'var(--color-surface)',
+                              color: collected ? 'var(--color-accent)' : 'var(--color-text)',
+                            }}
+                          >
+                            {collected ? `✓ ${t.checkin.visited}` : t.checkin.action}
+                          </button>
+                          <span style={{ flex: 1 }} />
+                          <select value={it.day} onChange={(e) => setItemDay(it.contentId, Number(e.target.value))} aria-label={t.plan.dayPicker} style={daySelect}>
+                            {days.map((n) => <option key={n} value={n}>{t.plan.day.replace('{n}', String(n))}</option>)}
+                          </select>
+                        </div>
                       </div>
                     );
                   })}
