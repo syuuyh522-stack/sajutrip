@@ -10,7 +10,14 @@ import { Aurora } from '../components/Aurora';
 import { track } from '../lib/analytics/track';
 
 type Gender = 'female' | 'male';
-const HOURS = Array.from({ length: 24 }, (_, h) => String(h));
+// 12지지 시간대 — 사주 시주(時柱)는 2시간 단위다(子 23~01, 丑 01~03 … 亥 21~23).
+// 값은 각 구간의 시작 시(hour). lib/saju/hour-pillar가 floor(((h+1)%24)/2)로
+// 지지를 뽑으므로 시작 시만 넘기면 그 구간의 지지가 정확히 나온다
+// (예: 23 → 子, 13 → 未). 구간 안 어느 분에 태어났든 결과는 같다.
+const TIME_BLOCKS = [23, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21] as const;
+const pad2 = (h: number) => String(h).padStart(2, '0');
+/** 23 → '23–01' */
+const blockLabel = (h: number) => `${pad2(h)}–${pad2((h + 2) % 24)}`;
 
 export default function LandingPage() {
   const { t } = useI18n();
@@ -133,7 +140,7 @@ export default function LandingPage() {
                 {/* 레퍼런스 패턴: 펼친 상태에선 '시간 선택' 라벨을 유지하고,
                     접힌 상태에서만 고른 값을 보여준다(레퍼런스의 날짜 카드가 그 형태). */}
                 <span style={{ flex: 1, textAlign: 'left', fontFamily: !timeOpen && birthTime ? 'var(--font-mono)' : undefined, fontWeight: 600, color: 'var(--color-text)' }}>
-                  {!timeOpen && birthTime ? `${birthTime.padStart(2, '0')}:00` : t.landing.tobPick}
+                  {!timeOpen && birthTime ? blockLabel(Number(birthTime)) : t.landing.tobPick}
                 </span>
                 <span aria-hidden="true" style={{ color: 'var(--color-text-muted)', transform: timeOpen ? 'rotate(180deg)' : 'none', transition: 'transform var(--motion-fast)', lineHeight: 1 }}>⌄</span>
               </button>
@@ -143,15 +150,16 @@ export default function LandingPage() {
                   aria-label={t.landing.tob}
                   style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, padding: '2px 14px 16px' }}
                 >
-                  {HOURS.map((h) => {
-                    const on = birthTime === h;
+                  {TIME_BLOCKS.map((h) => {
+                    const v = String(h);
+                    const on = birthTime === v;
                     return (
                       <button
                         key={h}
                         type="button"
                         role="radio"
                         aria-checked={on}
-                        onClick={() => { setBirthTime(on ? '' : h); if (!on) setTimeOpen(false); }}
+                        onClick={() => { setBirthTime(on ? '' : v); if (!on) setTimeOpen(false); }}
                         style={{
                           minHeight: 46, borderRadius: 'var(--radius-pill)', cursor: 'pointer',
                           fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: on ? 700 : 500,
@@ -161,7 +169,7 @@ export default function LandingPage() {
                           transition: 'background var(--motion-fast)',
                         }}
                       >
-                        {h.padStart(2, '0')}:00
+                        {blockLabel(h)}
                       </button>
                     );
                   })}

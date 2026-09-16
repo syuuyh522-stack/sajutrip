@@ -122,6 +122,34 @@ describe('시주 — 오자시두법(五鼠遁)', () => {
   });
 });
 
+describe('12지지 시간대 — 랜딩 시간 피커가 보내는 값', () => {
+  // 피커는 각 2시간 구간의 '시작 시'를 보낸다(app/page.tsx TIME_BLOCKS).
+  // 그 값이 실제로 그 구간의 지지로 떨어져야 한다.
+  const BLOCKS: [number, string][] = [
+    [23, '子'], [1, '丑'], [3, '寅'], [5, '卯'], [7, '辰'], [9, '巳'],
+    [11, '午'], [13, '未'], [15, '申'], [17, '酉'], [19, '戌'], [21, '亥'],
+  ];
+
+  for (const [hour, branch] of BLOCKS) {
+    test(`${hour}시 → ${branch}시`, () => {
+      assert.equal(hourPillar('甲', hour).branch, branch);
+    });
+  }
+
+  test('구간 안 어느 시각이든 같은 지지 — 분은 결과를 바꾸지 않는다', () => {
+    for (const [start, branch] of BLOCKS) {
+      const second = (start + 1) % 24; // 구간의 두 번째 시각
+      assert.equal(hourPillar('甲', second).branch, branch, `${second}시도 ${branch}여야 한다`);
+    }
+  });
+
+  test('12개 구간이 24시간을 빠짐없이 덮는다', () => {
+    const covered = new Set<number>();
+    for (const [start] of BLOCKS) { covered.add(start); covered.add((start + 1) % 24); }
+    assert.equal(covered.size, 24);
+  });
+});
+
 describe('오행 분포', () => {
   const profile: SajuProfile = {
     year: { stem: '丙', branch: '子' },
