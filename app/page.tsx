@@ -130,8 +130,10 @@ export default function LandingPage() {
                 }}
               >
                 <IconClock />
-                <span style={{ flex: 1, textAlign: 'left', fontFamily: birthTime ? 'var(--font-mono)' : undefined, fontWeight: birthTime ? 600 : 400, color: birthTime ? 'var(--color-text)' : 'var(--color-text-muted)' }}>
-                  {birthTime ? `${birthTime.padStart(2, '0')}:00` : t.landing.tobPick}
+                {/* 레퍼런스 패턴: 펼친 상태에선 '시간 선택' 라벨을 유지하고,
+                    접힌 상태에서만 고른 값을 보여준다(레퍼런스의 날짜 카드가 그 형태). */}
+                <span style={{ flex: 1, textAlign: 'left', fontFamily: !timeOpen && birthTime ? 'var(--font-mono)' : undefined, fontWeight: 600, color: 'var(--color-text)' }}>
+                  {!timeOpen && birthTime ? `${birthTime.padStart(2, '0')}:00` : t.landing.tobPick}
                 </span>
                 <span aria-hidden="true" style={{ color: 'var(--color-text-muted)', transform: timeOpen ? 'rotate(180deg)' : 'none', transition: 'transform var(--motion-fast)', lineHeight: 1 }}>⌄</span>
               </button>
@@ -139,7 +141,7 @@ export default function LandingPage() {
                 <div
                   role="radiogroup"
                   aria-label={t.landing.tob}
-                  style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, padding: '4px 14px 14px' }}
+                  style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, padding: '2px 14px 16px' }}
                 >
                   {HOURS.map((h) => {
                     const on = birthTime === h;
@@ -151,8 +153,8 @@ export default function LandingPage() {
                         aria-checked={on}
                         onClick={() => { setBirthTime(on ? '' : h); if (!on) setTimeOpen(false); }}
                         style={{
-                          minHeight: 40, borderRadius: 'var(--radius-pill)', cursor: 'pointer',
-                          fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: on ? 700 : 400,
+                          minHeight: 46, borderRadius: 'var(--radius-pill)', cursor: 'pointer',
+                          fontFamily: 'var(--font-mono)', fontSize: 15, fontWeight: on ? 700 : 500,
                           border: on ? 0 : '1px solid rgba(185,180,199,.45)',
                           background: on ? 'var(--color-accent)' : 'var(--color-surface)',
                           color: on ? '#fff' : 'var(--color-text)',
