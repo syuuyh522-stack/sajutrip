@@ -534,7 +534,7 @@ const ko: Dictionary = {
     female: '여성',
     male: '남성',
     dob: '생년월일',
-    tob: '태어난 시간 · 선택',
+    tob: '태어난 시간',
     tobPick: '시간 선택',
     unknownTime: '태어난 시간 모름',
     dateBasedNote: '괜찮아요 — 날짜만으로 읽어드려요. 날짜 기반 리딩도 완전한 전통 방식이에요.',

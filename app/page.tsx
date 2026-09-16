@@ -139,7 +139,9 @@ export default function LandingPage() {
                 <IconClock />
                 {/* 레퍼런스 패턴: 펼친 상태에선 '시간 선택' 라벨을 유지하고,
                     접힌 상태에서만 고른 값을 보여준다(레퍼런스의 날짜 카드가 그 형태). */}
-                <span style={{ flex: 1, textAlign: 'left', fontFamily: !timeOpen && birthTime ? 'var(--font-mono)' : undefined, fontWeight: 600, color: 'var(--color-text)' }}>
+                {/* 생년월일 입력(dobInput)과 같은 mono·16px — 같은 카드 안에서 글씨체가
+                    갈리면 다른 종류의 필드처럼 보인다. */}
+                <span style={{ flex: 1, textAlign: 'left', fontFamily: 'var(--font-mono)', fontSize: 16, fontWeight: !timeOpen && birthTime ? 600 : 400, color: !timeOpen && birthTime ? 'var(--color-text)' : 'var(--color-text-muted)' }}>
                   {!timeOpen && birthTime ? blockLabel(Number(birthTime)) : t.landing.tobPick}
                 </span>
                 <span aria-hidden="true" style={{ color: 'var(--color-text-muted)', transform: timeOpen ? 'rotate(180deg)' : 'none', transition: 'transform var(--motion-fast)', lineHeight: 1 }}>⌄</span>
