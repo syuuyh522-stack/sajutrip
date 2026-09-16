@@ -10,6 +10,7 @@ import { Aurora } from '../components/Aurora';
 import { track } from '../lib/analytics/track';
 
 type Gender = 'female' | 'male';
+const HOURS = Array.from({ length: 24 }, (_, h) => String(h));
 
 export default function LandingPage() {
   const { t } = useI18n();
@@ -40,8 +41,8 @@ export default function LandingPage() {
 
   const submit = () => {
     if (!isValidDate()) { setDateError(true); return; }
-    // 시간: 모름이 아니고 값이 있으면 시(hour)만 사주 산출에 사용 (시지는 2시간 단위)
-    const hour = !timeUnknown && birthTime ? String(Number(birthTime.split(':')[0])) : '';
+    // 시간: 모름이 아니고 값이 있으면 시(hour)만 사주 산출에 사용 (시지는 2시간 단위) — 분 단위 입력 자체가 없음
+    const hour = !timeUnknown && birthTime ? birthTime : '';
     setBirth({ gender, year, month, day, hour }); // 프로필 저장(하단 네비·마이 등에서 사용)
     track('saju_submit', { gender, withTime: hour !== '' });
     const params = new URLSearchParams({ gender, year, month, day, ...(hour ? { hour } : {}) });
@@ -111,14 +112,19 @@ export default function LandingPage() {
         {/* 태어난 시간 (선택) — 모름 = 일급 경로, 결과는 date-based로 온전히 렌더 (§7.2) */}
         <div>
           <label style={label} htmlFor="birth-time">{t.landing.tob}</label>
-          <input
+          {/* 분 단위는 사주 산출에 쓰이지 않아 시(hour) 선택만 제공 (시지는 2시간 단위) */}
+          <select
             id="birth-time"
-            type="time"
             value={birthTime}
             disabled={timeUnknown}
             onChange={(e) => setBirthTime(e.target.value)}
             style={{ ...dobInput, textAlign: 'left', opacity: timeUnknown ? 0.4 : 1 }}
-          />
+          >
+            <option value="" />
+            {HOURS.map((h) => (
+              <option key={h} value={h}>{h.padStart(2, '0')}:00</option>
+            ))}
+          </select>
           {/* 모름 = 체크박스 (일급 경로, §7.2) — 체크 시 시간 필드 비활성 + date-based 안내 */}
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 44, cursor: 'pointer', fontSize: 13, color: timeUnknown ? 'var(--color-accent)' : 'var(--color-text-muted)', fontWeight: timeUnknown ? 600 : 400 }}>
             <input
