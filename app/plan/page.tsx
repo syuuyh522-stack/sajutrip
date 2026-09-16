@@ -197,7 +197,7 @@ function PlanInner() {
 }
 
 const dateInput: React.CSSProperties = {
-  flex: 1, padding: 12, borderRadius: 11, border: '1px solid var(--line)', fontFamily: 'var(--mono)', fontSize: 14, color: 'var(--ink)', background: '#fff',
+  flex: 1, minWidth: 0, padding: 12, borderRadius: 11, border: '1px solid var(--line)', fontFamily: 'var(--mono)', fontSize: 14, color: 'var(--ink)', background: '#fff',
 };
 const daySelect: React.CSSProperties = {
   border: '1px solid rgba(185,180,199,.4)', borderRadius: 8, padding: '6px 8px', fontSize: 13, minHeight: 44, color: 'var(--ink)', background: '#fff', flex: '0 0 auto',
