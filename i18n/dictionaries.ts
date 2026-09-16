@@ -181,6 +181,17 @@ export interface Dictionary {
     shareText: string;
     back: string;
   };
+  /** 여행 요약(보고서) — 완료한 여행에 무엇을 했는지 */
+  tripSummary: {
+    title: string;
+    /** 숫자는 컴포넌트가 따로 크게 그린다 — 라벨에 자리표시자를 두지 않는다 */
+    days: string;
+    visited: string;
+    /** 미션 지표(비수도권) */
+    regional: string;
+    filled: string;
+    empty: string;
+  };
   nav: { saju: string; plan: string; search: string; my: string };
   search: {
     title: string;
@@ -420,6 +431,14 @@ const en: Dictionary = {
     share: 'Share',
     shareText: 'My SajuTrip — I filled my {element} in Korea.',
     back: 'Back',
+  },
+  tripSummary: {
+    title: 'Your trip',
+    days: 'days',
+    visited: 'visited',
+    regional: 'beyond Seoul',
+    filled: 'Elements you filled',
+    empty: 'Check off the stops you visited to see this fill in.',
   },
   nav: { saju: 'Saju', plan: 'Trips', search: 'Search', my: 'My' },
   search: {
@@ -679,6 +698,14 @@ const ko: Dictionary = {
     share: '공유',
     shareText: '사주트립 — 한국에서 {element} 기운을 채웠어요.',
     back: '뒤로',
+  },
+  tripSummary: {
+    title: '이번 여행',
+    days: '일',
+    visited: '다녀온 곳',
+    regional: '지방',
+    filled: '채운 기운',
+    empty: '다녀온 곳을 체크하면 여기에 채워져요.',
   },
   nav: { saju: '사주', plan: '내 일정', search: '검색', my: '마이' },
   search: {

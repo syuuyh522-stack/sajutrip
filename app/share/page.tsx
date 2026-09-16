@@ -9,6 +9,7 @@ import { useItinerary } from '../../i18n/ItineraryProvider';
 import { useProfile } from '../../i18n/ProfileProvider';
 import { track } from '../../lib/analytics/track';
 import { Aurora } from '../../components/Aurora';
+import { TripSummary } from '../../components/TripSummary';
 import type { Dictionary } from '../../i18n/dictionaries';
 import type { Element } from '../../types/saju';
 import type { ItineraryItem } from '../../types/itinerary';
@@ -134,7 +135,7 @@ function circled(n: number): string {
 function ShareInner() {
   const { t } = useI18n();
   const { state } = useItinerary();
-  const { collectedCount } = useProfile();
+  const { collectedCount, isCollected } = useProfile();
   const params = useSearchParams();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [target, setTarget] = useState<Element | null>(null);
@@ -207,6 +208,12 @@ function ShareInner() {
       </header>
 
       <h1 style={{ fontSize: 20, fontWeight: 600, margin: '0 0 16px' }}>{t.share.title}</h1>
+
+      {/* 여행 요약(보고서) — 공유 이미지 위에 둔다. 완료 직후 처음 보는 화면이라
+          "무엇을 했는지"를 먼저 보여주고, 그 아래 공유 카드로 이어진다. */}
+      <div style={{ marginBottom: 20 }}>
+        <TripSummary state={state} isVisited={isCollected} t={t} />
+      </div>
 
       {/* target 미확정(로딩·birth 누락) 동안 빈 흰 카드 방지 — 스켈레톤 오버레이 (휴리스틱 #5) */}
       <div style={{ position: 'relative' }}>

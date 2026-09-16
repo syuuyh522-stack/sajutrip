@@ -12,6 +12,7 @@ import { BottomNav } from '../../components/BottomNav';
 import { Aurora } from '../../components/Aurora';
 import { EL_COLOR, EL_INK } from '../../lib/ui/elements';
 import { ElementOrb } from '../../components/ElementOrb';
+import { TripSummary } from '../../components/TripSummary';
 import type { Element, ElementDistribution } from '../../types/saju';
 
 const ORDER: Element[] = ['wood', 'fire', 'earth', 'metal', 'water'];
@@ -19,8 +20,10 @@ const COLOR = EL_COLOR; // 공식 팔레트
 
 function MyInner() {
   const { t, locale } = useI18n();
-  const { birth, signedUp, nickname, collectedCount } = useProfile();
+  const { birth, signedUp, nickname, collectedCount, isCollected } = useProfile();
   const { state } = useItinerary();
+  // 여행 종료 판정 — plan 화면의 공유 CTA와 같은 기준
+  const tripEnded = Boolean(state.end) && new Date(`${state.end}T00:00:00`).getTime() <= Date.now();
   const params = useSearchParams();
 
   // birth: 프로필 우선, 없으면 URL
@@ -85,6 +88,10 @@ function MyInner() {
           {excess && <Row k={t.result.strongestTag} v={t.elements[excess]} />}
           {b.year && <Row k={t.my.birth} v={`${b.year}.${b.month}.${b.day}`} last />}
         </section>
+
+        {/* 여행 요약 — 종료일이 지난 뒤에만. 여행 중에는 '저장한 일정' 행으로 충분하고,
+            끝난 뒤에야 "무엇을 했는가"가 의미를 갖는다(plan의 공유 CTA와 같은 조건). */}
+        {state.items.length > 0 && tripEnded && <TripSummary state={state} isVisited={isCollected} t={t} />}
 
         {state.items.length > 0 && (
           <Link href={{ pathname: '/plan', query }} style={{ textDecoration: 'none', color: 'inherit' }}>
