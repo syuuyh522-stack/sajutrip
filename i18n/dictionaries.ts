@@ -27,6 +27,8 @@ export interface Dictionary {
     dob: string;
     /** 태어난 시간 (선택) — §7.2: 모름 = 일급 경로(date-based reading) */
     tob: string;
+    /** 시간 피커 접힘 상태의 안내 — 아직 안 고름 */
+    tobPick: string;
     unknownTime: string;
     dateBasedNote: string;
     year: string;
@@ -262,6 +264,7 @@ const en: Dictionary = {
     male: 'Male',
     dob: 'Date of birth',
     tob: 'Time of birth · optional',
+    tobPick: 'Pick a time',
     unknownTime: "I don't know my birth time",
     dateBasedNote: 'No problem — we\u2019ll read from your date alone. A date-based reading is a complete, traditional mode.',
     year: 'Year',
@@ -532,6 +535,7 @@ const ko: Dictionary = {
     male: '남성',
     dob: '생년월일',
     tob: '태어난 시간 · 선택',
+    tobPick: '시간 선택',
     unknownTime: '태어난 시간 모름',
     dateBasedNote: '괜찮아요 — 날짜만으로 읽어드려요. 날짜 기반 리딩도 완전한 전통 방식이에요.',
     year: '년',

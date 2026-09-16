@@ -26,6 +26,8 @@ export default function LandingPage() {
   // 태어난 시간 (선택, §7.2) — timeUnknown이면 date-based 리딩(완전한 모드로 프레이밍)
   const [birthTime, setBirthTime] = useState('');
   const [timeUnknown, setTimeUnknown] = useState(false);
+  // 시간 피커는 기본 접힘 — 선택 항목이라 랜딩이 길어지면 CTA가 밀린다
+  const [timeOpen, setTimeOpen] = useState(false);
 
   useEffect(() => { track('landing_view'); }, []);
 
@@ -111,26 +113,66 @@ export default function LandingPage() {
 
         {/* 태어난 시간 (선택) — 모름 = 일급 경로, 결과는 date-based로 온전히 렌더 (§7.2) */}
         <div>
-          <label style={label} htmlFor="birth-time">{t.landing.tob}</label>
-          {/* 분 단위는 사주 산출에 쓰이지 않아 시(hour) 선택만 제공 (시지는 2시간 단위) */}
-          <select
-            id="birth-time"
-            value={birthTime}
-            disabled={timeUnknown}
-            onChange={(e) => setBirthTime(e.target.value)}
-            style={{ ...dobInput, textAlign: 'left', opacity: timeUnknown ? 0.4 : 1 }}
-          >
-            <option value="" />
-            {HOURS.map((h) => (
-              <option key={h} value={h}>{h.padStart(2, '0')}:00</option>
-            ))}
-          </select>
+          <label style={label}>{t.landing.tob}</label>
+          {/* 시간 선택 — 드롭다운 대신 칩 그리드. 드롭다운은 열기 전까지 어떤 값이 있는지
+              보이지 않고, 24개를 스크롤로 훑어야 한다. 칩은 한눈에 들어오고 탭 한 번이다.
+              분 단위는 사주 산출에 쓰이지 않아 시(hour)만 제공한다(시지는 2시간 단위).
+              '모름'을 고르면 아예 감춘다 — 비활성 칩 24개는 시각적 소음이다. */}
+          {!timeUnknown && (
+            <div style={{ border: '1px solid rgba(185,180,199,.4)', borderRadius: 'var(--radius-input)', background: 'var(--color-surface)', overflow: 'hidden' }}>
+              <button
+                type="button"
+                onClick={() => setTimeOpen((o) => !o)}
+                aria-expanded={timeOpen}
+                style={{
+                  width: '100%', minHeight: 48, padding: '12px 14px', border: 0, background: 'transparent', cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', gap: 10, fontSize: 15, color: 'var(--color-text)',
+                }}
+              >
+                <IconClock />
+                <span style={{ flex: 1, textAlign: 'left', fontFamily: birthTime ? 'var(--font-mono)' : undefined, fontWeight: birthTime ? 600 : 400, color: birthTime ? 'var(--color-text)' : 'var(--color-text-muted)' }}>
+                  {birthTime ? `${birthTime.padStart(2, '0')}:00` : t.landing.tobPick}
+                </span>
+                <span aria-hidden="true" style={{ color: 'var(--color-text-muted)', transform: timeOpen ? 'rotate(180deg)' : 'none', transition: 'transform var(--motion-fast)', lineHeight: 1 }}>⌄</span>
+              </button>
+              {timeOpen && (
+                <div
+                  role="radiogroup"
+                  aria-label={t.landing.tob}
+                  style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8, padding: '4px 14px 14px' }}
+                >
+                  {HOURS.map((h) => {
+                    const on = birthTime === h;
+                    return (
+                      <button
+                        key={h}
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        onClick={() => { setBirthTime(on ? '' : h); if (!on) setTimeOpen(false); }}
+                        style={{
+                          minHeight: 40, borderRadius: 'var(--radius-pill)', cursor: 'pointer',
+                          fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: on ? 700 : 400,
+                          border: on ? 0 : '1px solid rgba(185,180,199,.45)',
+                          background: on ? 'var(--color-accent)' : 'var(--color-surface)',
+                          color: on ? '#fff' : 'var(--color-text)',
+                          transition: 'background var(--motion-fast)',
+                        }}
+                      >
+                        {h.padStart(2, '0')}:00
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
           {/* 모름 = 체크박스 (일급 경로, §7.2) — 체크 시 시간 필드 비활성 + date-based 안내 */}
           <label style={{ display: 'flex', alignItems: 'center', gap: 8, minHeight: 44, cursor: 'pointer', fontSize: 13, color: timeUnknown ? 'var(--color-accent)' : 'var(--color-text-muted)', fontWeight: timeUnknown ? 600 : 400 }}>
             <input
               type="checkbox"
               checked={timeUnknown}
-              onChange={(e) => { setTimeUnknown(e.target.checked); if (e.target.checked) setBirthTime(''); }}
+              onChange={(e) => { setTimeUnknown(e.target.checked); if (e.target.checked) { setBirthTime(''); setTimeOpen(false); } }}
               style={{ width: 18, height: 18, accentColor: 'var(--color-accent)' }}
             />
             {t.landing.unknownTime}
@@ -146,6 +188,16 @@ export default function LandingPage() {
       {/* PO 피드백 #3: 논의되지 않은 안내 문구 제거 — 프라이버시 카피(§7.2 문서 근거)만 유지 */}
       <button type="button" onClick={submit} style={{ ...cta, marginTop: 28 }}>{t.landing.cta} →</button>
     </main>
+  );
+}
+
+/** 시계 아이콘 — 라인 아이콘(§6, 한자·이모지 금지) */
+function IconClock() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" aria-hidden="true" style={{ color: 'var(--color-accent)', flex: '0 0 auto' }}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </svg>
   );
 }
 
